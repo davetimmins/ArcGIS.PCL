@@ -17,10 +17,10 @@ namespace ArcGIS.ServiceModel.Operation
         /// <summary>
         /// Represents a request for a query against a service resource
         /// </summary>
-        /// <param name="resourceRelativePath">Relative url of the resource to apply the query against</param>
-        public Query(String resourceRelativePath)
+        /// <param name="endpoint">Resource to apply the query against</param>
+        public Query(IEndpoint endpoint)
         {
-            _resourceRelativePath = resourceRelativePath.Trim('/');
+            _resourceRelativePath = endpoint.RelativeUrl.Trim('/');
             Where = "1=1";
             OutFields = "*";
             ReturnGeometry = true;

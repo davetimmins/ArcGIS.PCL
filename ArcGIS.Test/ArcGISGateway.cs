@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
+using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Logic;
 using ArcGIS.ServiceModel.Operation;
 using ServiceStack.Text;
@@ -71,7 +72,7 @@ namespace ArcGIS.Test
         {
             var gateway = new ArcGISGateway();
 
-            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0");
+            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
             var result = await gateway.Query<Point>(query);
 
             Assert.True(result.Any());
@@ -82,19 +83,19 @@ namespace ArcGIS.Test
         {
             var gateway = new ArcGISGateway();
 
-            var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0");
+            var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
             var resultPoint = await gateway.Query<Point>(queryPoint);
 
             Assert.True(resultPoint.Any());
             Assert.True(resultPoint.All(i => i.Geometry != null));
 
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1") { OutFields = "lengthkm" };
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm" };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Any());
             Assert.True(resultPolyline.All(i => i.Geometry != null));
 
-            var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0") { Where = "areasqkm = 0.012", OutFields = "areasqkm" };
+            var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = "areasqkm" };
             var resultPolygon = await gateway.Query<Polygon>(queryPolygon);
 
             Assert.True(resultPolygon.Any());
@@ -106,13 +107,13 @@ namespace ArcGIS.Test
         {
             var gateway = new ArcGISGateway();
 
-            var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0") { ReturnGeometry = false };
+            var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { ReturnGeometry = false };
             var resultPoint = await gateway.Query<Point>(queryPoint);
 
             Assert.True(resultPoint.Any());
             Assert.True(resultPoint.All(i => i.Geometry == null));
 
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1") { OutFields = "lengthkm", ReturnGeometry = false };
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm", ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Any());
@@ -123,15 +124,19 @@ namespace ArcGIS.Test
         public async Task QueryOutFieldsAreHonored()
         {
             var gateway = new ArcGISGateway();
-            
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1") { OutFields = "lengthkm", ReturnGeometry = false };
+
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm", ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Any());
             Assert.True(resultPolyline.All(i => i.Geometry == null));
             Assert.True(resultPolyline.All(i => i.Attributes != null && i.Attributes.Count == 1));
 
-            var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0") { Where = "areasqkm = 0.012", OutFields = "areasqkm,elevation,resolution,reachcode" };
+            var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint())
+                {
+                    Where = "areasqkm = 0.012", 
+                    OutFields = "areasqkm,elevation,resolution,reachcode"
+                };
             var resultPolygon = await gateway.Query<Polygon>(queryPolygon);
 
             Assert.True(resultPolygon.Any());

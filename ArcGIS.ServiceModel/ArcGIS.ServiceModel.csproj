@@ -43,6 +43,7 @@
     <Compile Include="Common\Feature.cs" />
     <Compile Include="Common\IEndpoint.cs" />
     <Compile Include="Common\IGeometry.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Logic\IPortalGateway.cs" />
     <Compile Include="Operation\CommonParameters.cs" />
     <Compile Include="Operation\PortalResponse.cs" />
