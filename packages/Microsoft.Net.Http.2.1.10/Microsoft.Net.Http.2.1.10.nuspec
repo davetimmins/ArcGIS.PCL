@@ -16,6 +16,7 @@ This package also supports Portable Class Libraries.
 
 This package is not supported in Visual Studio 2010, and is only required for projects targeting .NET Framework 4.5 or .NET for Windows Store apps when consuming a library that uses this package. For known issues, please see: http://go.microsoft.com/fwlink/?LinkID=279987.</description>
     <summary>This package provides a programming interface for modern HTTP applications on .NET Framework 4, Silverlight 4 and 5, Windows Phone 7.5 and 8.</summary>
+    <releaseNotes />
     <copyright>Copyright © Microsoft Corporation</copyright>
     <language>en-US</language>
     <tags>HTTP REST Microsoft System Networking</tags>

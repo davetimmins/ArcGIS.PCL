@@ -25,9 +25,7 @@ These types are "unified" to their later version equivalent. For example, when r
 
 This package is not required for projects targeting .NET Framework 4.5 or .NET for Windows Store apps. For known issues, please see: http://blogs.msdn.com/b/bclteam/p/asynctargetingpackkb.aspx.</description>
     <summary>Adds support for types from later versions to .NET Framework 4, Silverlight 4 and 5, and Windows Phone 7.5.</summary>
-    <releaseNotes />
     <copyright>Copyright © Microsoft Corporation</copyright>
-    <language />
     <tags>BCL Microsoft System Task IProgress</tags>
     <dependencies>
       <dependency id="Microsoft.Bcl.Build" version="1.0.4" />
