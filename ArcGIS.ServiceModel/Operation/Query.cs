@@ -75,6 +75,14 @@ namespace ArcGIS.ServiceModel.Operation
         {
             get { return _resourceRelativePath + "/query"; }
         }
+
+
+        public string BuildAbsoluteUrl(string rootUrl)
+        {
+            return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
+                       ? rootUrl + RelativeUrl
+                       : RelativeUrl;
+        }
     }
 
     [DataContract]
@@ -86,8 +94,4 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "spatialReference")]
         public SpatialReference SpatialReference { get; set; }
     }
-
-
-
-
 }

@@ -12,6 +12,13 @@ namespace ArcGIS.ServiceModel.Common
         /// Relative url of the resource
         /// </summary>
         String RelativeUrl { get; }
+
+        /// <summary>
+        /// Check the url is complete (ignore the scheme)
+        /// </summary>
+        /// <param name="rootUrl"></param>
+        /// <returns></returns>
+        String BuildAbsoluteUrl(String rootUrl);
     }
 
     /// <summary>
@@ -26,8 +33,17 @@ namespace ArcGIS.ServiceModel.Common
         public ArcGISServerEndpoint(String relativePath)
         {
             RelativeUrl = relativePath.Trim('/');
+            RelativeUrl = RelativeUrl.Replace("rest/services/", "");
+            RelativeUrl = "rest/services/" + RelativeUrl;
         }
         
         public string RelativeUrl { get; private set; }
+
+        public string BuildAbsoluteUrl(string rootUrl)
+        {
+            return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
+                       ? rootUrl + RelativeUrl
+                       : RelativeUrl;
+        }
     }
 }

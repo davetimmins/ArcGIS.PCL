@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
+using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Operation;
 
 namespace ArcGIS.ServiceModel.Logic
@@ -47,7 +48,6 @@ namespace ArcGIS.ServiceModel.Logic
         const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         readonly String _username;
         readonly String _password;
-        readonly String _urlPrefix;
 
         protected PortalGateway()
             : this(AGOPortalUrl, String.Empty, String.Empty)
@@ -65,9 +65,7 @@ namespace ArcGIS.ServiceModel.Logic
         {
             rootUrl = rootUrl.TrimEnd('/');
             rootUrl = rootUrl.Replace("/rest/services", "");
-
             RootUrl = rootUrl.ToLower() + '/';
-            _urlPrefix = RootUrl + "rest/services/";
             
             _username = username;
             _password = password;
@@ -84,10 +82,10 @@ namespace ArcGIS.ServiceModel.Logic
             if (String.IsNullOrWhiteSpace(_username) && String.IsNullOrWhiteSpace(_password)) return null;
             if (Token != null && !Token.IsExpired) return Token;
 
-            Token = null;
+            Token = null; // reset the Token
             var tokenRequest = new GenerateToken { Username = _username, Password = _password };
 
-            return await Post<Token>(RootUrl.Replace("http://", "https://") + tokenRequest.RelativeUrl.Trim('/'), Serializer.AsDictionary(tokenRequest));
+            return await Post<Token>(tokenRequest, Serializer.AsDictionary(tokenRequest));
         }
 
         String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
@@ -100,30 +98,28 @@ namespace ArcGIS.ServiceModel.Logic
         
         public async Task<PortalResponse> Ping(IEndpoint endpoint)
         {
-            return await Get<PortalResponse>(endpoint.RelativeUrl);
+            return await Get<PortalResponse>(endpoint);
         }
 
         protected async Task<T1> Get<T1, T2>(T2 requestObject)
             where T2 : CommonParameters
             where T1 : PortalResponse
         {
-            return await Get<T1>(AsRequestQueryString(requestObject));
+            return await Get<T1>(AsRequestQueryString(requestObject).AsEndpoint());
         }
 
-        protected async Task<T> Get<T>(String endpoint) where T : PortalResponse
+        protected async Task<T> Get<T>(IEndpoint endpoint) where T : PortalResponse
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
             var token = await CheckGenerateToken();
 
-            if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !endpoint.Contains("token="))
-                endpoint += (endpoint.Contains("?") ? "&" : "?") + "token=" + token.Value;
-            if (!endpoint.Contains("f="))
-                endpoint += (endpoint.Contains("?") ? "&" : "?") + "f=json";
-
-            // check the url is complete (ignore the scheme)
-            if (!endpoint.Contains(_urlPrefix.Substring(6)) && !endpoint.Contains(RootUrl.Substring(6))) endpoint = _urlPrefix + endpoint; 
-
+            var url = endpoint.BuildAbsoluteUrl(RootUrl);
+            if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !url.Contains("token="))
+                url += (url.Contains("?") ? "&" : "?") + "token=" + token.Value;
+            if (!url.Contains("f="))
+                url += (url.Contains("?") ? "&" : "?") + "f=json";
+            
             // TODO : use POST if request is too long
             
             using (var handler = new HttpClientHandler())
@@ -131,7 +127,7 @@ namespace ArcGIS.ServiceModel.Logic
                 // handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 using (var httpClient = new HttpClient(handler))
                 {
-                    HttpResponseMessage response = await httpClient.GetAsync(endpoint);
+                    HttpResponseMessage response = await httpClient.GetAsync(url);
                     response.EnsureSuccessStatusCode();
 
                     var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
@@ -144,14 +140,14 @@ namespace ArcGIS.ServiceModel.Logic
             }
         }
 
-        protected async Task<T1> Post<T1, T2>(String endpoint, T2 requestObject)
+        protected async Task<T1> Post<T1, T2>(IEndpoint endpoint, T2 requestObject)
             where T2 : CommonParameters
             where T1 : PortalResponse
         {
             return await Post<T1>(endpoint, Serializer.AsDictionary(requestObject));
         }
 
-        protected async Task<T> Post<T>(String endpoint, Dictionary<String, String> parameters) where T : PortalResponse
+        protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : PortalResponse
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
@@ -161,16 +157,15 @@ namespace ArcGIS.ServiceModel.Logic
             if (!parameters.ContainsKey("token") && Token != null && !String.IsNullOrWhiteSpace(Token.Value))
                 parameters.Add("token", Token.Value);
 
-            // check the url is complete (ignore the scheme)
-            if (!endpoint.Contains(_urlPrefix.Substring(6)) && !endpoint.Contains(RootUrl.Substring(6))) endpoint = _urlPrefix + endpoint;
-
+            var url = endpoint.BuildAbsoluteUrl(RootUrl);
+           
             HttpContent content = new FormUrlEncodedContent(parameters);
             using (var handler = new HttpClientHandler())
             {
                 //handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 using (var httpClient = new HttpClient(handler))
                 {
-                    HttpResponseMessage response = await httpClient.PostAsync(endpoint, content);
+                    HttpResponseMessage response = await httpClient.PostAsync(url, content);
                     response.EnsureSuccessStatusCode();
                     var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
                     if (result.Error != null)

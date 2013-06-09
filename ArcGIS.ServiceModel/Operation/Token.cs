@@ -28,10 +28,18 @@ namespace ArcGIS.ServiceModel.Operation
 
         public string RelativeUrl
         {
-            get { return "/tokens/generateToken"; }
+            get { return "tokens/generateToken"; }
+        }
+
+        public string BuildAbsoluteUrl(string rootUrl)
+        {
+            return rootUrl.Replace("http://", "https://") + RelativeUrl;
         }
     }
 
+    /// <summary>
+    /// Represents a token object with a value that can be used to access secure resources
+    /// </summary>
     [DataContract]
     public class Token : PortalResponse
     {

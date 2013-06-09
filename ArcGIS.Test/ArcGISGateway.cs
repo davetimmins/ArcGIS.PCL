@@ -25,7 +25,7 @@ namespace ArcGIS.Test
 
         public async Task<List<Feature<T>>> Query<T>(Query queryOptions) where T : IGeometry
         {
-            var result = await Post<QueryResponse<T>, Query>(queryOptions.RelativeUrl, queryOptions);
+            var result = await Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
             return result.Features.ToList();
         }
     }
