@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Operation;
 using Xunit;
 
 namespace ArcGIS.Test
@@ -15,9 +11,7 @@ namespace ArcGIS.Test
         public SecureGISGateway()
             : base(@"https://servicesbeta.esri.com/arcgis", "rick", "rick@esri")
             // these credentials are from the Esri samples before you complain :)
-        {
-            ServiceStack.Text.JsConfig.ConvertObjectTypesIntoStringDictionary = true;
-        }
+        { }
 
         public SecureGISGateway(double tokenExpiryInMinutes) : this()
         {

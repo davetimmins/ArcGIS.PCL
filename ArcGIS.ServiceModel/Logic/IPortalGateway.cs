@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Extensions;
@@ -90,8 +91,7 @@ namespace ArcGIS.ServiceModel.Logic
         {
             var dictionary = Serializer.AsDictionary(objectToConvert);
 
-            // TODO : add url encoding to key and value
-            return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k])));
+            return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));
         }
 
         /// <summary>
@@ -105,11 +105,11 @@ namespace ArcGIS.ServiceModel.Logic
             return await Get<PortalResponse>(endpoint);
         }
 
-        protected async Task<T1> Get<T1, T2>(T2 requestObject)
-            where T2 : CommonParameters
-            where T1 : PortalResponse
+        protected async Task<T> Get<T, TRequest>(IEndpoint endpoint, TRequest requestObject)
+            where TRequest : CommonParameters
+            where T : PortalResponse
         {
-            return await Get<T1>(AsRequestQueryString(requestObject).AsEndpoint());
+            return await Get<T>((endpoint.RelativeUrl + AsRequestQueryString(requestObject)).AsEndpoint());
         }
 
         protected async Task<T> Get<T>(IEndpoint endpoint) where T : PortalResponse
@@ -124,8 +124,9 @@ namespace ArcGIS.ServiceModel.Logic
             if (!url.Contains("f="))
                 url += (url.Contains("?") ? "&" : "?") + "f=json";
             
-            // TODO : use POST if request is too long
-           
+            // use POST if request is too long
+            if (url.Length > 2082)
+                return await Post<T>(endpoint, ParseQueryString(endpoint.RelativeUrl));
             
             using (var handler = new HttpClientHandler())
             {
@@ -179,6 +180,17 @@ namespace ArcGIS.ServiceModel.Logic
                     return result;
                 }
             }
+        }
+
+        public static Dictionary<String, String> ParseQueryString(String queryString)
+        {
+            // remove anything other than query string from url
+            if (queryString.Contains("?"))
+                queryString = queryString.Substring(queryString.IndexOf('?') + 1);
+
+            return Regex.Split(queryString, "&")
+                .Select(vp => Regex.Split(vp, "="))
+                .ToDictionary(singlePair => singlePair[0], singlePair => singlePair.Length == 2 ? singlePair[1] : String.Empty);
         }
     }
 }

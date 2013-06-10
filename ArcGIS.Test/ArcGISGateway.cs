@@ -28,6 +28,12 @@ namespace ArcGIS.Test
             var result = await Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
             return result.Features.ToList();
         }
+
+        public async Task<List<Feature<T>>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
+        {
+            var result = await Get<QueryResponse<T>, Query>(queryOptions, queryOptions);
+            return result.Features.ToList();
+        }
     }
 
     public class Serializer : ISerializer
@@ -93,7 +99,7 @@ namespace ArcGIS.Test
             Assert.True(resultPoint.All(i => i.Geometry != null));
 
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm" };
-            var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
+            var resultPolyline = await gateway.QueryAsGet<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Any());
             Assert.True(resultPolyline.All(i => i.Geometry != null));
@@ -111,7 +117,7 @@ namespace ArcGIS.Test
             var gateway = new ArcGISGateway();
 
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { ReturnGeometry = false };
-            var resultPoint = await gateway.Query<Point>(queryPoint);
+            var resultPoint = await gateway.QueryAsGet<Point>(queryPoint);
 
             Assert.True(resultPoint.Any());
             Assert.True(resultPoint.All(i => i.Geometry == null));
@@ -140,7 +146,7 @@ namespace ArcGIS.Test
                     Where = "areasqkm = 0.012", 
                     OutFields = "areasqkm,elevation,resolution,reachcode"
                 };
-            var resultPolygon = await gateway.Query<Polygon>(queryPolygon);
+            var resultPolygon = await gateway.QueryAsGet<Polygon>(queryPolygon);
 
             Assert.True(resultPolygon.Any());
             Assert.True(resultPolygon.All(i => i.Geometry != null));
