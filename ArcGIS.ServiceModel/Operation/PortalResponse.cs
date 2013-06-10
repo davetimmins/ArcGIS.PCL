@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation
@@ -13,6 +14,11 @@ namespace ArcGIS.ServiceModel.Operation
     {
         [DataMember(Name = "error")]
         public ArcGISError Error { get; set; }
+    }
+
+    public class PortalResponseWithRaw : PortalResponse
+    {
+        public Dictionary<String, String> Raw { get; set; }
     }
 
     [DataContract]

@@ -46,8 +46,7 @@ namespace ArcGIS.ServiceModel.Logic
     public abstract class PortalGateway : IPortalGateway
     {
         const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
-        readonly String _username;
-        readonly String _password;
+        protected readonly GenerateToken TokenRequest;
 
         protected PortalGateway()
             : this(AGOPortalUrl, String.Empty, String.Empty)
@@ -66,9 +65,9 @@ namespace ArcGIS.ServiceModel.Logic
             rootUrl = rootUrl.TrimEnd('/');
             rootUrl = rootUrl.Replace("/rest/services", "");
             RootUrl = rootUrl.ToLower() + '/';
-            
-            _username = username;
-            _password = password;
+
+            if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
+                TokenRequest = new GenerateToken { Username = username, Password = password };
         }
 
         public string RootUrl { get; private set; }
@@ -79,13 +78,12 @@ namespace ArcGIS.ServiceModel.Logic
 
         async Task<Token> CheckGenerateToken()
         {
-            if (String.IsNullOrWhiteSpace(_username) && String.IsNullOrWhiteSpace(_password)) return null;
+            if (TokenRequest == null) return null;
             if (Token != null && !Token.IsExpired) return Token;
 
             Token = null; // reset the Token
-            var tokenRequest = new GenerateToken { Username = _username, Password = _password };
-
-            return await Post<Token>(tokenRequest, Serializer.AsDictionary(tokenRequest));
+            Token = await Post<Token>(TokenRequest, Serializer.AsDictionary(TokenRequest));
+            return Token;
         }
 
         String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
@@ -95,7 +93,13 @@ namespace ArcGIS.ServiceModel.Logic
             // TODO : add url encoding to key and value
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k])));
         }
-        
+
+        /// <summary>
+        /// Pings the endpoint specified
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <returns>HTTP error if there is a problem with the request, otherwise an
+        /// empty <see cref="PortalResponse"/> object if successful otherwise the Error property is populated</returns>
         public async Task<PortalResponse> Ping(IEndpoint endpoint)
         {
             return await Get<PortalResponse>(endpoint);

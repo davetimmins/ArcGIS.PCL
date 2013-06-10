@@ -5,6 +5,10 @@ using ArcGIS.ServiceModel.Extensions;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    /// <summary>
+    /// This operation generates an access token in exchange for user credentials that can be used by clients when working with the ArcGIS Portal API. 
+    /// The call is only allowed over HTTPS and must be a POST.
+    /// </summary>
     [DataContract]
     public class GenerateToken : CommonParameters, IEndpoint
     {
@@ -12,19 +16,41 @@ namespace ArcGIS.ServiceModel.Operation
         {
             Client = "referer";
             Referer = "requestip";
+            Expiration = 60;
         }
 
-        [DataMember(Name = "token")]
-        public String Client { get; set; }
+        /// <summary>
+        /// The client identification type for which the token is to be granted.
+        /// </summary>
+        /// <remarks>The default and only value supported is referer.</remarks>
+        [DataMember(Name = "client")]
+        public String Client { get; private set; }
 
-        [DataMember(Name = "token")]
+        /// <summary>
+        /// The base URL of the web app that will invoke the Portal API. 
+        /// This parameter must be specified if the value of the client parameter is referer.
+        /// </summary>
+        [DataMember(Name = "referer")]
         public String Referer { get; set; }
 
+        /// <summary>
+        /// Username of user who wants to get a token.
+        /// </summary>
         [DataMember(Name = "username")]
         public String Username { get; set; }
 
+        /// <summary>
+        /// Password of user who wants to get a token.
+        /// </summary>
         [DataMember(Name = "password")]
         public String Password { get; set; }
+
+        /// <summary>
+        /// The token expiration time in minutes.
+        /// </summary>
+        /// <remarks> The default is 60 minutes.</remarks>
+        [DataMember(Name = "expiration")]
+        public double Expiration { get; set; }
 
         public string RelativeUrl
         {
@@ -58,7 +84,7 @@ namespace ArcGIS.ServiceModel.Operation
         [IgnoreDataMember]
         public bool IsExpired
         {
-            get { return !String.IsNullOrWhiteSpace(Value) && Expiry > 0 && DateTime.Compare(Expiry.FromUnixTime(), DateTime.UtcNow) > 0; }
+            get { return !String.IsNullOrWhiteSpace(Value) && Expiry > 0 && DateTime.Compare(Expiry.FromUnixTime(), DateTime.UtcNow) < 1; }
         }
 
         /// <summary>

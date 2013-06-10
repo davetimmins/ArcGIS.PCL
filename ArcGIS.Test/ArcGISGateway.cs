@@ -30,14 +30,6 @@ namespace ArcGIS.Test
         }
     }
 
-    public class SecureGISGateway : ArcGISGateway
-    {
-        public SecureGISGateway()
-            : base(@"http://serverapps10.esri.com/ArcGIS/rest/services", "user1", "pass.word1") 
-            // these credentials are from the Esri samples before you complain :)
-        { }
-    }
-
     public class Serializer : ISerializer
     {
         public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
@@ -142,16 +134,6 @@ namespace ArcGIS.Test
             Assert.True(resultPolygon.Any());
             Assert.True(resultPolygon.All(i => i.Geometry != null));
             Assert.True(resultPolygon.All(i => i.Attributes != null && i.Attributes.Count == 4));
-        }
-
-        [Fact]
-        public async Task CanGenerateToken()
-        {
-            var gateway = new SecureGISGateway();
-
-            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
-
-            await gateway.Ping(endpoint);
         }
     }
 }
