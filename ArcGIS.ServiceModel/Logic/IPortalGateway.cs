@@ -35,7 +35,7 @@ namespace ArcGIS.ServiceModel.Logic
         Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters;
 
         /// <summary>
-        /// Deserialize string as a <see cref="PortalResponse"/>"/>
+        /// Deserialize string as a <see cref="PortalResponse"/>
         /// </summary>
         /// <typeparam name="T">The type of the result from the call</typeparam>
         /// <param name="dataToConvert">Json string to deserialize</param>
@@ -125,6 +125,7 @@ namespace ArcGIS.ServiceModel.Logic
                 url += (url.Contains("?") ? "&" : "?") + "f=json";
             
             // TODO : use POST if request is too long
+           
             
             using (var handler = new HttpClientHandler())
             {

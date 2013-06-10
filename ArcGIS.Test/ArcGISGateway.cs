@@ -56,7 +56,18 @@ namespace ArcGIS.Test
 
             var endpoint = new ArcGISServerEndpoint("/");
 
-            await gateway.Ping(endpoint);
+            var response = await gateway.Ping(endpoint);
+
+            Assert.Null(response.Error);
+        }
+
+        [Fact]
+        public void RootUrlHasCorrectFormat()
+        {
+            var gateway = new ArcGISGateway();
+            Assert.True(gateway.RootUrl.EndsWith("/"));
+            Assert.True(gateway.RootUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) || gateway.RootUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase));
+            Assert.False(gateway.RootUrl.ToLowerInvariant().Contains("/rest/services/"));
         }
 
         [Fact]
