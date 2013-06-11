@@ -23,6 +23,7 @@ namespace ArcGIS.ServiceModel.Common
         SpatialReference SpatialReference { get; set; }
     }
 
+    [DataContract]
     public class SpatialReference : IEquatable<SpatialReference>
     {
         /// <summary>
@@ -92,7 +93,7 @@ namespace ArcGIS.ServiceModel.Common
     [DataContract]
     public class Point : IGeometry, IEquatable<Point>
     {
-        [DataMember(Order = 5)]
+        [DataMember(Name = "spatialReference", Order = 5)]
         public SpatialReference SpatialReference { get; set; }
 
         [DataMember(Name = "x", Order = 1)]
@@ -139,7 +140,7 @@ namespace ArcGIS.ServiceModel.Common
     [DataContract]
     public class MultiPoint : IGeometry, IEquatable<MultiPoint>
     {
-        [DataMember(Order = 4)]
+        [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
 
         [DataMember(Name = "hasM", Order = 1)]
@@ -182,7 +183,7 @@ namespace ArcGIS.ServiceModel.Common
     [DataContract]
     public class Polyline : IGeometry, IEquatable<Polyline>
     {
-        [DataMember(Order = 4)]
+        [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
 
         [DataMember(Name = "hasM", Order = 1)]
@@ -237,7 +238,7 @@ namespace ArcGIS.ServiceModel.Common
     [DataContract]
     public class Polygon : IGeometry, IEquatable<Polygon>
     {
-        [DataMember(Order = 4)]
+        [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
 
         [DataMember(Name = "hasM", Order = 1)]
@@ -280,7 +281,7 @@ namespace ArcGIS.ServiceModel.Common
     [DataContract]
     public class Extent : IGeometry, IEquatable<Extent>
     {
-        [DataMember(Order = 5)]
+        [DataMember(Name = "spatialReference", Order = 5)]
         public SpatialReference SpatialReference { get; set; }
 
         [DataMember(Name = "xmin", Order = 1)]

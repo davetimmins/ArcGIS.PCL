@@ -27,19 +27,30 @@ namespace ArcGIS.Test
 
         public async Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
         {
-            var result = await Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
-            return result;
+            return await Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
         }
 
         public async Task<QueryResponse<T>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
         {
-            var result = await Get<QueryResponse<T>, Query>(queryOptions, queryOptions);
-            return result;
+            return await Get<QueryResponse<T>, Query>(queryOptions, queryOptions);
+        }
+
+        public async Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
+        {
+            return await Post<ApplyEditsResponse, ApplyEdits<T>>(edits, edits);
         }
     }
 
     public class Serializer : ISerializer
     {
+        public Serializer()
+        {
+            JsConfig.EmitCamelCaseNames = true;
+            JsConfig.IncludeTypeInfo = false;
+            JsConfig.ConvertObjectTypesIntoStringDictionary = true;
+            JsConfig.IncludeNullValues = false;
+        }
+
         public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
         {
             return objectToConvert == null ?
@@ -182,6 +193,50 @@ namespace ArcGIS.Test
             Assert.True(resultPolygon.Features.Any());
             Assert.True(resultPolygon.Features.All(i => i.Geometry != null));
             Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
+        }
+
+        [Fact]
+        public async Task CanAddUpdateAndDelete()
+        {
+            var gateway = new ArcGISGateway();
+
+            var feature = new Feature<Point>();
+            feature.Attributes.Add("type", 0);
+            feature.Geometry = new Point { SpatialReference = new SpatialReference { Wkid = SpatialReference.WebMercator.Wkid }, X = -13073617.8735768, Y = 4071422.42978062 };
+
+            var adds = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
+            {
+                Adds = new List<Feature<Point>> {feature}
+            };
+            var resultAdd = await gateway.ApplyEdits(adds);
+
+            Assert.True(resultAdd.Adds.Any());
+            Assert.True(resultAdd.Adds.First().Success);
+
+            var id = resultAdd.Adds.First().ObjectId;
+
+            feature.Attributes.Add("description", "'something'"); // problem with serialization means we need single quotes around string values
+            feature.Attributes.Add("objectId", id);
+
+            var updates = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
+            {
+                Updates = new List<Feature<Point>> { feature }
+            };
+            var resultUpdate = await gateway.ApplyEdits(updates);
+
+            Assert.True(resultUpdate.Updates.Any());
+            Assert.True(resultUpdate.Updates.First().Success);
+            Assert.Equal(resultUpdate.Updates.First().ObjectId, id);
+
+            var deletes = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
+            {
+                Deletes = new List<int> {id}
+            };
+            var resultDelete = await gateway.ApplyEdits(deletes);
+
+            Assert.True(resultDelete.Deletes.Any());
+            Assert.True(resultDelete.Deletes.First().Success);
+            Assert.Equal(resultDelete.Deletes.First().ObjectId, id);
         }
     }
 }

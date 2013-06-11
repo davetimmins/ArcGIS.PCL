@@ -41,6 +41,8 @@
     <Compile Include="Common\IGeometry.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Logic\IPortalGateway.cs" />
+    <Compile Include="Operation\ApplyEdits.cs" />
+    <Compile Include="Operation\ArcGISServerOperation.cs" />
     <Compile Include="Operation\CommonParameters.cs" />
     <Compile Include="Operation\PortalResponse.cs" />
     <Compile Include="Operation\Token.cs" />

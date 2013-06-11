@@ -10,17 +10,15 @@ namespace ArcGIS.ServiceModel.Operation
     /// Basic query request operation
     /// </summary>
     [DataContract]
-    public class Query : CommonParameters, IEndpoint
+    public class Query : ArcGISServerOperation
     {
-        readonly String _resourceRelativePath;
-
         /// <summary>
         /// Represents a request for a query against a service resource
         /// </summary>
         /// <param name="endpoint">Resource to apply the query against</param>
-        public Query(ArcGISServerEndpoint endpoint)
+        public Query(ArcGISServerEndpoint endpoint) 
+            : base (endpoint, "/query")
         {
-            _resourceRelativePath = endpoint.RelativeUrl.Trim('/');
             Where = "1=1";
             OutFields = "*";
             ReturnGeometry = true;
@@ -70,19 +68,6 @@ namespace ArcGIS.ServiceModel.Operation
         }
 
         // TODO : add more options
-
-        public string RelativeUrl
-        {
-            get { return _resourceRelativePath + "/query"; }
-        }
-
-
-        public string BuildAbsoluteUrl(string rootUrl)
-        {
-            return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
-                       ? rootUrl + RelativeUrl
-                       : RelativeUrl;
-        }
     }
 
     [DataContract]

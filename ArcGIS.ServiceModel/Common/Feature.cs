@@ -10,6 +10,7 @@ namespace ArcGIS.ServiceModel.Common
     /// </summary>
     /// <typeparam name="T">Type of geometry that the feature represents.</typeparam>
     /// <remarks>All properties are optional.</remarks>
+    [DataContract]
     public class Feature<T> : IEquatable<Feature<T>> where T : IGeometry
     {
         public Feature()
