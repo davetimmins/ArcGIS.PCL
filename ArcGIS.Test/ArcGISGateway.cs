@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Extensions;
@@ -23,16 +25,16 @@ namespace ArcGIS.Test
             Serializer = new Serializer();
         }
 
-        public async Task<List<Feature<T>>> Query<T>(Query queryOptions) where T : IGeometry
+        public async Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
         {
             var result = await Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
-            return result.Features.ToList();
+            return result;
         }
 
-        public async Task<List<Feature<T>>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
+        public async Task<QueryResponse<T>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
         {
             var result = await Get<QueryResponse<T>, Query>(queryOptions, queryOptions);
-            return result.Features.ToList();
+            return result;
         }
     }
 
@@ -77,6 +79,35 @@ namespace ArcGIS.Test
         }
 
         [Fact]
+        public async Task GatewayDoesAutoPost()
+        {
+            var gateway = new ArcGISGateway();
+
+            var longWhere = new StringBuilder("region = '");
+            for (var i = 0; i < 3000; i++)
+                longWhere.Append(i);
+            
+            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { Where = longWhere + "'" };
+
+            try
+            {
+                await gateway.QueryAsGet<Point>(query);
+            }
+            catch (HttpRequestException)
+            {
+                Assert.False(true);
+                return;
+            }
+            catch (InvalidOperationException)
+            {
+                Assert.True(true);
+                return;
+            }
+
+            Assert.False(true);
+        }
+
+        [Fact]
         public async Task QueryCanReturnFeatures()
         {
             var gateway = new ArcGISGateway();
@@ -84,7 +115,7 @@ namespace ArcGIS.Test
             var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
             var result = await gateway.Query<Point>(query);
 
-            Assert.True(result.Any());
+            Assert.True(result.Features.Any());
         }
 
         [Fact]
@@ -95,20 +126,20 @@ namespace ArcGIS.Test
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
             var resultPoint = await gateway.Query<Point>(queryPoint);
 
-            Assert.True(resultPoint.Any());
-            Assert.True(resultPoint.All(i => i.Geometry != null));
+            Assert.True(resultPoint.Features.Any());
+            Assert.True(resultPoint.Features.All(i => i.Geometry != null));
 
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm" };
             var resultPolyline = await gateway.QueryAsGet<Polyline>(queryPolyline);
 
-            Assert.True(resultPolyline.Any());
-            Assert.True(resultPolyline.All(i => i.Geometry != null));
+            Assert.True(resultPolyline.Features.Any());
+            Assert.True(resultPolyline.Features.All(i => i.Geometry != null));
 
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = "areasqkm" };
             var resultPolygon = await gateway.Query<Polygon>(queryPolygon);
 
-            Assert.True(resultPolygon.Any());
-            Assert.True(resultPolygon.All(i => i.Geometry != null));
+            Assert.True(resultPolygon.Features.Any());
+            Assert.True(resultPolygon.Features.All(i => i.Geometry != null));
         }
 
         [Fact]
@@ -119,14 +150,14 @@ namespace ArcGIS.Test
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { ReturnGeometry = false };
             var resultPoint = await gateway.QueryAsGet<Point>(queryPoint);
 
-            Assert.True(resultPoint.Any());
-            Assert.True(resultPoint.All(i => i.Geometry == null));
+            Assert.True(resultPoint.Features.Any());
+            Assert.True(resultPoint.Features.All(i => i.Geometry == null));
 
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm", ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
-            Assert.True(resultPolyline.Any());
-            Assert.True(resultPolyline.All(i => i.Geometry == null));
+            Assert.True(resultPolyline.Features.Any());
+            Assert.True(resultPolyline.Features.All(i => i.Geometry == null));
         }
 
         [Fact]
@@ -137,20 +168,20 @@ namespace ArcGIS.Test
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm", ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
-            Assert.True(resultPolyline.Any());
-            Assert.True(resultPolyline.All(i => i.Geometry == null));
-            Assert.True(resultPolyline.All(i => i.Attributes != null && i.Attributes.Count == 1));
+            Assert.True(resultPolyline.Features.Any());
+            Assert.True(resultPolyline.Features.All(i => i.Geometry == null));
+            Assert.True(resultPolyline.Features.All(i => i.Attributes != null && i.Attributes.Count == 1));
 
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint())
                 {
-                    Where = "areasqkm = 0.012", 
+                    Where = "areasqkm = 0.012",
                     OutFields = "areasqkm,elevation,resolution,reachcode"
                 };
             var resultPolygon = await gateway.QueryAsGet<Polygon>(queryPolygon);
 
-            Assert.True(resultPolygon.Any());
-            Assert.True(resultPolygon.All(i => i.Geometry != null));
-            Assert.True(resultPolygon.All(i => i.Attributes != null && i.Attributes.Count == 4));
+            Assert.True(resultPolygon.Features.Any());
+            Assert.True(resultPolygon.Features.All(i => i.Geometry != null));
+            Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
         }
     }
 }

@@ -87,29 +87,22 @@ namespace ArcGIS.ServiceModel.Logic
             return Token;
         }
 
-        String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
-        {
-            var dictionary = Serializer.AsDictionary(objectToConvert);
-
-            return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));
-        }
-
         /// <summary>
         /// Pings the endpoint specified
         /// </summary>
         /// <param name="endpoint"></param>
         /// <returns>HTTP error if there is a problem with the request, otherwise an
         /// empty <see cref="PortalResponse"/> object if successful otherwise the Error property is populated</returns>
-        public async Task<PortalResponse> Ping(IEndpoint endpoint)
+        public Task<PortalResponse> Ping(IEndpoint endpoint)
         {
-            return await Get<PortalResponse>(endpoint);
+            return Get<PortalResponse>(endpoint);
         }
 
-        protected async Task<T> Get<T, TRequest>(IEndpoint endpoint, TRequest requestObject)
+        protected Task<T> Get<T, TRequest>(IEndpoint endpoint, TRequest requestObject)
             where TRequest : CommonParameters
             where T : PortalResponse
         {
-            return await Get<T>((endpoint.RelativeUrl + AsRequestQueryString(requestObject)).AsEndpoint());
+            return Get<T>((endpoint.RelativeUrl + AsRequestQueryString(requestObject)).AsEndpoint());
         }
 
         protected async Task<T> Get<T>(IEndpoint endpoint) where T : PortalResponse
@@ -146,11 +139,11 @@ namespace ArcGIS.ServiceModel.Logic
             }
         }
 
-        protected async Task<T1> Post<T1, T2>(IEndpoint endpoint, T2 requestObject)
+        protected Task<T1> Post<T1, T2>(IEndpoint endpoint, T2 requestObject)
             where T2 : CommonParameters
             where T1 : PortalResponse
         {
-            return await Post<T1>(endpoint, Serializer.AsDictionary(requestObject));
+            return Post<T1>(endpoint, Serializer.AsDictionary(requestObject));
         }
 
         protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : PortalResponse
@@ -163,7 +156,7 @@ namespace ArcGIS.ServiceModel.Logic
             if (!parameters.ContainsKey("token") && Token != null && !String.IsNullOrWhiteSpace(Token.Value))
                 parameters.Add("token", Token.Value);
 
-            var url = endpoint.BuildAbsoluteUrl(RootUrl);
+            var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
            
             HttpContent content = new FormUrlEncodedContent(parameters);
             using (var handler = new HttpClientHandler())
@@ -182,7 +175,14 @@ namespace ArcGIS.ServiceModel.Logic
             }
         }
 
-        public static Dictionary<String, String> ParseQueryString(String queryString)
+        String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
+        {
+            var dictionary = Serializer.AsDictionary(objectToConvert);
+
+            return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));
+        }
+
+        static Dictionary<String, String> ParseQueryString(String queryString)
         {
             // remove anything other than query string from url
             if (queryString.Contains("?"))
