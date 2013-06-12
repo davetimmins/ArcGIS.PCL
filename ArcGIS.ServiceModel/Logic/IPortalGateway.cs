@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -125,7 +126,7 @@ namespace ArcGIS.ServiceModel.Logic
             
             using (var handler = new HttpClientHandler())
             {
-                // handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 using (var httpClient = new HttpClient(handler))
                 {
                     HttpResponseMessage response = await httpClient.GetAsync(url);
@@ -165,7 +166,7 @@ namespace ArcGIS.ServiceModel.Logic
             HttpContent content = new FormUrlEncodedContent(parameters);
             using (var handler = new HttpClientHandler())
             {
-                //handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 using (var httpClient = new HttpClient(handler))
                 {
                     HttpResponseMessage response = await httpClient.PostAsync(url, content);
