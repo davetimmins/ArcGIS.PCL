@@ -10,8 +10,7 @@ Since the serialization is specific to your implementation you will need to crea
 
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
-or this really bad example.
-  
+###Gateway with really bad serializer example  
 ```csharp
 public class ArcGISGateway : PortalGateway
 {
@@ -37,7 +36,9 @@ public class Serializer : ISerializer
         return (T)new PortalResponse();
     }
 }
-
+```
+###Calling the above
+```csharp
 public class ArcGISGatewayExample
 {
     public async Task CanPingServer()
@@ -46,3 +47,9 @@ public class ArcGISGatewayExample
     }
 }
 ```
+### Download
+If you have [NuGet](http://nuget.org) installed, the easiest way to get started is to install via NuGet:
+
+    PM> Install-Package ArcGIS.PCL -Pre
+
+or you can get the code from here.
