@@ -8,7 +8,6 @@ using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Logic;
 using ArcGIS.ServiceModel.Operation;
-using ServiceStack.Text;
 using Xunit;
 
 namespace ArcGIS.Test
@@ -22,7 +21,7 @@ namespace ArcGIS.Test
         public ArcGISGateway(String root, String username, String password)
             : base(root, username, password)
         {
-            Serializer = new Serializer();
+            Serializer = new ServiceStackSerializer();
         }
 
         public async Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
@@ -40,32 +39,7 @@ namespace ArcGIS.Test
             return await Post<ApplyEditsResponse, ApplyEdits<T>>(edits, edits);
         }
     }
-
-    public class Serializer : ISerializer
-    {
-        public Serializer()
-        {
-            JsConfig.EmitCamelCaseNames = true;
-            JsConfig.IncludeTypeInfo = false;
-            JsConfig.ConvertObjectTypesIntoStringDictionary = true;
-            JsConfig.IncludeNullValues = false;
-        }
-
-        public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
-        {
-            return objectToConvert == null ?
-                null :
-                JsonSerializer.DeserializeFromString<Dictionary<String, String>>(JsonSerializer.SerializeToString(objectToConvert));
-        }
-
-        public T AsPortalResponse<T>(String dataToConvert) where T : PortalResponse
-        {
-            return String.IsNullOrWhiteSpace(dataToConvert) ?
-                null :
-                JsonSerializer.DeserializeFromString<T>(dataToConvert);
-        }
-    }
-
+    
     public class ArcGISGatewayTests
     {
         [Fact]
@@ -146,6 +120,8 @@ namespace ArcGIS.Test
             Assert.True(resultPolyline.Features.Any());
             Assert.True(resultPolyline.Features.All(i => i.Geometry != null));
 
+            gateway.Serializer = new JsonDotNetSerializer();
+
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = "areasqkm" };
             var resultPolygon = await gateway.Query<Polygon>(queryPolygon);
 
@@ -175,6 +151,7 @@ namespace ArcGIS.Test
         public async Task QueryOutFieldsAreHonored()
         {
             var gateway = new ArcGISGateway();
+            gateway.Serializer = new JsonDotNetSerializer();
 
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm", ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);

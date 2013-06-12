@@ -79,6 +79,8 @@ namespace ArcGIS.ServiceModel.Logic
 
         async Task<Token> CheckGenerateToken()
         {
+            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
+
             if (TokenRequest == null) return null;
             if (Token != null && !Token.IsExpired) return Token;
 
@@ -143,6 +145,8 @@ namespace ArcGIS.ServiceModel.Logic
             where T2 : CommonParameters
             where T1 : PortalResponse
         {
+            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
+
             return Post<T1>(endpoint, Serializer.AsDictionary(requestObject));
         }
 
@@ -177,6 +181,8 @@ namespace ArcGIS.ServiceModel.Logic
 
         String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
         {
+            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
+
             var dictionary = Serializer.AsDictionary(objectToConvert);
 
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));

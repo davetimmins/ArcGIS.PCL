@@ -34,6 +34,15 @@ namespace ArcGIS.Test
             Assert.NotNull(gateway.Token.Value);
             Assert.False(gateway.Token.IsExpired);
             Assert.Null(response.Error);
+
+            gateway.Serializer = new JsonDotNetSerializer();
+
+            response = await gateway.Ping(endpoint);
+
+            Assert.NotNull(gateway.Token);
+            Assert.NotNull(gateway.Token.Value);
+            Assert.False(gateway.Token.IsExpired);
+            Assert.Null(response.Error);
         }
 
         [Fact]
