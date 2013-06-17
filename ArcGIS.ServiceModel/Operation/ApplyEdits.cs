@@ -45,20 +45,20 @@ namespace ArcGIS.ServiceModel.Operation
     public class ApplyEditsResponse : PortalResponse
     {
         [DataMember(Name = "addResults")]
-        public List<ApplyEditResult> Adds { get; set; }
+        public List<ApplyEditResponse> Adds { get; set; }
 
         [DataMember(Name = "updateResults")]
-        public List<ApplyEditResult> Updates { get; set; }
+        public List<ApplyEditResponse> Updates { get; set; }
 
         [DataMember(Name = "deleteResults")]
-        public List<ApplyEditResult> Deletes { get; set; }
+        public List<ApplyEditResponse> Deletes { get; set; }
     }
 
     /// <summary>
     /// Identifies a single feature and indicates if the edit was successful or not.
     /// </summary>
     [DataContract]
-    public class ApplyEditResult : PortalResponse
+    public class ApplyEditResponse : PortalResponse
     {
         [DataMember(Name = "objectId")]
         public int ObjectId { get; set; }

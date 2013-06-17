@@ -45,6 +45,8 @@
     <Compile Include="Operation\ArcGISServerOperation.cs" />
     <Compile Include="Operation\CommonParameters.cs" />
     <Compile Include="Operation\PortalResponse.cs" />
+    <Compile Include="Operation\ReverseGeocode.cs" />
+    <Compile Include="Operation\SingleInputGeocode.cs" />
     <Compile Include="Operation\Token.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Operation\Query.cs" />

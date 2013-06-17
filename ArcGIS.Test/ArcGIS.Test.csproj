@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="ArcGISGatewayTests.cs" />
     <Compile Include="EndpointTests.cs" />
+    <Compile Include="GeocodeTests.cs" />
     <Compile Include="GeometryTests.cs" />
     <Compile Include="ISerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
