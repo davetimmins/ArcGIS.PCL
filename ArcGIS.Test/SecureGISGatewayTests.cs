@@ -9,7 +9,7 @@ namespace ArcGIS.Test
     public class SecureGISGateway : ArcGISGateway
     {
         public SecureGISGateway()
-            : base(@"https://servicesbeta.esri.com/arcgis", "rick", "rick@esri")
+            : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
             // these credentials are from the Esri samples before you complain :)
         { }
 
@@ -26,7 +26,7 @@ namespace ArcGIS.Test
         {
             var gateway = new SecureGISGateway();
 
-            var endpoint = new ArcGISServerEndpoint("SanJuan/TrailConditions/MapServer");
+            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
 
             var response = await gateway.Ping(endpoint);
 
@@ -50,7 +50,7 @@ namespace ArcGIS.Test
         {
             var gateway = new SecureGISGateway(0.05); // 3 seconds
 
-            var endpoint = new ArcGISServerEndpoint("SanJuan/TrailConditions/MapServer");
+            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
 
             var response = await gateway.Ping(endpoint);
 
