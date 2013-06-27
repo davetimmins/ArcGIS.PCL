@@ -16,7 +16,7 @@ namespace ArcGIS.ServiceModel.Operation
         {
             Client = "referer";
             Referer = "requestip";
-            Expiration = 60;
+            ExpirationInMinutes = 60;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks> The default is 60 minutes.</remarks>
         [DataMember(Name = "expiration")]
-        public double Expiration { get; set; }
+        public int ExpirationInMinutes { get; set; }
 
         public string RelativeUrl
         {

@@ -13,9 +13,9 @@ namespace ArcGIS.Test
             // these credentials are from the Esri samples before you complain :)
         { }
 
-        public SecureGISGateway(double tokenExpiryInMinutes) : this()
+        public SecureGISGateway(int tokenExpiryInMinutes) : this()
         {
-            TokenRequest.Expiration = tokenExpiryInMinutes;
+            TokenRequest.ExpirationInMinutes = tokenExpiryInMinutes;
         }
     }
 
@@ -48,7 +48,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanGenerateShortLivedToken()
         {
-            var gateway = new SecureGISGateway(0.05); // 3 seconds
+            var gateway = new SecureGISGateway(1); // 60 seconds
 
             var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
 
@@ -56,7 +56,7 @@ namespace ArcGIS.Test
 
             Assert.NotNull(gateway.Token);
             Assert.NotNull(gateway.Token.Value);
-            Thread.Sleep(TimeSpan.FromSeconds(3));
+            Thread.Sleep(TimeSpan.FromSeconds(61));
             Assert.True(gateway.Token.IsExpired); // this fails at the moment, need to test on later version of AGS
             Assert.Null(response.Error);
         }
