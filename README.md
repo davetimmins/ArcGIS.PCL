@@ -8,6 +8,14 @@ Should work with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 
 
 Since the serialization is specific to your implementation you will need to create an ISerializer to use in your gateway. The test project has ServiceStack.Text and Json.NET [example serializers](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ISerializer.cs) 
 
+Supports the following as typed operations:
+
+ - Generate Token (automatically if credentials are specified in gateway)
+ - Query
+ - Apply Edits
+ - Single Input Geocode
+ - Reverse Geocode
+
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
 ###Gateway with really bad serializer example  
