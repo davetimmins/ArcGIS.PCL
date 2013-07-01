@@ -91,6 +91,46 @@ namespace ArcGIS.ServiceModel.Logic
         }
 
         /// <summary>
+        /// Recursively parses an ArcGIS Server site and discovers the resources available
+        /// </summary>
+        /// <returns>An ArcGIS Server site hierarchy</returns>
+        public async Task<SiteDescription> DescribeSite()
+        {
+            var result = new SiteDescription();
+
+            var folderDescriptions = await DescribeEndpoint("/".AsEndpoint());
+
+            foreach (var description in folderDescriptions)
+            {
+                if (description.Version > result.Version) result.Version = description.Version;
+
+                foreach (var service in description.Services)
+                {
+                    result.Resources.Add(new ArcGISServerEndpoint(String.Format("{0}/{1}", service.Name, service.Type)));
+                }
+            }
+
+            return result;
+        }
+
+        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint)
+        {
+            var result = new List<SiteFolderDescription>();
+
+            var folderDescription = await Get<SiteFolderDescription>(endpoint);
+            folderDescription.Path = endpoint.RelativeUrl;
+
+            result.Add(folderDescription);
+
+            foreach (var folder in folderDescription.Folders)
+            {       
+                result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint()));
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Pings the endpoint specified
         /// </summary>
         /// <param name="endpoint"></param>

@@ -55,6 +55,23 @@ namespace ArcGIS.Test
         }
 
         [Fact]
+        public async Task CanDescribeSite()
+        {
+            var gateway = new ArcGISGateway();
+
+            var response = await gateway.DescribeSite();
+
+            Assert.NotNull(response);
+            Assert.True(response.Version > 0);
+
+            foreach (var resource in response.Resources)
+            {
+                var ping = await gateway.Ping(resource);
+                Assert.Null(ping.Error);
+            }
+        }
+
+        [Fact]
         public void RootUrlHasCorrectFormat()
         {
             var gateway = new ArcGISGateway();
