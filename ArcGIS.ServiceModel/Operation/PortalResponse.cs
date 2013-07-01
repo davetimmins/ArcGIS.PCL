@@ -8,19 +8,15 @@ namespace ArcGIS.ServiceModel.Operation
     /// Common response object from an ArcGIS Server REST call
     /// </summary>
     /// <remarks>Would be nice if the correct HTTP response code was returned but currently if an error occurs
-    /// a 200 is returned and the <see cref="ArcGISError" />property is populated with more details</remarks>
+    /// a 200 is returned and the <see cref="ArcGISError" />property is populated with more details.
+    /// Sometimes the code is an internal COM error code too.</remarks>
     [DataContract]
     public class PortalResponse
     {
         [DataMember(Name = "error")]
         public ArcGISError Error { get; set; }
     }
-
-    public class PortalResponseWithRaw : PortalResponse
-    {
-        public Dictionary<String, String> Raw { get; set; }
-    }
-
+    
     [DataContract]
     public class ArcGISError
     {

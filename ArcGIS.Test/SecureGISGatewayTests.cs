@@ -46,6 +46,23 @@ namespace ArcGIS.Test
         }
 
         [Fact]
+        public async Task CanDescribeSite()
+        {
+            var gateway = new SecureGISGateway();
+
+            var response = await gateway.DescribeSite();
+
+            Assert.NotNull(response);
+            Assert.True(response.Version > 0);
+
+            foreach (var resource in response.Resources)
+            {
+                var ping = await gateway.Ping(resource);
+                Assert.Null(ping.Error);
+            }
+        }
+
+        [Fact]
         public async Task CanGenerateShortLivedToken()
         {
             var gateway = new SecureGISGateway(1); // 60 seconds
