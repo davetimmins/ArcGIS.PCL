@@ -15,6 +15,7 @@ Supports the following as typed operations:
  - Apply Edits
  - Single Input Geocode
  - Reverse Geocode
+ - Describe site (returns a url for every service)
 
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
