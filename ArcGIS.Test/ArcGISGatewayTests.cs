@@ -9,6 +9,7 @@ using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Logic;
 using ArcGIS.ServiceModel.Operation;
 using Xunit;
+using ServiceStack.Text;
 
 namespace ArcGIS.Test
 {
@@ -24,24 +25,51 @@ namespace ArcGIS.Test
             Serializer = new ServiceStackSerializer();
         }
 
-        public async Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
+        public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
         {
-            return await Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
+            return Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
         }
 
-        public async Task<QueryResponse<T>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
+        public Task<QueryResponse<T>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
         {
-            return await Get<QueryResponse<T>, Query>(queryOptions, queryOptions);
+            return Get<QueryResponse<T>, Query>(queryOptions, queryOptions);
         }
 
-        public async Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
+        public Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
         {
-            return await Post<ApplyEditsResponse, ApplyEdits<T>>(edits, edits);
+            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits, edits);
         }
+
+        public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint) 
+        {
+            return Get<AgsObject>(endpoint); 
+        }
+    }
+
+    public class AgsObject : JsonObject, IPortalResponse
+    {
+        [System.Runtime.Serialization.DataMember(Name = "error")]
+        public ArcGISError Error { get; set; }
     }
     
     public class ArcGISGatewayTests
     {
+        [Fact]
+        public async Task CanGetAnythingFromServer()
+        {
+            var gateway = new ArcGISGateway();
+
+            var endpoint = new ArcGISServerEndpoint("/Earthquakes/EarthquakesFromLastSevenDays/MapServer");
+
+            var response = await gateway.GetAnything(endpoint);
+
+            Assert.Null(response.Error);
+            Assert.True(response.ContainsKey("capabilities"));
+            Assert.True(response.ContainsKey("mapName"));
+            Assert.True(response.ContainsKey("layers"));
+            Assert.True(response.ContainsKey("documentInfo"));
+        }
+
         [Fact]
         public async Task CanPingServer()
         {
@@ -117,6 +145,9 @@ namespace ArcGIS.Test
             var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
             var result = await gateway.Query<Point>(query);
 
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.NotNull(result.SpatialReference);
             Assert.True(result.Features.Any());
         }
 

@@ -23,11 +23,9 @@ namespace ArcGIS.Test
                 ServiceStack.Text.JsonSerializer.DeserializeFromString<Dictionary<String, String>>(ServiceStack.Text.JsonSerializer.SerializeToString(objectToConvert));
         }
 
-        public T AsPortalResponse<T>(String dataToConvert) where T : PortalResponse
+        public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
         {
-            return String.IsNullOrWhiteSpace(dataToConvert)
-                ? null
-                : ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
+            return ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
         }
     }
 
@@ -55,11 +53,9 @@ namespace ArcGIS.Test
             return dict;
         }
 
-        public T AsPortalResponse<T>(String dataToConvert) where T : PortalResponse
+        public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
         {
-            return String.IsNullOrWhiteSpace(dataToConvert)
-                ? null
-                : Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);
         }
     }
 }

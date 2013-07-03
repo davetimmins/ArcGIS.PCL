@@ -4,6 +4,12 @@ using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    public interface IPortalResponse
+    {
+        [DataMember(Name = "error")]
+        ArcGISError Error { get; set; }
+    }
+
     /// <summary>
     /// Common response object from an ArcGIS Server REST call
     /// </summary>
@@ -11,7 +17,7 @@ namespace ArcGIS.ServiceModel.Operation
     /// a 200 is returned and the <see cref="ArcGISError" />property is populated with more details.
     /// Sometimes the code is an internal COM error code too.</remarks>
     [DataContract]
-    public class PortalResponse
+    public class PortalResponse : IPortalResponse
     {
         [DataMember(Name = "error")]
         public ArcGISError Error { get; set; }

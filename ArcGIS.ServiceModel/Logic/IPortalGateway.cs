@@ -42,7 +42,7 @@ namespace ArcGIS.ServiceModel.Logic
         /// <typeparam name="T">The type of the result from the call</typeparam>
         /// <param name="dataToConvert">Json string to deserialize</param>
         /// <returns></returns>
-        T AsPortalResponse<T>(String dataToConvert) where T : PortalResponse;
+        T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse;
     }
 
     public abstract class PortalGateway : IPortalGateway
@@ -135,7 +135,7 @@ namespace ArcGIS.ServiceModel.Logic
         /// </summary>
         /// <param name="endpoint"></param>
         /// <returns>HTTP error if there is a problem with the request, otherwise an
-        /// empty <see cref="PortalResponse"/> object if successful otherwise the Error property is populated</returns>
+        /// empty <see cref="IPortalResponse"/> object if successful otherwise the Error property is populated</returns>
         public Task<PortalResponse> Ping(IEndpoint endpoint)
         {
             return Get<PortalResponse>(endpoint);
@@ -143,12 +143,12 @@ namespace ArcGIS.ServiceModel.Logic
 
         protected Task<T> Get<T, TRequest>(IEndpoint endpoint, TRequest requestObject)
             where TRequest : CommonParameters
-            where T : PortalResponse
+            where T : IPortalResponse
         {
             return Get<T>((endpoint.RelativeUrl + AsRequestQueryString(requestObject)).AsEndpoint());
         }
 
-        protected async Task<T> Get<T>(IEndpoint endpoint) where T : PortalResponse
+        protected async Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
@@ -184,14 +184,14 @@ namespace ArcGIS.ServiceModel.Logic
 
         protected Task<T1> Post<T1, T2>(IEndpoint endpoint, T2 requestObject)
             where T2 : CommonParameters
-            where T1 : PortalResponse
+            where T1 : IPortalResponse
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
             return Post<T1>(endpoint, Serializer.AsDictionary(requestObject));
         }
 
-        protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : PortalResponse
+        protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : IPortalResponse
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
