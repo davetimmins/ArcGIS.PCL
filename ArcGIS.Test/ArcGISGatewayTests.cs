@@ -189,24 +189,24 @@ namespace ArcGIS.Test
             Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
         }
 
-        [Fact]
-        public async Task QueryMapServerEnvelopeCriteriaHonored()
+        public async Task QueryGeometryCriteriaHonored(string serviceUrl)
         {
             int countAllResults = 0;
             int countExtentResults = 0;
+            int countPolygonResults = 0;
 
             var gateway = new ArcGISGateway();
             gateway.Serializer = new JsonDotNetSerializer();
 
-            var queryPointAllResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            var queryPointAllResults = new Query(serviceUrl.AsEndpoint())
             {
-                Where = "1=1",
+                //Where = "1=1",
             };
             var resultPointAllResults = await gateway.QueryAsGet<Point>(queryPointAllResults);
 
-            var queryPointExtentResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            var queryPointExtentResults = new Query(serviceUrl.AsEndpoint())
             {
-                Where = "1=1",
+                //Where = "1=1",
 
                 Geometry = new Extent() { XMin = 0, YMin = 0, XMax = 180, YMax = -90 }, // SE quarter of globe
                 //GeometryType = "esriGeometryEnvelope",
@@ -214,43 +214,47 @@ namespace ArcGIS.Test
             };
             var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
 
+            PointCollectionList rings = new PointCollectionList();
+            PointCollection pointCollection = new PointCollection();
+            pointCollection.Add(new double[] { 0, 0 });
+            pointCollection.Add(new double[] { 180, 0 });
+            pointCollection.Add(new double[] { 180, -90 });
+            pointCollection.Add(new double[] { 0, -90 });
+            pointCollection.Add(new double[] { 0, 0 });
+            rings.Add(pointCollection);            
+
+            var queryPointPolygonResults = new Query(serviceUrl.AsEndpoint())
+            {
+                //Where = "1=1",
+                Geometry = new Polygon()
+                {
+                    Rings = rings
+                },
+                GeometryType = "esriGeometryPolygon",
+                //SpatialRelationship = "esriSpatialRelIntersects"
+            };
+            var resultPointPolygonResults = await gateway.QueryAsGet<Point>(queryPointPolygonResults);
+
             countAllResults = resultPointAllResults.Features.Count();
             countExtentResults = resultPointExtentResults.Features.Count();
+            countPolygonResults = resultPointPolygonResults.Features.Count();
 
             Assert.True(countAllResults > countExtentResults);
+            Assert.True(countPolygonResults == countExtentResults);
         }
 
         [Fact]
-        public async Task QueryFeatureServerEnvelopeCriteriaHonored()
+        public async Task QueryMapServerGeometryCriteriaHonored()
         {
-            int countAllResults = 0;
-            int countExtentResults = 0;
-
-            var gateway = new ArcGISGateway();
-            gateway.Serializer = new JsonDotNetSerializer();
-
-            var queryPointAllResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0".AsEndpoint())
-            {
-                Where = "1=1",
-            };
-            var resultPointAllResults = await gateway.QueryAsGet<Point>(queryPointAllResults);
-
-            var queryPointExtentResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0".AsEndpoint())
-            {
-                Where = "1=1",
-
-                Geometry = new Extent() { XMin = 0, YMin = 0, XMax = 180, YMax = -90 }, // SE quarter of globe
-                //GeometryType = "esriGeometryEnvelope",
-                //SpatialRelationship = "esriSpatialRelIntersects"
-            };
-            var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
-
-            countAllResults = resultPointAllResults.Features.Count();
-            countExtentResults = resultPointExtentResults.Features.Count();
-
-            Assert.True(countAllResults > countExtentResults);
+            await QueryGeometryCriteriaHonored(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0");
         }
 
+        [Fact]
+        public async Task QueryFeatureServerGeometryCriteriaHonored()
+        {
+            await QueryGeometryCriteriaHonored(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0");
+        }
+        
         [Fact]
         public async Task CanAddUpdateAndDelete()
         {
