@@ -27,17 +27,17 @@ namespace ArcGIS.Test
 
         public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
         {
-            return Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
+            return Post<QueryResponse<T>, Query>(queryOptions);
         }
 
         public Task<QueryResponse<T>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
         {
-            return Get<QueryResponse<T>, Query>(queryOptions, queryOptions);
+            return Get<QueryResponse<T>, Query>(queryOptions);
         }
 
         public Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
         {
-            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits, edits);
+            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits);
         }
 
         public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint) 

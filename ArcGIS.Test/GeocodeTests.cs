@@ -18,12 +18,12 @@ namespace ArcGIS.Test
 
         public async Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
         {
-            return await Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode, reverseGeocode);
+            return await Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode);
         }
 
         public async Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
         {
-            return await Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode, geocode);
+            return await Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode);
         }
     }
 

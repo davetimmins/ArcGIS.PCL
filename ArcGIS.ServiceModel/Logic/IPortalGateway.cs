@@ -10,7 +10,7 @@ using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Operation;
 
 namespace ArcGIS.ServiceModel.Logic
-{    
+{
     public interface IPortalGateway
     {
         /// <summary>
@@ -37,7 +37,7 @@ namespace ArcGIS.ServiceModel.Logic
         Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters;
 
         /// <summary>
-        /// Deserialize string as a <see cref="PortalResponse"/>
+        /// Deserialize string as a <see cref="IPortalResponse"/>
         /// </summary>
         /// <typeparam name="T">The type of the result from the call</typeparam>
         /// <param name="dataToConvert">Json string to deserialize</param>
@@ -129,7 +129,7 @@ namespace ArcGIS.ServiceModel.Logic
             result.Add(folderDescription);
 
             foreach (var folder in folderDescription.Folders)
-            {       
+            {
                 result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint()));
             }
 
@@ -147,11 +147,11 @@ namespace ArcGIS.ServiceModel.Logic
             return Get<PortalResponse>(endpoint);
         }
 
-        protected Task<T> Get<T, TRequest>(IEndpoint endpoint, TRequest requestObject)
-            where TRequest : CommonParameters
+        protected Task<T> Get<T, TRequest>(TRequest requestObject)
+            where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            return Get<T>((endpoint.RelativeUrl + AsRequestQueryString(requestObject)).AsEndpoint());
+            return Get<T>((requestObject.RelativeUrl + AsRequestQueryString(requestObject)).AsEndpoint());
         }
 
         protected async Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
@@ -165,11 +165,11 @@ namespace ArcGIS.ServiceModel.Logic
                 url += (url.Contains("?") ? "&" : "?") + "token=" + token.Value;
             if (!url.Contains("f="))
                 url += (url.Contains("?") ? "&" : "?") + "f=json";
-            
+
             // use POST if request is too long
             if (url.Length > 2082)
                 return await Post<T>(endpoint, ParseQueryString(endpoint.RelativeUrl));
-            
+
             using (var handler = new HttpClientHandler())
             {
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
@@ -188,13 +188,13 @@ namespace ArcGIS.ServiceModel.Logic
             }
         }
 
-        protected Task<T1> Post<T1, T2>(IEndpoint endpoint, T2 requestObject)
-            where T2 : CommonParameters
+        protected Task<T1> Post<T1, TRequest>(TRequest requestObject)
+            where TRequest : CommonParameters, IEndpoint
             where T1 : IPortalResponse
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
-            return Post<T1>(endpoint, Serializer.AsDictionary(requestObject));
+            return Post<T1>(requestObject, Serializer.AsDictionary(requestObject));
         }
 
         protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : IPortalResponse
@@ -208,7 +208,7 @@ namespace ArcGIS.ServiceModel.Logic
                 parameters.Add("token", Token.Value);
 
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
-           
+
             HttpContent content = new FormUrlEncodedContent(parameters);
             using (var handler = new HttpClientHandler())
             {
