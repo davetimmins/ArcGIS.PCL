@@ -26,7 +26,7 @@ public class ArcGISGateway : PortalGateway
     public ArcGISGateway()
         : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
     {
-        Serializer = new Serializer();
+        Serializer = new ServiceStackSerializer();
     }
 }
 
