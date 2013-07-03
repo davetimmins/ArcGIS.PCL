@@ -180,6 +180,7 @@ namespace ArcGIS.Test
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint())
                 {
                     Where = "areasqkm = 0.012",
+                    //Geometry = new Extent(){ XMin= -104, YMin= 35.6, XMax= -94.32, YMax= 41},
                     OutFields = "areasqkm,elevation,resolution,reachcode"
                 };
             var resultPolygon = await gateway.QueryAsGet<Polygon>(queryPolygon);

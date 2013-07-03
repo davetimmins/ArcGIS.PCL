@@ -39,6 +39,12 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "outFields")]
         public String OutFields { get; set; }
 
+        [DataMember(Name = "geometry")]
+        public IGeometry Geometry { get; set; }
+
+        [DataMember(Name = "geometryType")]
+        public string GeometryType { get; set; }
+
         /// <summary>
         /// If true, the resultset includes the geometry associated with each result.
         /// </summary>
