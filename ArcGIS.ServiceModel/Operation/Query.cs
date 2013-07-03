@@ -22,6 +22,8 @@ namespace ArcGIS.ServiceModel.Operation
             Where = "1=1";
             OutFields = "*";
             ReturnGeometry = true;
+            GeometryType = "esriGeometryEnvelope";
+            SpatialRelationship = "esriSpatialRelIntersects";
         }
 
         /// <summary>

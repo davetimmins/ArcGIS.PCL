@@ -190,7 +190,7 @@ namespace ArcGIS.Test
         }
 
         [Fact]
-        public async Task QueryPolygonCriteriaHonored()
+        public async Task QueryMapServerEnvelopeCriteriaHonored()
         {
             int countAllResults = 0;
             int countExtentResults = 0;
@@ -208,11 +208,9 @@ namespace ArcGIS.Test
             {
                 Where = "1=1",
 
-                //Geometry = new Extent() { XMin = 162, YMin = -33, XMax = -174, YMax = -48 }
-                //Geometry = new Extent() { XMin = 162, YMin = -33, XMax = 180, YMax = -48 }
                 Geometry = new Extent() { XMin = 0, YMin = 0, XMax = 180, YMax = -90 }, // SE quarter of globe
-                GeometryType = "esriGeometryEnvelope",
-                SpatialRelationship = "esriSpatialRelIntersects"
+                //GeometryType = "esriGeometryEnvelope",
+                //SpatialRelationship = "esriSpatialRelIntersects"
             };
             var resultPolygonExtentResults = await gateway.QueryAsGet<Polygon>(queryPolygonExtentResults);
 
@@ -220,8 +218,37 @@ namespace ArcGIS.Test
             countExtentResults = resultPolygonExtentResults.Features.Count();
 
             Assert.True(countAllResults > countExtentResults);
-            //Assert.True(resultPolygon.Features.All(i => i.Geometry != null));
-            //Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
+        }
+
+        [Fact]
+        public async Task QueryFeatureServerEnvelopeCriteriaHonored()
+        {
+            int countAllResults = 0;
+            int countExtentResults = 0;
+
+            var gateway = new ArcGISGateway();
+            gateway.Serializer = new JsonDotNetSerializer();
+
+            var queryPolygonAllResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0".AsEndpoint())
+            {
+                Where = "1=1",
+            };
+            var resultPolygonAllResults = await gateway.QueryAsGet<Polygon>(queryPolygonAllResults);
+
+            var queryPolygonExtentResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0".AsEndpoint())
+            {
+                Where = "1=1",
+
+                Geometry = new Extent() { XMin = 0, YMin = 0, XMax = 180, YMax = -90 }, // SE quarter of globe
+                //GeometryType = "esriGeometryEnvelope",
+                //SpatialRelationship = "esriSpatialRelIntersects"
+            };
+            var resultPolygonExtentResults = await gateway.QueryAsGet<Polygon>(queryPolygonExtentResults);
+
+            countAllResults = resultPolygonAllResults.Features.Count();
+            countExtentResults = resultPolygonExtentResults.Features.Count();
+
+            Assert.True(countAllResults > countExtentResults);
         }
 
         [Fact]
