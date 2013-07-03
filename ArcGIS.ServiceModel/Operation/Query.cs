@@ -45,6 +45,9 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "geometryType")]
         public string GeometryType { get; set; }
 
+        [DataMember(Name = "spatialRel")]
+        public string SpatialRelationship { get; set; }
+
         /// <summary>
         /// If true, the resultset includes the geometry associated with each result.
         /// </summary>
