@@ -198,13 +198,13 @@ namespace ArcGIS.Test
             var gateway = new ArcGISGateway();
             gateway.Serializer = new JsonDotNetSerializer();
 
-            var queryPolygonAllResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            var queryPointAllResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
             {
                 Where = "1=1",
             };
-            var resultPolygonAllResults = await gateway.QueryAsGet<Polygon>(queryPolygonAllResults);
+            var resultPointAllResults = await gateway.QueryAsGet<Point>(queryPointAllResults);
 
-            var queryPolygonExtentResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            var queryPointExtentResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
             {
                 Where = "1=1",
 
@@ -212,10 +212,10 @@ namespace ArcGIS.Test
                 //GeometryType = "esriGeometryEnvelope",
                 //SpatialRelationship = "esriSpatialRelIntersects"
             };
-            var resultPolygonExtentResults = await gateway.QueryAsGet<Polygon>(queryPolygonExtentResults);
+            var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
 
-            countAllResults = resultPolygonAllResults.Features.Count();
-            countExtentResults = resultPolygonExtentResults.Features.Count();
+            countAllResults = resultPointAllResults.Features.Count();
+            countExtentResults = resultPointExtentResults.Features.Count();
 
             Assert.True(countAllResults > countExtentResults);
         }
@@ -229,13 +229,13 @@ namespace ArcGIS.Test
             var gateway = new ArcGISGateway();
             gateway.Serializer = new JsonDotNetSerializer();
 
-            var queryPolygonAllResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0".AsEndpoint())
+            var queryPointAllResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0".AsEndpoint())
             {
                 Where = "1=1",
             };
-            var resultPolygonAllResults = await gateway.QueryAsGet<Polygon>(queryPolygonAllResults);
+            var resultPointAllResults = await gateway.QueryAsGet<Point>(queryPointAllResults);
 
-            var queryPolygonExtentResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0".AsEndpoint())
+            var queryPointExtentResults = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0".AsEndpoint())
             {
                 Where = "1=1",
 
@@ -243,10 +243,10 @@ namespace ArcGIS.Test
                 //GeometryType = "esriGeometryEnvelope",
                 //SpatialRelationship = "esriSpatialRelIntersects"
             };
-            var resultPolygonExtentResults = await gateway.QueryAsGet<Polygon>(queryPolygonExtentResults);
+            var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
 
-            countAllResults = resultPolygonAllResults.Features.Count();
-            countExtentResults = resultPolygonExtentResults.Features.Count();
+            countAllResults = resultPointAllResults.Features.Count();
+            countExtentResults = resultPointExtentResults.Features.Count();
 
             Assert.True(countAllResults > countExtentResults);
         }
