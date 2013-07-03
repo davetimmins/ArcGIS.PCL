@@ -13,7 +13,7 @@ namespace ArcGIS.ServiceModel.Operation
     public class ApplyEdits<T> : ArcGISServerOperation where T : IGeometry
     {
         public ApplyEdits(ArcGISServerEndpoint endpoint)
-            : base(endpoint, "/applyEdits")
+            : base(endpoint, Operations.ApplyEdits)
         { }
 
         /// <summary>

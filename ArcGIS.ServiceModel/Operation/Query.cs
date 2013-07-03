@@ -16,8 +16,8 @@ namespace ArcGIS.ServiceModel.Operation
         /// Represents a request for a query against a service resource
         /// </summary>
         /// <param name="endpoint">Resource to apply the query against</param>
-        public Query(ArcGISServerEndpoint endpoint) 
-            : base (endpoint, "/query")
+        public Query(ArcGISServerEndpoint endpoint)
+            : base(endpoint, Operations.Query)
         {
             Where = "1=1";
             OutFields = "*";

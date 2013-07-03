@@ -7,6 +7,9 @@ using System.Text;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    /// <summary>
+    /// Represents an ArcGIS Server site
+    /// </summary>
     public class SiteDescription
     {
         public SiteDescription()
@@ -14,8 +17,14 @@ namespace ArcGIS.ServiceModel.Operation
             Resources = new List<ArcGISServerEndpoint>();
         }
 
+        /// <summary>
+        /// Current version of ArcGIS Server
+        /// </summary>
         public double Version { get; set; }
 
+        /// <summary>
+        /// Collection of discovered REST resources
+        /// </summary>
         public List<ArcGISServerEndpoint> Resources { get; set; }
     }
 

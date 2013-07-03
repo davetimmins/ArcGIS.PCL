@@ -54,7 +54,7 @@ namespace ArcGIS.ServiceModel.Operation
 
         public string RelativeUrl
         {
-            get { return "tokens/generateToken"; }
+            get { return "tokens/" + Operations.GenerateToken; }
         }
 
         public string BuildAbsoluteUrl(string rootUrl)

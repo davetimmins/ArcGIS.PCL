@@ -78,7 +78,13 @@ namespace ArcGIS.ServiceModel.Logic
 
         public ISerializer Serializer { get; set; }
 
-        async Task<Token> CheckGenerateToken()
+        /// <summary>
+        /// Generates a token if a username and password have been set for this gateway.
+        /// </summary>
+        /// <returns>The generated token or null if not applicable</returns>
+        /// <remarks>This sets the Token property for the gateway. It will be auto appended to 
+        /// any requests sent through the gateway.</remarks>
+        protected async Task<Token> CheckGenerateToken()
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
