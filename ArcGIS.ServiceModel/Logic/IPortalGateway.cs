@@ -45,10 +45,12 @@ namespace ArcGIS.ServiceModel.Logic
         T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse;
     }
 
-    public abstract class PortalGateway : IPortalGateway
+    public abstract class PortalGateway : IPortalGateway, IDisposable
     {
         const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         protected readonly GenerateToken TokenRequest;
+        HttpClientHandler _httpClientHandler;
+        HttpClient _httpClient;
 
         protected PortalGateway()
             : this(AGOPortalUrl, String.Empty, String.Empty)
@@ -68,8 +70,36 @@ namespace ArcGIS.ServiceModel.Logic
             rootUrl = rootUrl.Replace("/rest/services", "");
             RootUrl = rootUrl.ToLower() + '/';
 
+            _httpClientHandler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };            
+            if (_httpClientHandler.SupportsUseProxy()) _httpClientHandler.UseProxy = true;
+            if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
+            _httpClient = new HttpClient(_httpClientHandler);
+
             if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
                 TokenRequest = new GenerateToken { Username = username, Password = password };
+        }
+                
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_httpClient != null) 
+                { 
+                    _httpClient.Dispose();
+                    _httpClient = null;
+                }
+                if (_httpClientHandler != null) 
+                { 
+                    _httpClientHandler.Dispose();
+                    _httpClientHandler = null;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);            
         }
 
         public string RootUrl { get; private set; }
@@ -170,22 +200,15 @@ namespace ArcGIS.ServiceModel.Logic
             if (url.Length > 2082)
                 return await Post<T>(endpoint, ParseQueryString(endpoint.RelativeUrl));
 
-            using (var handler = new HttpClientHandler())
-            {
-                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-                using (var httpClient = new HttpClient(handler))
-                {
-                    HttpResponseMessage response = await httpClient.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
 
-                    var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
+            var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
 
-                    if (result.Error != null)
-                        throw new InvalidOperationException(result.Error.ToString());
+            if (result.Error != null)
+                throw new InvalidOperationException(result.Error.ToString());
 
-                    return result;
-                }
-            }
+            return result;
         }
 
         protected Task<T1> Post<T1, TRequest>(TRequest requestObject)
@@ -210,20 +233,14 @@ namespace ArcGIS.ServiceModel.Logic
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
             HttpContent content = new FormUrlEncodedContent(parameters);
-            using (var handler = new HttpClientHandler())
-            {
-                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-                using (var httpClient = new HttpClient(handler))
-                {
-                    HttpResponseMessage response = await httpClient.PostAsync(url, content);
-                    response.EnsureSuccessStatusCode();
-                    var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
-                    if (result.Error != null)
-                        throw new InvalidOperationException(result.Error.ToString());
 
-                    return result;
-                }
-            }
+            HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+            var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
+            if (result.Error != null)
+                throw new InvalidOperationException(result.Error.ToString());
+
+            return result;
         }
 
         String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
