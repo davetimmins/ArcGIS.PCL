@@ -209,10 +209,10 @@ namespace ArcGIS.Test
             Assert.True(resultPolyline.Features.All(i => i.Attributes != null && i.Attributes.Count == 1));
 
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint())
-                {
-                    Where = "areasqkm = 0.012",
-                    OutFields = "areasqkm,elevation,resolution,reachcode"
-                };
+            {
+                Where = "areasqkm = 0.012",
+                OutFields = "areasqkm,elevation,resolution,reachcode"
+            };
             var resultPolygon = await gateway.QueryAsGet<Polygon>(queryPolygon);
 
             Assert.True(resultPolygon.Features.Any());
@@ -220,6 +220,85 @@ namespace ArcGIS.Test
             Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
         }
 
+        /// <summary>
+        /// Performs unfiltered query, then filters by Extent and Polygon to SE quadrant of globe and verifies both filtered
+        /// results contain same number of features as each other, and that both filtered resultsets contain fewer features than unfiltered resultset.
+        /// </summary>
+        /// <param name="serviceUrl"></param>
+        /// <returns></returns>
+        public async Task QueryGeometryCriteriaHonored(string serviceUrl)
+        {
+            int countAllResults = 0;
+            int countExtentResults = 0;
+            int countPolygonResults = 0;
+
+            var gateway = new ArcGISGateway();
+            gateway.Serializer = new JsonDotNetSerializer();
+
+            var queryPointAllResults = new Query(serviceUrl.AsEndpoint())
+            {
+                //Where = "1=1",
+            };
+            var resultPointAllResults = await gateway.QueryAsGet<Point>(queryPointAllResults);
+
+            var queryPointExtentResults = new Query(serviceUrl.AsEndpoint())
+            {
+                //Where = "1=1",
+                Geometry = new Extent() { XMin = 0, YMin = 0, XMax = 180, YMax = -90 }, // SE quarter of globe
+                //GeometryType = "esriGeometryEnvelope",
+                //SpatialRelationship = "esriSpatialRelIntersects"
+            };
+            var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
+
+            PointCollectionList rings = new PointCollectionList();
+            PointCollection pointCollection = new PointCollection();
+            pointCollection.Add(new double[] { 0, 0 });
+            pointCollection.Add(new double[] { 180, 0 });
+            pointCollection.Add(new double[] { 180, -90 });
+            pointCollection.Add(new double[] { 0, -90 });
+            pointCollection.Add(new double[] { 0, 0 });
+            rings.Add(pointCollection);            
+
+            var queryPointPolygonResults = new Query(serviceUrl.AsEndpoint())
+            {
+                //Where = "1=1",
+                Geometry = new Polygon()
+                {
+                    Rings = rings
+                },
+                GeometryType = "esriGeometryPolygon",
+                //SpatialRelationship = "esriSpatialRelIntersects"
+            };
+            var resultPointPolygonResults = await gateway.QueryAsGet<Point>(queryPointPolygonResults);
+
+            countAllResults = resultPointAllResults.Features.Count();
+            countExtentResults = resultPointExtentResults.Features.Count();
+            countPolygonResults = resultPointPolygonResults.Features.Count();
+
+            Assert.True(countAllResults > countExtentResults);
+            Assert.True(countPolygonResults == countExtentResults);
+        }
+
+        /// <summary>
+        /// Test geometry query against MapServer
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task QueryMapServerGeometryCriteriaHonored()
+        {
+            await QueryGeometryCriteriaHonored(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0");
+        }
+
+        /// <summary>
+        /// Test geometry query against FeatureServer
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task QueryFeatureServerGeometryCriteriaHonored()
+        {
+            await QueryGeometryCriteriaHonored(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0");
+        }
+        
         [Fact]
         public async Task CanAddUpdateAndDelete()
         {
