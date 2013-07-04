@@ -52,12 +52,12 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "expiration")]
         public int ExpirationInMinutes { get; set; }
 
-        public string RelativeUrl
+        public String RelativeUrl
         {
             get { return "tokens/" + Operations.GenerateToken; }
         }
 
-        public string BuildAbsoluteUrl(string rootUrl)
+        public String BuildAbsoluteUrl(String rootUrl)
         {
             return rootUrl.Replace("http://", "https://") + RelativeUrl;
         }

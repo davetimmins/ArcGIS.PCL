@@ -64,7 +64,7 @@ namespace ArcGIS.ServiceModel.Operation
         public int ObjectId { get; set; }
 
         [DataMember(Name = "globalId")]
-        public string GlobalId { get; set; }
+        public String GlobalId { get; set; }
 
         [DataMember(Name = "success")]
         public bool Success { get; set; }

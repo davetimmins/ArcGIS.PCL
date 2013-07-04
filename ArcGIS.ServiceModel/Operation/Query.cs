@@ -58,7 +58,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>Default is esriGeometryEnvelope</remarks>
         [DataMember(Name = "geometryType")]
-        public string GeometryType { get; set; }
+        public String GeometryType { get; set; }
 
         /// <summary>
         /// The spatial relationship to be applied on the input geometry while performing the query.
@@ -67,7 +67,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses | esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps | esriSpatialRelTouches | esriSpatialRelWithin | esriSpatialRelRelation
         /// </summary>
         [DataMember(Name = "spatialRel")]
-        public string SpatialRelationship { get; set; }
+        public String SpatialRelationship { get; set; }
 
         /// <summary>
         /// If true, the resultset includes the geometry associated with each result.

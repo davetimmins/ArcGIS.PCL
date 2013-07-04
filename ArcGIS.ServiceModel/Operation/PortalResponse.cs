@@ -30,12 +30,12 @@ namespace ArcGIS.ServiceModel.Operation
         public int Code { get; set; }
 
         [DataMember(Name = "message")]
-        public string Message { get; set; }
+        public String Message { get; set; }
 
         [DataMember(Name = "details")]
-        public string[] Details { get; set; }
+        public String[] Details { get; set; }
 
-        public override string ToString()
+        public override String ToString()
         {
             return String.Format("Code {0}: {1}. {2}", Code, Message, String.Join(" ", Details));
         }

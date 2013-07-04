@@ -205,19 +205,18 @@ namespace ArcGIS.ServiceModel.Logic
 
             var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
 
-            if (result.Error != null)
-                throw new InvalidOperationException(result.Error.ToString());
+            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
             return result;
         }
 
-        protected Task<T1> Post<T1, TRequest>(TRequest requestObject)
+        protected Task<T> Post<T, TRequest>(TRequest requestObject)
             where TRequest : CommonParameters, IEndpoint
-            where T1 : IPortalResponse
+            where T : IPortalResponse
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
-            return Post<T1>(requestObject, Serializer.AsDictionary(requestObject));
+            return Post<T>(requestObject, Serializer.AsDictionary(requestObject));
         }
 
         protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : IPortalResponse
@@ -236,9 +235,10 @@ namespace ArcGIS.ServiceModel.Logic
 
             HttpResponseMessage response = await _httpClient.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
+
             var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
-            if (result.Error != null)
-                throw new InvalidOperationException(result.Error.ToString());
+
+            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
             return result;
         }
