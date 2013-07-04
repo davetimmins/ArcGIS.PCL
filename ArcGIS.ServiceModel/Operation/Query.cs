@@ -41,12 +41,31 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "outFields")]
         public String OutFields { get; set; }
 
+        /// <summary>
+        /// The geometry to apply as the spatial filter.
+        /// The structure of the geometry is the same as the structure of the json geometry objects returned by the ArcGIS REST API.
+        /// In addition to the JSON structures, for envelopes and points, you can specify the geometry with a simpler comma-separated syntax.
+        /// </summary>
+        /// <remarks>Default is empty</remarks>
         [DataMember(Name = "geometry")]
         public IGeometry Geometry { get; set; }
 
+        /// <summary>
+        /// The type of geometry specified by the geometry parameter. 
+        /// The geometry type can be an envelope, point, line, or polygon.
+        /// The default geometry type is "esriGeometryEnvelope". 
+        /// Values: esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | esriGeometryEnvelope
+        /// </summary>
+        /// <remarks>Default is esriGeometryEnvelope</remarks>
         [DataMember(Name = "geometryType")]
         public string GeometryType { get; set; }
 
+        /// <summary>
+        /// The spatial relationship to be applied on the input geometry while performing the query.
+        /// The supported spatial relationships include intersects, contains, envelope intersects, within, etc.
+        /// The default spatial relationship is "esriSpatialRelIntersects".
+        /// Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses | esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps | esriSpatialRelTouches | esriSpatialRelWithin | esriSpatialRelRelation
+        /// </summary>
         [DataMember(Name = "spatialRel")]
         public string SpatialRelationship { get; set; }
 

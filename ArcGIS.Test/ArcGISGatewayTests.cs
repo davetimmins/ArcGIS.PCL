@@ -189,6 +189,12 @@ namespace ArcGIS.Test
             Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
         }
 
+        /// <summary>
+        /// Performs unfiltered query, then filters by Extent and Polygon to SE quadrant of globe and verifies both filtered
+        /// results contain same number of features as each other, and that both filtered resultsets contain fewer features than unfiltered resultset.
+        /// </summary>
+        /// <param name="serviceUrl"></param>
+        /// <returns></returns>
         public async Task QueryGeometryCriteriaHonored(string serviceUrl)
         {
             int countAllResults = 0;
@@ -207,7 +213,6 @@ namespace ArcGIS.Test
             var queryPointExtentResults = new Query(serviceUrl.AsEndpoint())
             {
                 //Where = "1=1",
-
                 Geometry = new Extent() { XMin = 0, YMin = 0, XMax = 180, YMax = -90 }, // SE quarter of globe
                 //GeometryType = "esriGeometryEnvelope",
                 //SpatialRelationship = "esriSpatialRelIntersects"
@@ -243,12 +248,20 @@ namespace ArcGIS.Test
             Assert.True(countPolygonResults == countExtentResults);
         }
 
+        /// <summary>
+        /// Test geometry query against MapServer
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task QueryMapServerGeometryCriteriaHonored()
         {
             await QueryGeometryCriteriaHonored(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0");
         }
 
+        /// <summary>
+        /// Test geometry query against FeatureServer
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task QueryFeatureServerGeometryCriteriaHonored()
         {
