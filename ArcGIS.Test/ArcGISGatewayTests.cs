@@ -40,9 +40,9 @@ namespace ArcGIS.Test
             return Post<ApplyEditsResponse, ApplyEdits<T>>(edits);
         }
 
-        public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint) 
+        public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint)
         {
-            return Get<AgsObject>(endpoint); 
+            return Get<AgsObject>(endpoint);
         }
     }
 
@@ -51,7 +51,7 @@ namespace ArcGIS.Test
         [System.Runtime.Serialization.DataMember(Name = "error")]
         public ArcGISError Error { get; set; }
     }
-    
+
     public class ArcGISGatewayTests
     {
         [Fact]
@@ -116,7 +116,7 @@ namespace ArcGIS.Test
             var longWhere = new StringBuilder("region = '");
             for (var i = 0; i < 3000; i++)
                 longWhere.Append(i);
-            
+
             var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { Where = longWhere + "'" };
 
             try
@@ -235,18 +235,13 @@ namespace ArcGIS.Test
             var gateway = new ArcGISGateway();
             gateway.Serializer = new JsonDotNetSerializer();
 
-            var queryPointAllResults = new Query(serviceUrl.AsEndpoint())
-            {
-                //Where = "1=1",
-            };
+            var queryPointAllResults = new Query(serviceUrl.AsEndpoint());
+
             var resultPointAllResults = await gateway.QueryAsGet<Point>(queryPointAllResults);
 
             var queryPointExtentResults = new Query(serviceUrl.AsEndpoint())
             {
-                //Where = "1=1",
                 Geometry = new Extent() { XMin = 0, YMin = 0, XMax = 180, YMax = -90 }, // SE quarter of globe
-                //GeometryType = "esriGeometryEnvelope",
-                //SpatialRelationship = "esriSpatialRelIntersects"
             };
             var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
 
@@ -257,17 +252,12 @@ namespace ArcGIS.Test
             pointCollection.Add(new double[] { 180, -90 });
             pointCollection.Add(new double[] { 0, -90 });
             pointCollection.Add(new double[] { 0, 0 });
-            rings.Add(pointCollection);            
+            rings.Add(pointCollection);
 
             var queryPointPolygonResults = new Query(serviceUrl.AsEndpoint())
             {
-                //Where = "1=1",
-                Geometry = new Polygon()
-                {
-                    Rings = rings
-                },
-                GeometryType = "esriGeometryPolygon",
-                //SpatialRelationship = "esriSpatialRelIntersects"
+                Geometry = new Polygon { Rings = rings },
+                GeometryType = GeometryTypes.Polygon
             };
             var resultPointPolygonResults = await gateway.QueryAsGet<Point>(queryPointPolygonResults);
 
@@ -298,7 +288,7 @@ namespace ArcGIS.Test
         {
             await QueryGeometryCriteriaHonored(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0");
         }
-        
+
         [Fact]
         public async Task CanAddUpdateAndDelete()
         {
@@ -310,7 +300,7 @@ namespace ArcGIS.Test
 
             var adds = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
             {
-                Adds = new List<Feature<Point>> {feature}
+                Adds = new List<Feature<Point>> { feature }
             };
             var resultAdd = await gateway.ApplyEdits(adds);
 
@@ -334,7 +324,7 @@ namespace ArcGIS.Test
 
             var deletes = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
             {
-                Deletes = new List<int> {id}
+                Deletes = new List<int> { id }
             };
             var resultDelete = await gateway.ApplyEdits(deletes);
 

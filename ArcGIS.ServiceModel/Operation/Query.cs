@@ -22,8 +22,8 @@ namespace ArcGIS.ServiceModel.Operation
             Where = "1=1";
             OutFields = "*";
             ReturnGeometry = true;
-            GeometryType = "esriGeometryEnvelope";
-            SpatialRelationship = "esriSpatialRelIntersects";
+            GeometryType = GeometryTypes.Envelope;
+            SpatialRelationship = SpatialRelationshipTypes.Intersects;
         }
 
         /// <summary>
@@ -108,5 +108,27 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "spatialReference")]
         public SpatialReference SpatialReference { get; set; }
+    }
+
+    public static class GeometryTypes
+    {
+        public const String Point = "esriGeometryPoint";
+        public const String MultiPoint = "esriGeometryMultipoint";
+        public const String Polyline = "esriGeometryPolyline";
+        public const String Polygon = "esriGeometryPolygon";
+        public const String Envelope = "esriGeometryEnvelope";
+    }
+
+    public static class SpatialRelationshipTypes
+    {
+        public const String Intersects = "esriSpatialRelIntersects";
+        public const String Contains = "esriSpatialRelContains";
+        public const String Crosses = "esriSpatialRelCrosses";
+        public const String EnvelopeIntersects = "esriSpatialRelEnvelopeIntersects";
+        public const String IndexIntersects = "esriSpatialRelIndexIntersects";
+        public const String Overlaps = "esriSpatialRelOverlaps";
+        public const String Touches = "esriSpatialRelTouches";
+        public const String Within = "esriSpatialRelWithin";
+        public const String Relation = "esriSpatialRelRelation";
     }
 }
