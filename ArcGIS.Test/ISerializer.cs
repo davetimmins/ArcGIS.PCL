@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ArcGIS.ServiceModel.Logic;
 using ArcGIS.ServiceModel.Operation;
-using Newtonsoft.Json.Linq;
 
 namespace ArcGIS.Test
 {
@@ -37,14 +36,17 @@ namespace ArcGIS.Test
         {
             _settings = new Newtonsoft.Json.JsonSerializerSettings
             {
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+                MissingMemberHandling  = Newtonsoft.Json.MissingMemberHandling.Ignore,
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
             };
         }
 
         public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
         {
-            var stringValue = JObject.FromObject(objectToConvert).ToString();
-            var jobject = JObject.Parse(stringValue);
+            var stringValue = Newtonsoft.Json.JsonConvert.SerializeObject(objectToConvert, _settings);
+         
+            var jobject = Newtonsoft.Json.Linq.JObject.Parse(stringValue);
             var dict = new Dictionary<String, String>();
             foreach (var item in jobject)
             {
