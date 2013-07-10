@@ -9,6 +9,7 @@ using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Logic;
 using ArcGIS.ServiceModel.Operation;
 using Xunit;
+using ServiceStack.Text;
 
 namespace ArcGIS.Test
 {
@@ -24,24 +25,51 @@ namespace ArcGIS.Test
             Serializer = new ServiceStackSerializer();
         }
 
-        public async Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
+        public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
         {
-            return await Post<QueryResponse<T>, Query>(queryOptions, queryOptions);
+            return Post<QueryResponse<T>, Query>(queryOptions);
         }
 
-        public async Task<QueryResponse<T>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
+        public Task<QueryResponse<T>> QueryAsGet<T>(Query queryOptions) where T : IGeometry
         {
-            return await Get<QueryResponse<T>, Query>(queryOptions, queryOptions);
+            return Get<QueryResponse<T>, Query>(queryOptions);
         }
 
-        public async Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
+        public Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
         {
-            return await Post<ApplyEditsResponse, ApplyEdits<T>>(edits, edits);
+            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits);
+        }
+
+        public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint)
+        {
+            return Get<AgsObject>(endpoint);
         }
     }
-    
+
+    public class AgsObject : JsonObject, IPortalResponse
+    {
+        [System.Runtime.Serialization.DataMember(Name = "error")]
+        public ArcGISError Error { get; set; }
+    }
+
     public class ArcGISGatewayTests
     {
+        [Fact]
+        public async Task CanGetAnythingFromServer()
+        {
+            var gateway = new ArcGISGateway();
+
+            var endpoint = new ArcGISServerEndpoint("/Earthquakes/EarthquakesFromLastSevenDays/MapServer");
+
+            var response = await gateway.GetAnything(endpoint);
+
+            Assert.Null(response.Error);
+            Assert.True(response.ContainsKey("capabilities"));
+            Assert.True(response.ContainsKey("mapName"));
+            Assert.True(response.ContainsKey("layers"));
+            Assert.True(response.ContainsKey("documentInfo"));
+        }
+
         [Fact]
         public async Task CanPingServer()
         {
@@ -52,6 +80,23 @@ namespace ArcGIS.Test
             var response = await gateway.Ping(endpoint);
 
             Assert.Null(response.Error);
+        }
+
+        [Fact]
+        public async Task CanDescribeSite()
+        {
+            var gateway = new ArcGISGateway();
+
+            var response = await gateway.DescribeSite();
+
+            Assert.NotNull(response);
+            Assert.True(response.Version > 0);
+
+            foreach (var resource in response.Resources)
+            {
+                var ping = await gateway.Ping(resource);
+                Assert.Null(ping.Error);
+            }
         }
 
         [Fact]
@@ -71,7 +116,7 @@ namespace ArcGIS.Test
             var longWhere = new StringBuilder("region = '");
             for (var i = 0; i < 3000; i++)
                 longWhere.Append(i);
-            
+
             var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { Where = longWhere + "'" };
 
             try
@@ -100,6 +145,9 @@ namespace ArcGIS.Test
             var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
             var result = await gateway.Query<Point>(query);
 
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.NotNull(result.SpatialReference);
             Assert.True(result.Features.Any());
         }
 
@@ -161,15 +209,86 @@ namespace ArcGIS.Test
             Assert.True(resultPolyline.Features.All(i => i.Attributes != null && i.Attributes.Count == 1));
 
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint())
-                {
-                    Where = "areasqkm = 0.012",
-                    OutFields = "areasqkm,elevation,resolution,reachcode"
-                };
+            {
+                Where = "areasqkm = 0.012",
+                OutFields = "areasqkm,elevation,resolution,reachcode"
+            };
             var resultPolygon = await gateway.QueryAsGet<Polygon>(queryPolygon);
 
             Assert.True(resultPolygon.Features.Any());
             Assert.True(resultPolygon.Features.All(i => i.Geometry != null));
             Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
+        }
+
+        /// <summary>
+        /// Performs unfiltered query, then filters by Extent and Polygon to SE quadrant of globe and verifies both filtered
+        /// results contain same number of features as each other, and that both filtered resultsets contain fewer features than unfiltered resultset.
+        /// </summary>
+        /// <param name="serviceUrl"></param>
+        /// <returns></returns>
+        public async Task QueryGeometryCriteriaHonored(string serviceUrl)
+        {
+            int countAllResults = 0;
+            int countExtentResults = 0;
+            int countPolygonResults = 0;
+
+            var gateway = new ArcGISGateway();
+            gateway.Serializer = new JsonDotNetSerializer();
+
+            var queryPointAllResults = new Query(serviceUrl.AsEndpoint());
+
+            var resultPointAllResults = await gateway.QueryAsGet<Point>(queryPointAllResults);
+
+            var queryPointExtentResults = new Query(serviceUrl.AsEndpoint())
+            {
+                Geometry = new Extent { XMin = 0, YMin = 0, XMax = 180, YMax = -90, SpatialReference = SpatialReference.WGS84 }, // SE quarter of globe
+                OutputSpatialReference = SpatialReference.WebMercator
+            };
+            var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
+
+            PointCollectionList rings = new PointCollectionList();
+            PointCollection pointCollection = new PointCollection();
+            pointCollection.Add(new double[] { 0, 0 });
+            pointCollection.Add(new double[] { 180, 0 });
+            pointCollection.Add(new double[] { 180, -90 });
+            pointCollection.Add(new double[] { 0, -90 });
+            pointCollection.Add(new double[] { 0, 0 });
+            rings.Add(pointCollection);
+
+            var queryPointPolygonResults = new Query(serviceUrl.AsEndpoint())
+            {
+                Geometry = new Polygon { Rings = rings },
+                GeometryType = GeometryTypes.Polygon
+            };
+            var resultPointPolygonResults = await gateway.QueryAsGet<Point>(queryPointPolygonResults);
+
+            countAllResults = resultPointAllResults.Features.Count();
+            countExtentResults = resultPointExtentResults.Features.Count();
+            countPolygonResults = resultPointPolygonResults.Features.Count();
+
+            Assert.Equal(resultPointExtentResults.SpatialReference.Wkid, queryPointExtentResults.OutputSpatialReference.LatestWkid);
+            Assert.True(countAllResults > countExtentResults);
+            Assert.True(countPolygonResults == countExtentResults);
+        }
+
+        /// <summary>
+        /// Test geometry query against MapServer
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task QueryMapServerGeometryCriteriaHonored()
+        {
+            await QueryGeometryCriteriaHonored(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0");
+        }
+
+        /// <summary>
+        /// Test geometry query against FeatureServer
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task QueryFeatureServerGeometryCriteriaHonored()
+        {
+            await QueryGeometryCriteriaHonored(@"/Earthquakes/EarthquakesFromLastSevenDays/FeatureServer/0");
         }
 
         [Fact]
@@ -183,7 +302,7 @@ namespace ArcGIS.Test
 
             var adds = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
             {
-                Adds = new List<Feature<Point>> {feature}
+                Adds = new List<Feature<Point>> { feature }
             };
             var resultAdd = await gateway.ApplyEdits(adds);
 
@@ -207,7 +326,7 @@ namespace ArcGIS.Test
 
             var deletes = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
             {
-                Deletes = new List<int> {id}
+                Deletes = new List<int> { id }
             };
             var resultDelete = await gateway.ApplyEdits(deletes);
 

@@ -16,12 +16,14 @@ namespace ArcGIS.ServiceModel.Operation
         /// Represents a request for a query against a service resource
         /// </summary>
         /// <param name="endpoint">Resource to apply the query against</param>
-        public Query(ArcGISServerEndpoint endpoint) 
-            : base (endpoint, "/query")
+        public Query(ArcGISServerEndpoint endpoint)
+            : base(endpoint, Operations.Query)
         {
             Where = "1=1";
             OutFields = "*";
             ReturnGeometry = true;
+            GeometryType = GeometryTypes.Envelope;
+            SpatialRelationship = SpatialRelationshipTypes.Intersects;
         }
 
         /// <summary>
@@ -38,6 +40,50 @@ namespace ArcGIS.ServiceModel.Operation
         /// <remarks>Default is '*' (all fields)</remarks>
         [DataMember(Name = "outFields")]
         public String OutFields { get; set; }
+
+        /// <summary>
+        /// The spatial reference of the input geometry. 
+        /// </summary>
+        [DataMember(Name = "inSR")]
+        public SpatialReference InputSpatialReference 
+        {
+            get { return Geometry == null ? null : Geometry.SpatialReference; }
+        }
+
+        /// <summary>
+        /// The spatial reference of the returned geometry. 
+        /// If not specified, the geometry is returned in the spatial reference of the input.
+        /// </summary>
+        [DataMember(Name = "outSR")]
+        public SpatialReference OutputSpatialReference { get; set; }
+
+        /// <summary>
+        /// The geometry to apply as the spatial filter.
+        /// The structure of the geometry is the same as the structure of the json geometry objects returned by the ArcGIS REST API.
+        /// In addition to the JSON structures, for envelopes and points, you can specify the geometry with a simpler comma-separated syntax.
+        /// </summary>
+        /// <remarks>Default is empty</remarks>
+        [DataMember(Name = "geometry")]
+        public IGeometry Geometry { get; set; }
+
+        /// <summary>
+        /// The type of geometry specified by the geometry parameter. 
+        /// The geometry type can be an envelope, point, line, or polygon.
+        /// The default geometry type is "esriGeometryEnvelope". 
+        /// Values: esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | esriGeometryEnvelope
+        /// </summary>
+        /// <remarks>Default is esriGeometryEnvelope</remarks>
+        [DataMember(Name = "geometryType")]
+        public String GeometryType { get; set; }
+
+        /// <summary>
+        /// The spatial relationship to be applied on the input geometry while performing the query.
+        /// The supported spatial relationships include intersects, contains, envelope intersects, within, etc.
+        /// The default spatial relationship is "esriSpatialRelIntersects".
+        /// Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses | esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps | esriSpatialRelTouches | esriSpatialRelWithin | esriSpatialRelRelation
+        /// </summary>
+        [DataMember(Name = "spatialRel")]
+        public String SpatialRelationship { get; set; }
 
         /// <summary>
         /// If true, the resultset includes the geometry associated with each result.
@@ -65,7 +111,7 @@ namespace ArcGIS.ServiceModel.Operation
                   From.Value.ToUnixTime(),
                   (To ?? From.Value).ToUnixTime());
             }
-        }
+        }        
 
         // TODO : add more options
     }
@@ -78,5 +124,27 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "spatialReference")]
         public SpatialReference SpatialReference { get; set; }
+    }
+
+    public static class GeometryTypes
+    {
+        public const String Point = "esriGeometryPoint";
+        public const String MultiPoint = "esriGeometryMultipoint";
+        public const String Polyline = "esriGeometryPolyline";
+        public const String Polygon = "esriGeometryPolygon";
+        public const String Envelope = "esriGeometryEnvelope";
+    }
+
+    public static class SpatialRelationshipTypes
+    {
+        public const String Intersects = "esriSpatialRelIntersects";
+        public const String Contains = "esriSpatialRelContains";
+        public const String Crosses = "esriSpatialRelCrosses";
+        public const String EnvelopeIntersects = "esriSpatialRelEnvelopeIntersects";
+        public const String IndexIntersects = "esriSpatialRelIndexIntersects";
+        public const String Overlaps = "esriSpatialRelOverlaps";
+        public const String Touches = "esriSpatialRelTouches";
+        public const String Within = "esriSpatialRelWithin";
+        public const String Relation = "esriSpatialRelRelation";
     }
 }

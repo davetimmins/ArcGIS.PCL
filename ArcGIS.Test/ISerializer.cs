@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ArcGIS.ServiceModel.Logic;
 using ArcGIS.ServiceModel.Operation;
-using Newtonsoft.Json.Linq;
 
 namespace ArcGIS.Test
 {
@@ -23,11 +22,9 @@ namespace ArcGIS.Test
                 ServiceStack.Text.JsonSerializer.DeserializeFromString<Dictionary<String, String>>(ServiceStack.Text.JsonSerializer.SerializeToString(objectToConvert));
         }
 
-        public T AsPortalResponse<T>(String dataToConvert) where T : PortalResponse
+        public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
         {
-            return String.IsNullOrWhiteSpace(dataToConvert)
-                ? null
-                : ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
+            return ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
         }
     }
 
@@ -39,14 +36,17 @@ namespace ArcGIS.Test
         {
             _settings = new Newtonsoft.Json.JsonSerializerSettings
             {
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+                MissingMemberHandling  = Newtonsoft.Json.MissingMemberHandling.Ignore,
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
             };
         }
 
         public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
         {
-            var stringValue = JObject.FromObject(objectToConvert).ToString();
-            var jobject = JObject.Parse(stringValue);
+            var stringValue = Newtonsoft.Json.JsonConvert.SerializeObject(objectToConvert, _settings);
+         
+            var jobject = Newtonsoft.Json.Linq.JObject.Parse(stringValue);
             var dict = new Dictionary<String, String>();
             foreach (var item in jobject)
             {
@@ -55,11 +55,9 @@ namespace ArcGIS.Test
             return dict;
         }
 
-        public T AsPortalResponse<T>(String dataToConvert) where T : PortalResponse
+        public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
         {
-            return String.IsNullOrWhiteSpace(dataToConvert)
-                ? null
-                : Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);
         }
     }
 }

@@ -8,32 +8,48 @@ Should work with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 
 
 Since the serialization is specific to your implementation you will need to create an ISerializer to use in your gateway. The test project has ServiceStack.Text and Json.NET [example serializers](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ISerializer.cs) 
 
+Supports the following as typed operations:
+
+ - Generate Token (automatically if credentials are specified in gateway)
+ - Query
+ - Apply Edits
+ - Single Input Geocode
+ - Reverse Geocode
+ - Describe site (returns a url for every service)
+
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
-###Gateway with really bad serializer example  
+###Gateway with ServiceStack.Text Json serializer example  
 ```csharp
 public class ArcGISGateway : PortalGateway
 {
     public ArcGISGateway()
         : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
     {
-        Serializer = new Serializer();
+        Serializer = new ServiceStackSerializer();
     }
 }
 
-/// <summary>
-/// Whatever you do, do not use this implementation. Ever. OK!
-/// </summary>
-public class Serializer : ISerializer
+public class ServiceStackSerializer : ISerializer
 {
-    public Dictionary<string, string> AsDictionary<T>(T objectToConvert) where T : CommonParameters
+    public ServiceStackSerializer()
     {
-        return new Dictionary<String, String>();
+        JsConfig.EmitCamelCaseNames = true;
+        JsConfig.IncludeTypeInfo = false;
+        JsConfig.ConvertObjectTypesIntoStringDictionary = true;
+        JsConfig.IncludeNullValues = false;
     }
 
-    public T AsPortalResponse<T>(string dataToConvert) where T : PortalResponse
+    public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
     {
-        return (T)new PortalResponse();
+        return objectToConvert == null ?
+            null :
+            JsonSerializer.DeserializeFromString<Dictionary<String, String>>(JsonSerializer.SerializeToString(objectToConvert));
+    }
+
+    public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
+    {
+        return JsonSerializer.DeserializeFromString<T>(dataToConvert);
     }
 }
 ```
@@ -41,7 +57,7 @@ public class Serializer : ISerializer
 ```csharp
 public class ArcGISGatewayExample
 {
-    public async Task CanPingServer()
+    public async Task PingServer()
     {
         await new ArcGISGateway().Ping(new ArcGISServerEndpoint("/"));
     }

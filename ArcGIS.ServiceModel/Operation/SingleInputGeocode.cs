@@ -9,7 +9,7 @@ namespace ArcGIS.ServiceModel.Operation
     public class SingleInputGeocode : GeocodeOperation
     {
         public SingleInputGeocode(ArcGISServerEndpoint endpoint)
-            : base(endpoint, "/find")
+            : base(endpoint, Operations.SingleInputGeocode)
         {
             MaxResults = 1;
             Distance = null;

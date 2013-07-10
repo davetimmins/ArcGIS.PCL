@@ -16,14 +16,14 @@ namespace ArcGIS.Test
             Serializer = new ServiceStackSerializer();
         }
 
-        public async Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
+        public Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
         {
-            return await Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode, reverseGeocode);
+            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode);
         }
 
-        public async Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
+        public Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
         {
-            return await Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode, geocode);
+            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode);
         }
     }
 

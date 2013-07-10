@@ -45,7 +45,7 @@ namespace ArcGIS.ServiceModel.Operation
     public class ReverseGeocode : GeocodeOperation
     {
         public ReverseGeocode(ArcGISServerEndpoint endpoint)
-            : base(endpoint, "/reverseGeocode")
+            : base(endpoint, Operations.ReverseGeocode)
         { }
     }
 

@@ -15,12 +15,9 @@ namespace ArcGIS.ServiceModel.Operation
             _relativeUrl = endpoint.RelativeUrl.Trim('/') + "/" + operationPath.Trim('/');
         }
 
-        public string RelativeUrl
-        {
-            get { return _relativeUrl; }
-        }
+        public String RelativeUrl { get { return _relativeUrl; } }
 
-        public string BuildAbsoluteUrl(string rootUrl)
+        public String BuildAbsoluteUrl(String rootUrl)
         {
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl

@@ -36,9 +36,9 @@ namespace ArcGIS.ServiceModel.Common
             RelativeUrl = "rest/services/" + RelativeUrl;
         }
         
-        public string RelativeUrl { get; private set; }
+        public String RelativeUrl { get; private set; }
 
-        public string BuildAbsoluteUrl(string rootUrl)
+        public String BuildAbsoluteUrl(String rootUrl)
         {
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl

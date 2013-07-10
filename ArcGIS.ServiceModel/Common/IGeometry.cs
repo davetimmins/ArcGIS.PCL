@@ -32,8 +32,7 @@ namespace ArcGIS.ServiceModel.Common
         public static SpatialReference WGS84 = new SpatialReference
             {
                 Wkid = 4326, 
-                LatestWkid = 4326,
-                WKT = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+                LatestWkid = 4326
             };
 
         /// <summary>
@@ -42,8 +41,7 @@ namespace ArcGIS.ServiceModel.Common
         public static SpatialReference WebMercator = new SpatialReference
             {
                 Wkid = 102100, 
-                LatestWkid = 3857,
-                WKT = "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",0.0],PARAMETER[\"Standard_Parallel_1\",0.0],PARAMETER[\"Auxiliary_Sphere_Type\",0.0],UNIT[\"Meter\",1.0]]"
+                LatestWkid = 3857
             };
 
         [DataMember(Name = "wkid")]
@@ -57,10 +55,7 @@ namespace ArcGIS.ServiceModel.Common
 
         [DataMember(Name = "latestVcsWkid")]
         public int LatestVCSWkid { get; set; }
-
-        [DataMember(Name = "wkt")]
-        public String WKT { get; set; }
-
+        
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -73,7 +68,7 @@ namespace ArcGIS.ServiceModel.Common
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Wkid == other.Wkid && LatestWkid == other.LatestWkid && VCSWkid == other.VCSWkid && LatestVCSWkid == other.LatestVCSWkid && String.Equals(WKT, other.WKT);
+            return Wkid == other.Wkid && LatestWkid == other.LatestWkid && VCSWkid == other.VCSWkid && LatestVCSWkid == other.LatestVCSWkid;
         }
 
         public override int GetHashCode()
@@ -84,7 +79,6 @@ namespace ArcGIS.ServiceModel.Common
                 hashCode = (hashCode * 397) ^ LatestWkid;
                 hashCode = (hashCode * 397) ^ VCSWkid;
                 hashCode = (hashCode * 397) ^ LatestVCSWkid;
-                hashCode = (hashCode * 397) ^ (WKT != null ? WKT.GetHashCode() : 0);
                 return hashCode;
             }
         }

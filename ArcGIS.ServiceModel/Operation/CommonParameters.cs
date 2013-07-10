@@ -3,6 +3,15 @@ using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    public static class Operations
+    {
+        public const String Query = "query";
+        public const String ApplyEdits = "applyEdits";
+        public const String SingleInputGeocode = "find";
+        public const String ReverseGeocode = "reverseGeocode";
+        public const String GenerateToken = "generateToken";
+    }
+
     /// <summary>
     /// There are four parameters common to all API operations unless otherwise noted.
     /// </summary>
@@ -11,13 +20,11 @@ namespace ArcGIS.ServiceModel.Operation
     {
         protected CommonParameters()
             : this("json", null)
-        {
-        }
+        { }
 
         protected CommonParameters(Token token)
             : this("json", token)
-        {
-        }
+        { }
 
         protected CommonParameters(String format, Token token)
         {
