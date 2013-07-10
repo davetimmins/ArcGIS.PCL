@@ -42,6 +42,22 @@ namespace ArcGIS.ServiceModel.Operation
         public String OutFields { get; set; }
 
         /// <summary>
+        /// The spatial reference of the input geometry. 
+        /// </summary>
+        [DataMember(Name = "inSR")]
+        public SpatialReference InputSpatialReference 
+        {
+            get { return Geometry == null ? null : Geometry.SpatialReference; }
+        }
+
+        /// <summary>
+        /// The spatial reference of the returned geometry. 
+        /// If not specified, the geometry is returned in the spatial reference of the input.
+        /// </summary>
+        [DataMember(Name = "outSR")]
+        public SpatialReference OutputSpatialReference { get; set; }
+
+        /// <summary>
         /// The geometry to apply as the spatial filter.
         /// The structure of the geometry is the same as the structure of the json geometry objects returned by the ArcGIS REST API.
         /// In addition to the JSON structures, for envelopes and points, you can specify the geometry with a simpler comma-separated syntax.
@@ -95,7 +111,7 @@ namespace ArcGIS.ServiceModel.Operation
                   From.Value.ToUnixTime(),
                   (To ?? From.Value).ToUnixTime());
             }
-        }
+        }        
 
         // TODO : add more options
     }

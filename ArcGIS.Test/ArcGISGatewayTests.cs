@@ -241,7 +241,8 @@ namespace ArcGIS.Test
 
             var queryPointExtentResults = new Query(serviceUrl.AsEndpoint())
             {
-                Geometry = new Extent() { XMin = 0, YMin = 0, XMax = 180, YMax = -90 }, // SE quarter of globe
+                Geometry = new Extent { XMin = 0, YMin = 0, XMax = 180, YMax = -90, SpatialReference = SpatialReference.WGS84 }, // SE quarter of globe
+                OutputSpatialReference = SpatialReference.WebMercator
             };
             var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
 
@@ -265,6 +266,7 @@ namespace ArcGIS.Test
             countExtentResults = resultPointExtentResults.Features.Count();
             countPolygonResults = resultPointPolygonResults.Features.Count();
 
+            Assert.Equal(resultPointExtentResults.SpatialReference.Wkid, queryPointExtentResults.OutputSpatialReference.LatestWkid);
             Assert.True(countAllResults > countExtentResults);
             Assert.True(countPolygonResults == countExtentResults);
         }
