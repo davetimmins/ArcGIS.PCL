@@ -70,26 +70,30 @@ namespace ArcGIS.ServiceModel.Logic
             rootUrl = rootUrl.Replace("/rest/services", "");
             RootUrl = rootUrl.ToLower() + '/';
 
-            _httpClientHandler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };            
+            _httpClientHandler = new HttpClientHandler();
+            if (_httpClientHandler.SupportsAutomaticDecompression) 
+                _httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             if (_httpClientHandler.SupportsUseProxy()) _httpClientHandler.UseProxy = true;
             if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
+            if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
+
             _httpClient = new HttpClient(_httpClientHandler);
 
             if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
                 TokenRequest = new GenerateToken { Username = username, Password = password };
         }
-                
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (_httpClient != null) 
-                { 
+                if (_httpClient != null)
+                {
                     _httpClient.Dispose();
                     _httpClient = null;
                 }
-                if (_httpClientHandler != null) 
-                { 
+                if (_httpClientHandler != null)
+                {
                     _httpClientHandler.Dispose();
                     _httpClientHandler = null;
                 }
@@ -99,7 +103,7 @@ namespace ArcGIS.ServiceModel.Logic
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);            
+            GC.SuppressFinalize(this);
         }
 
         public string RootUrl { get; private set; }

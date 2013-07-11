@@ -10,10 +10,11 @@ namespace ArcGIS.Test
     {
         public SecureGISGateway()
             : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
-            // these credentials are from the Esri samples before you complain :)
+        // these credentials are from the Esri samples before you complain :)
         { }
 
-        public SecureGISGateway(int tokenExpiryInMinutes) : this()
+        public SecureGISGateway(int tokenExpiryInMinutes)
+            : this()
         {
             TokenRequest.ExpirationInMinutes = tokenExpiryInMinutes;
         }
@@ -76,6 +77,40 @@ namespace ArcGIS.Test
             Thread.Sleep(TimeSpan.FromSeconds(61));
             Assert.True(gateway.Token.IsExpired); // this fails at the moment, need to test on later version of AGS
             Assert.Null(response.Error);
+        }
+
+        [Fact]
+        public async Task InvalidTokenReported()
+        {
+            var gateway = new SecureGISGateway();
+
+            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
+
+            var response = await gateway.Ping(endpoint);
+
+            Assert.NotNull(gateway.Token);
+            Assert.NotNull(gateway.Token.Value);
+            Assert.False(gateway.Token.IsExpired);
+            Assert.Null(response.Error);
+
+            gateway.Token.Value += "chuff";
+
+            await ThrowsAsync<InvalidOperationException>(async () => await gateway.Ping(endpoint));
+        }
+
+        public static async Task ThrowsAsync<TException>(Func<Task> func)
+        {
+            var expected = typeof(TException);
+            Type actual = null;
+            try
+            {
+                await func();
+            }
+            catch (Exception e)
+            {
+                actual = e.GetType();
+            }
+            Assert.Equal(expected, actual);
         }
     }
 }
