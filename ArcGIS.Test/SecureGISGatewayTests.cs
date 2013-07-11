@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
 using Xunit;
+using ArcGIS.ServiceModel.Logic;
 
 namespace ArcGIS.Test
 {
@@ -17,6 +18,15 @@ namespace ArcGIS.Test
             : this()
         {
             TokenRequest.ExpirationInMinutes = tokenExpiryInMinutes;
+        }
+    }
+
+    public class NonSecureGISGateway : PortalGateway
+    {
+        public NonSecureGISGateway()
+            : base(@"http://serverapps10.esri.com/arcgis")
+        {
+            Serializer = new ServiceStackSerializer();
         }
     }
 
@@ -80,6 +90,18 @@ namespace ArcGIS.Test
         }
 
         [Fact]
+        public async Task CannotAccessSecureResourceWithoutToken()
+        {
+            var gateway = new NonSecureGISGateway();
+
+            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
+
+            var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Ping(endpoint));
+            Assert.NotNull(exception);
+            Assert.Contains("Unauthorized access", exception.Message);
+        }
+
+        [Fact]
         public async Task InvalidTokenReported()
         {
             var gateway = new SecureGISGateway();
@@ -95,22 +117,28 @@ namespace ArcGIS.Test
 
             gateway.Token.Value += "chuff";
 
-            await ThrowsAsync<InvalidOperationException>(async () => await gateway.Ping(endpoint));
+            var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Ping(endpoint));
+            Assert.NotNull(exception);
+            Assert.Contains("Invalid token", exception.Message);
         }
 
-        public static async Task ThrowsAsync<TException>(Func<Task> func)
+        public static async Task<TException> ThrowsAsync<TException>(Func<Task> func) where TException : Exception
         {
             var expected = typeof(TException);
             Type actual = null;
+            TException result = null;
             try
             {
                 await func();
             }
-            catch (Exception e)
+            catch (TException e)
             {
                 actual = e.GetType();
+                result = e;
             }
+
             Assert.Equal(expected, actual);
+            return result;
         }
     }
 }
