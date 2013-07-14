@@ -66,6 +66,7 @@ namespace ArcGIS.ServiceModel.Logic
 
         protected PortalGateway(String rootUrl, String username, String password)
         {
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             rootUrl = rootUrl.TrimEnd('/');
             rootUrl = rootUrl.Replace("/rest/services", "");
             RootUrl = rootUrl.ToLower() + '/';
@@ -258,6 +259,8 @@ namespace ArcGIS.ServiceModel.Logic
 
         static Dictionary<String, String> ParseQueryString(String queryString)
         {
+            if (String.IsNullOrWhiteSpace(queryString)) return new Dictionary<String, String>();
+
             // remove anything other than query string from url
             if (queryString.Contains("?"))
                 queryString = queryString.Substring(queryString.IndexOf('?') + 1);

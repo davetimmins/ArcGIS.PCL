@@ -31,6 +31,7 @@ namespace ArcGIS.ServiceModel.Common
         /// <param name="relativePath">Path of the endpoint relative to the root url of the ArcGIS Server</param>
         public ArcGISServerEndpoint(String relativePath)
         {
+            if (String.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");
             RelativeUrl = relativePath.Trim('/');
             RelativeUrl = RelativeUrl.Replace("rest/services/", "");
             RelativeUrl = "rest/services/" + RelativeUrl;
@@ -40,6 +41,7 @@ namespace ArcGIS.ServiceModel.Common
 
         public String BuildAbsoluteUrl(String rootUrl)
         {
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl
                        : RelativeUrl;

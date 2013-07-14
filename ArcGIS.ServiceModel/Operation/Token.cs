@@ -59,6 +59,7 @@ namespace ArcGIS.ServiceModel.Operation
 
         public String BuildAbsoluteUrl(String rootUrl)
         {
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             return rootUrl.Replace("http://", "https://") + RelativeUrl;
         }
     }
