@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Operation;
+using System.Net.Http.Headers;
 
 namespace ArcGIS.ServiceModel.Logic
 {
@@ -72,7 +73,7 @@ namespace ArcGIS.ServiceModel.Logic
             RootUrl = rootUrl.ToLower() + '/';
 
             _httpClientHandler = new HttpClientHandler();
-            if (_httpClientHandler.SupportsAutomaticDecompression) 
+            if (_httpClientHandler.SupportsAutomaticDecompression)
                 _httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             if (_httpClientHandler.SupportsUseProxy()) _httpClientHandler.UseProxy = true;
             if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
@@ -193,13 +194,16 @@ namespace ArcGIS.ServiceModel.Logic
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
-            var token = await CheckGenerateToken();
+            await CheckGenerateToken();
 
             var url = endpoint.BuildAbsoluteUrl(RootUrl);
-            if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !url.Contains("token="))
-                url += (url.Contains("?") ? "&" : "?") + "token=" + token.Value;
-            if (!url.Contains("f="))
-                url += (url.Contains("?") ? "&" : "?") + "f=json";
+            if (!url.Contains("f=")) url += (url.Contains("?") ? "&" : "?") + "f=json";
+            if (Token != null && !String.IsNullOrWhiteSpace(Token.Value) && !url.Contains("token="))
+            {
+                url += (url.Contains("?") ? "&" : "?") + "token=" + Token.Value;
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Token.Value);
+                if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
+            }            
 
             // use POST if request is too long
             if (url.Length > 2082)
@@ -228,13 +232,16 @@ namespace ArcGIS.ServiceModel.Logic
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
-            // these should have already been added
-            if (!parameters.ContainsKey("f"))
-                parameters.Add("f", "json");
-            if (!parameters.ContainsKey("token") && Token != null && !String.IsNullOrWhiteSpace(Token.Value))
-                parameters.Add("token", Token.Value);
-
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
+
+            // these should have already been added
+            if (!parameters.ContainsKey("f")) parameters.Add("f", "json");
+            if (!parameters.ContainsKey("token") && Token != null && !String.IsNullOrWhiteSpace(Token.Value))
+            {
+                parameters.Add("token", Token.Value);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Token.Value);
+                if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
+            }            
 
             HttpContent content = new FormUrlEncodedContent(parameters);
 

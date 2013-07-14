@@ -92,6 +92,6 @@ namespace ArcGIS.ServiceModel.Operation
         /// True if the token must always pass over ssl.
         /// </summary>
         [DataMember(Name = "ssl")]
-        public String AlwaysUseSsl { get; set; }
+        public bool AlwaysUseSsl { get; set; }
     }
 }
