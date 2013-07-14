@@ -80,6 +80,9 @@ namespace ArcGIS.ServiceModel.Logic
             if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
 
             _httpClient = new HttpClient(_httpClientHandler);
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
 
             if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
                 TokenRequest = new GenerateToken { Username = username, Password = password };
@@ -209,6 +212,7 @@ namespace ArcGIS.ServiceModel.Logic
             if (url.Length > 2082)
                 return await Post<T>(endpoint, ParseQueryString(endpoint.RelativeUrl));
 
+            _httpClient.CancelPendingRequests();       
             HttpResponseMessage response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
@@ -243,8 +247,8 @@ namespace ArcGIS.ServiceModel.Logic
                 if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }            
 
-            HttpContent content = new FormUrlEncodedContent(parameters);
-
+            HttpContent content = new FormUrlEncodedContent(parameters);            
+            _httpClient.CancelPendingRequests();
             HttpResponseMessage response = await _httpClient.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
 
