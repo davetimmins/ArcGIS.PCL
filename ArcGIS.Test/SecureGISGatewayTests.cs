@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
 using Xunit;
 using ArcGIS.ServiceModel.Logic;
+using ArcGIS.ServiceModel.Extensions;
 
 namespace ArcGIS.Test
 {
@@ -13,12 +14,6 @@ namespace ArcGIS.Test
             : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
         // these credentials are from the Esri samples before you complain :)
         { }
-
-        public SecureGISGateway(int tokenExpiryInMinutes)
-            : this()
-        {
-            TokenRequest.ExpirationInMinutes = tokenExpiryInMinutes;
-        }
     }
 
     public class NonSecureGISGateway : PortalGateway
@@ -74,19 +69,16 @@ namespace ArcGIS.Test
         }
 
         [Fact]
-        public async Task CanGenerateShortLivedToken()
+        public void TokenIsExpiredHasCorrectValue()
         {
-            var gateway = new SecureGISGateway(1); // 60 seconds
-
-            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
-
-            var response = await gateway.Ping(endpoint);
-
-            Assert.NotNull(gateway.Token);
-            Assert.NotNull(gateway.Token.Value);
-            Thread.Sleep(TimeSpan.FromSeconds(61));
-            Assert.True(gateway.Token.IsExpired); // this fails at the moment, need to test on later version of AGS
-            Assert.Null(response.Error);
+            var expiry = DateTime.UtcNow.AddSeconds(1).ToUnixTime();
+            var token = new ArcGIS.ServiceModel.Operation.Token { Value = "blah", Expiry = expiry };
+            
+            Assert.NotNull(token);
+            Assert.NotNull(token.Value);
+            Assert.False(token.IsExpired);
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+            Assert.True(token.IsExpired); 
         }
 
         [Fact]

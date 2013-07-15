@@ -48,7 +48,7 @@ namespace ArcGIS.ServiceModel.Logic
 
     public abstract class PortalGateway : IPortalGateway, IDisposable
     {
-        const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
+        internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         protected readonly GenerateToken TokenRequest;
         HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;

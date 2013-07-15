@@ -60,7 +60,10 @@ namespace ArcGIS.ServiceModel.Operation
         public String BuildAbsoluteUrl(String rootUrl)
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
-            return rootUrl.Replace("http://", "https://") + RelativeUrl;
+ 
+            return (String.Equals(rootUrl, ArcGIS.ServiceModel.Logic.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
+                ? rootUrl.Replace("http://", "https://") + RelativeUrl.Replace("tokens/", "")
+                : rootUrl.Replace("http://", "https://") + RelativeUrl;
         }
     }
 
