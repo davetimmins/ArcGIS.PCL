@@ -88,6 +88,13 @@ namespace ArcGIS.ServiceModel.Logic
                 TokenRequest = new GenerateToken { Username = username, Password = password };
         }
 
+#if DEBUG
+        ~PortalGateway()
+        {
+            Dispose(false);
+        }
+#endif
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -108,7 +115,9 @@ namespace ArcGIS.ServiceModel.Logic
         public void Dispose()
         {
             Dispose(true);
+#if DEBUG
             GC.SuppressFinalize(this);
+#endif
         }
 
         public string RootUrl { get; private set; }
@@ -206,13 +215,13 @@ namespace ArcGIS.ServiceModel.Logic
                 url += (url.Contains("?") ? "&" : "?") + "token=" + Token.Value;
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Token.Value);
                 if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
-            }            
+            }
 
             // use POST if request is too long
             if (url.Length > 2082)
                 return await Post<T>(endpoint, ParseQueryString(endpoint.RelativeUrl));
 
-            _httpClient.CancelPendingRequests();       
+            _httpClient.CancelPendingRequests();
             HttpResponseMessage response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
@@ -245,9 +254,9 @@ namespace ArcGIS.ServiceModel.Logic
                 parameters.Add("token", Token.Value);
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Token.Value);
                 if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
-            }            
+            }
 
-            HttpContent content = new FormUrlEncodedContent(parameters);            
+            HttpContent content = new FormUrlEncodedContent(parameters);
             _httpClient.CancelPendingRequests();
             HttpResponseMessage response = await _httpClient.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
