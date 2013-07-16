@@ -5,4 +5,4 @@ install:
 
 script:
 - xbuild CI.proj
-- xunit-console ./src/ArcGIS.Test/bin/Release/ArcGIS.Test.dll
+- xunit-console ./ArcGIS.Test/bin/Release/ArcGIS.Test.dll
