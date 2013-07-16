@@ -5,4 +5,4 @@ install:
 
 script:
 - xbuild CI.proj
-- nunit-console ./src/ArcGIS.Test/bin/Release/ArcGIS.Test.dll -exclude Integration,NotWorkingOnMono
+- xunit-console ./src/ArcGIS.Test/bin/Release/ArcGIS.Test.dll
