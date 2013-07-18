@@ -42,9 +42,7 @@ public class ServiceStackSerializer : ISerializer
 
     public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
     {
-        return objectToConvert == null ?
-            null :
-            JsonSerializer.DeserializeFromString<Dictionary<String, String>>(JsonSerializer.SerializeToString(objectToConvert));
+        return ServiceStack.Text.TypeSerializer.ToStringDictionary<T>(objectToConvert);
     }
 
     public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
@@ -66,6 +64,6 @@ public class ArcGISGatewayExample
 ### Download
 If you have [NuGet](http://nuget.org) installed, the easiest way to get started is to install via NuGet:
 
-    PM> Install-Package ArcGIS.PCL -Pre
+    PM> Install-Package ArcGIS.PCL
 
 or you can get the code from here.
