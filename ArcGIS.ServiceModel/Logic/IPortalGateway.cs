@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Operation;
+using System.Net.Http.Headers;
 
 namespace ArcGIS.ServiceModel.Logic
 {
@@ -47,7 +48,7 @@ namespace ArcGIS.ServiceModel.Logic
 
     public abstract class PortalGateway : IPortalGateway, IDisposable
     {
-        const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
+        internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         protected readonly GenerateToken TokenRequest;
         HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;
@@ -66,30 +67,45 @@ namespace ArcGIS.ServiceModel.Logic
 
         protected PortalGateway(String rootUrl, String username, String password)
         {
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             rootUrl = rootUrl.TrimEnd('/');
             rootUrl = rootUrl.Replace("/rest/services", "");
             RootUrl = rootUrl.ToLower() + '/';
 
-            _httpClientHandler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };            
+            _httpClientHandler = new HttpClientHandler();
+            if (_httpClientHandler.SupportsAutomaticDecompression)
+                _httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             if (_httpClientHandler.SupportsUseProxy()) _httpClientHandler.UseProxy = true;
             if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
+            if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
+
             _httpClient = new HttpClient(_httpClientHandler);
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
 
             if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
                 TokenRequest = new GenerateToken { Username = username, Password = password };
         }
-                
+
+#if DEBUG
+        ~PortalGateway()
+        {
+            Dispose(false);
+        }
+#endif
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (_httpClient != null) 
-                { 
+                if (_httpClient != null)
+                {
                     _httpClient.Dispose();
                     _httpClient = null;
                 }
-                if (_httpClientHandler != null) 
-                { 
+                if (_httpClientHandler != null)
+                {
                     _httpClientHandler.Dispose();
                     _httpClientHandler = null;
                 }
@@ -99,7 +115,9 @@ namespace ArcGIS.ServiceModel.Logic
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);            
+#if DEBUG
+            GC.SuppressFinalize(this);
+#endif
         }
 
         public string RootUrl { get; private set; }
@@ -188,18 +206,22 @@ namespace ArcGIS.ServiceModel.Logic
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
-            var token = await CheckGenerateToken();
+            await CheckGenerateToken();
 
             var url = endpoint.BuildAbsoluteUrl(RootUrl);
-            if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !url.Contains("token="))
-                url += (url.Contains("?") ? "&" : "?") + "token=" + token.Value;
-            if (!url.Contains("f="))
-                url += (url.Contains("?") ? "&" : "?") + "f=json";
+            if (!url.Contains("f=")) url += (url.Contains("?") ? "&" : "?") + "f=json";
+            if (Token != null && !String.IsNullOrWhiteSpace(Token.Value) && !url.Contains("token="))
+            {
+                url += (url.Contains("?") ? "&" : "?") + "token=" + Token.Value;
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Token.Value);
+                if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
+            }
 
             // use POST if request is too long
             if (url.Length > 2082)
                 return await Post<T>(endpoint, ParseQueryString(endpoint.RelativeUrl));
 
+            _httpClient.CancelPendingRequests();
             HttpResponseMessage response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
@@ -223,16 +245,19 @@ namespace ArcGIS.ServiceModel.Logic
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
-            // these should have already been added
-            if (!parameters.ContainsKey("f"))
-                parameters.Add("f", "json");
-            if (!parameters.ContainsKey("token") && Token != null && !String.IsNullOrWhiteSpace(Token.Value))
-                parameters.Add("token", Token.Value);
-
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
-            HttpContent content = new FormUrlEncodedContent(parameters);
+            // these should have already been added
+            if (!parameters.ContainsKey("f")) parameters.Add("f", "json");
+            if (!parameters.ContainsKey("token") && Token != null && !String.IsNullOrWhiteSpace(Token.Value))
+            {
+                parameters.Add("token", Token.Value);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Token.Value);
+                if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
+            }
 
+            HttpContent content = new FormUrlEncodedContent(parameters);
+            _httpClient.CancelPendingRequests();
             HttpResponseMessage response = await _httpClient.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
 
@@ -254,6 +279,8 @@ namespace ArcGIS.ServiceModel.Logic
 
         static Dictionary<String, String> ParseQueryString(String queryString)
         {
+            if (String.IsNullOrWhiteSpace(queryString)) return new Dictionary<String, String>();
+
             // remove anything other than query string from url
             if (queryString.Contains("?"))
                 queryString = queryString.Substring(queryString.IndexOf('?') + 1);

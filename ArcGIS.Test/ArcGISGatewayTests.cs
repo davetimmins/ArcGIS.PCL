@@ -119,22 +119,9 @@ namespace ArcGIS.Test
 
             var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { Where = longWhere + "'" };
 
-            try
-            {
-                await gateway.QueryAsGet<Point>(query);
-            }
-            catch (HttpRequestException)
-            {
-                Assert.False(true);
-                return;
-            }
-            catch (InvalidOperationException)
-            {
-                Assert.True(true);
-                return;
-            }
-
-            Assert.False(true);
+            var exception = await SecureGISGatewayTests.ThrowsAsync<InvalidOperationException>(async () => await gateway.QueryAsGet<Point>(query));
+            Assert.NotNull(exception);
+            Assert.Contains("Unable to complete Query operation", exception.Message);
         }
 
         [Fact]

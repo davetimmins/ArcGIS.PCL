@@ -17,9 +17,7 @@ namespace ArcGIS.Test
 
         public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
         {
-            return objectToConvert == null ?
-                null :
-                ServiceStack.Text.JsonSerializer.DeserializeFromString<Dictionary<String, String>>(ServiceStack.Text.JsonSerializer.SerializeToString(objectToConvert));
+            return ServiceStack.Text.TypeSerializer.ToStringDictionary<T>(objectToConvert);            
         }
 
         public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse

@@ -12,6 +12,7 @@ namespace ArcGIS.ServiceModel.Operation
 
         protected ArcGISServerOperation(ArcGISServerEndpoint endpoint, String operationPath)
         {
+            if (endpoint == null) throw new ArgumentNullException("endpoint");
             _relativeUrl = endpoint.RelativeUrl.Trim('/') + "/" + operationPath.Trim('/');
         }
 
@@ -19,6 +20,7 @@ namespace ArcGIS.ServiceModel.Operation
 
         public String BuildAbsoluteUrl(String rootUrl)
         {
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl
                        : RelativeUrl;

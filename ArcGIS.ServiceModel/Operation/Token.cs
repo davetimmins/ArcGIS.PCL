@@ -59,7 +59,11 @@ namespace ArcGIS.ServiceModel.Operation
 
         public String BuildAbsoluteUrl(String rootUrl)
         {
-            return rootUrl.Replace("http://", "https://") + RelativeUrl;
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+ 
+            return (String.Equals(rootUrl, ArcGIS.ServiceModel.Logic.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
+                ? rootUrl.Replace("http://", "https://") + RelativeUrl.Replace("tokens/", "")
+                : rootUrl.Replace("http://", "https://") + RelativeUrl;
         }
     }
 
@@ -91,6 +95,6 @@ namespace ArcGIS.ServiceModel.Operation
         /// True if the token must always pass over ssl.
         /// </summary>
         [DataMember(Name = "ssl")]
-        public String AlwaysUseSsl { get; set; }
+        public bool AlwaysUseSsl { get; set; }
     }
 }

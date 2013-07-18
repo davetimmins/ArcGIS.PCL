@@ -9,8 +9,7 @@ namespace ArcGIS.Test
         [Fact]
         public void ArcGISServerEndpointHasCorrectFormat()
         {
-            var endpoint = new ArcGISServerEndpoint("");
-            Assert.True(endpoint.RelativeUrl.StartsWith("rest/services/", StringComparison.InvariantCultureIgnoreCase));
+            Assert.Throws<ArgumentNullException>(() => new ArcGISServerEndpoint(""));
 
             var endpoint2 = new ArcGISServerEndpoint("/rest/services/rest/services/rest/services/");
             Assert.True(endpoint2.RelativeUrl.StartsWith("rest/services/", StringComparison.InvariantCultureIgnoreCase));
@@ -29,6 +28,9 @@ namespace ArcGIS.Test
 
             var endpoint7 = new ArcGISServerEndpoint("/rest/services");
             Assert.True(endpoint7.RelativeUrl.StartsWith("rest/services/", StringComparison.InvariantCultureIgnoreCase));
+
+            var endpoint8 = new ArcGISServerEndpoint("/");
+            Assert.True(endpoint8.RelativeUrl.StartsWith("rest/services/", StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }
