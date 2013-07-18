@@ -1,7 +1,7 @@
 ArcGIS.PCL
 ==========
 
-Use ArcGIS Server REST resources without an official SDK.
+Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.wordpress.com/2013/07/11/arcgis-pclthe-what-why-how/).
 
 Typical use case would be the need to call some ArcGIS REST resource from server .NET code or maybe a console app. Rather than having to fudge a dependency to an existing SDK you can use this. 
 Should work with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher
