@@ -231,7 +231,7 @@ namespace ArcGIS.ServiceModel.Common
 
         public IGeoJsonGeometry ToGeoJson()
         {
-            return new GeoJsonLineString { Type = "LineString", Coordinates = Paths.First() };
+            return Paths.Any() ? new GeoJsonLineString { Type = "LineString", Coordinates = Paths.First() } : null;
         }
     }
 

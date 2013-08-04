@@ -43,7 +43,7 @@ namespace ArcGIS.ServiceModel.Operation
         public GeometryCollection<T> Geometries { get; set; }
 
         [DataMember(Name = "inSR")]
-        public SpatialReference InputSpatialReference { get { return Geometries.Geometries.First().SpatialReference; } }
+        public SpatialReference InputSpatialReference { get { return Geometries.Geometries.First().SpatialReference ?? SpatialReference.WGS84; } }
 
         /// <summary>
         /// The spatial reference of the returned geometry. 

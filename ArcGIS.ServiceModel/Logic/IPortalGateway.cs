@@ -69,7 +69,7 @@ namespace ArcGIS.ServiceModel.Logic
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             rootUrl = rootUrl.TrimEnd('/');
-            if (rootUrl.IndexOf("rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("rest/services"));
+            if (rootUrl.IndexOf("/rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services"));
             rootUrl = rootUrl.Replace("/rest/services", "");
             RootUrl = rootUrl.ToLower() + '/';
 
@@ -257,7 +257,20 @@ namespace ArcGIS.ServiceModel.Logic
                 if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
 
-            HttpContent content = new FormUrlEncodedContent(parameters);
+            HttpContent content = null;
+            try
+            {
+                content = new FormUrlEncodedContent(parameters);
+            }
+            catch (FormatException)
+            {
+                var tempContent = new MultipartFormDataContent();
+                foreach (var keyValuePair in parameters)
+                {
+                    tempContent.Add(new StringContent(keyValuePair.Value), keyValuePair.Key);
+                }
+                content = tempContent;
+            }
             _httpClient.CancelPendingRequests();
             HttpResponseMessage response = await _httpClient.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
