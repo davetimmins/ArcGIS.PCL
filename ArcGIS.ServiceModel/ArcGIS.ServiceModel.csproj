@@ -46,6 +46,7 @@
     <Compile Include="Operation\ApplyEdits.cs" />
     <Compile Include="Operation\ArcGISServerOperation.cs" />
     <Compile Include="Operation\CommonParameters.cs" />
+    <Compile Include="Operation\GeometryServerOperation.cs" />
     <Compile Include="Operation\PortalResponse.cs" />
     <Compile Include="Operation\ReverseGeocode.cs" />
     <Compile Include="Operation\SingleInputGeocode.cs" />
