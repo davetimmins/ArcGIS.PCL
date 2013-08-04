@@ -69,6 +69,7 @@ namespace ArcGIS.ServiceModel.Logic
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             rootUrl = rootUrl.TrimEnd('/');
+            if (rootUrl.IndexOf("rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("rest/services"));
             rootUrl = rootUrl.Replace("/rest/services", "");
             RootUrl = rootUrl.ToLower() + '/';
 

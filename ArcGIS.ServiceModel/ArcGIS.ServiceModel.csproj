@@ -39,7 +39,9 @@
     <Compile Include="Common\Feature.cs" />
     <Compile Include="Common\IEndpoint.cs" />
     <Compile Include="Common\IGeometry.cs" />
+    <Compile Include="Extensions\FeatureCollectionExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="GeoJson\FeatureCollection.cs" />
     <Compile Include="Logic\IPortalGateway.cs" />
     <Compile Include="Operation\ApplyEdits.cs" />
     <Compile Include="Operation\ArcGISServerOperation.cs" />
