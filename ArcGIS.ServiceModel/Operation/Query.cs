@@ -11,7 +11,7 @@ namespace ArcGIS.ServiceModel.Operation
     /// </summary>
     [DataContract]
     public class Query : ArcGISServerOperation
-    {
+    {      
         /// <summary>
         /// Represents a request for a query against a service resource
         /// </summary>
@@ -22,7 +22,6 @@ namespace ArcGIS.ServiceModel.Operation
             Where = "1=1";
             OutFields = "*";
             ReturnGeometry = true;
-            GeometryType = GeometryTypes.Envelope;
             SpatialRelationship = SpatialRelationshipTypes.Intersects;
         }
 
@@ -47,7 +46,7 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "inSR")]
         public SpatialReference InputSpatialReference 
         {
-            get { return Geometry == null ? null : Geometry.SpatialReference; }
+            get { return Geometry == null ? null : Geometry.SpatialReference ?? SpatialReference.WGS84; }
         }
 
         /// <summary>
@@ -74,7 +73,13 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>Default is esriGeometryEnvelope</remarks>
         [DataMember(Name = "geometryType")]
-        public String GeometryType { get; set; }
+        public String GeometryType 
+        {
+            get { return Geometry == null 
+                ? GeometryTypes.Envelope
+                : GeometryTypes.TypeMap[Geometry.GetType()]();
+            } 
+        }
 
         /// <summary>
         /// The spatial relationship to be applied on the input geometry while performing the query.
@@ -128,6 +133,15 @@ namespace ArcGIS.ServiceModel.Operation
 
     public static class GeometryTypes
     {
+        internal static Dictionary<Type, Func<String>> TypeMap = new Dictionary<Type, Func<String>>
+            {
+                { typeof(Point), () => GeometryTypes.Point },
+                { typeof(MultiPoint), () => GeometryTypes.MultiPoint },
+                { typeof(Extent), () => GeometryTypes.Envelope },
+                { typeof(Polygon), () => GeometryTypes.Polygon },
+                { typeof(Polyline), () => GeometryTypes.Polyline }
+            };
+
         public const String Point = "esriGeometryPoint";
         public const String MultiPoint = "esriGeometryMultipoint";
         public const String Polyline = "esriGeometryPolyline";

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArcGIS.ServiceModel.GeoJson;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -21,6 +22,8 @@ namespace ArcGIS.ServiceModel.Common
         /// </summary>
         [DataMember(Name = "spatialReference")]
         SpatialReference SpatialReference { get; set; }
+
+        IGeoJsonGeometry ToGeoJson();
     }
 
     [DataContract]
@@ -31,7 +34,7 @@ namespace ArcGIS.ServiceModel.Common
         /// </summary>
         public static SpatialReference WGS84 = new SpatialReference
             {
-                Wkid = 4326, 
+                Wkid = 4326,
                 LatestWkid = 4326
             };
 
@@ -40,7 +43,7 @@ namespace ArcGIS.ServiceModel.Common
         /// </summary>
         public static SpatialReference WebMercator = new SpatialReference
             {
-                Wkid = 102100, 
+                Wkid = 102100,
                 LatestWkid = 3857
             };
 
@@ -55,7 +58,7 @@ namespace ArcGIS.ServiceModel.Common
 
         [DataMember(Name = "latestVcsWkid")]
         public int LatestVCSWkid { get; set; }
-        
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -129,8 +132,13 @@ namespace ArcGIS.ServiceModel.Common
             if (obj.GetType() != GetType()) return false;
             return Equals((Point)obj);
         }
+
+        public IGeoJsonGeometry ToGeoJson()
+        {
+            return new GeoJsonPoint { Type = "Point", Coordinates = new[] { X, Y } };
+        }
     }
-   
+
     [DataContract]
     public class MultiPoint : IGeometry, IEquatable<MultiPoint>
     {
@@ -171,6 +179,11 @@ namespace ArcGIS.ServiceModel.Common
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals((MultiPoint)obj);
+        }
+
+        public IGeoJsonGeometry ToGeoJson()
+        {
+            return new GeoJsonLineString { Type = "MultiPoint", Coordinates = Points };
         }
     }
 
@@ -215,13 +228,18 @@ namespace ArcGIS.ServiceModel.Common
             if (obj.GetType() != GetType()) return false;
             return Equals((Polyline)obj);
         }
+
+        public IGeoJsonGeometry ToGeoJson()
+        {
+            return Paths.Any() ? new GeoJsonLineString { Type = "LineString", Coordinates = Paths.First() } : null;
+        }
     }
 
     public class PointCollection : List<double[]>
     {
-        public List<Point> Points 
+        public List<Point> Points
         {
-            get { return this.Select(point => point != null ? new Point { X = point[0], Y = point[1] } : null).ToList(); }
+            get { return this.Select(point => point != null ? new Point { X = point.First(), Y = point.Last() } : null).ToList(); }
         }
     }
 
@@ -270,6 +288,11 @@ namespace ArcGIS.ServiceModel.Common
             if (obj.GetType() != GetType()) return false;
             return Equals((Polygon)obj);
         }
+
+        public IGeoJsonGeometry ToGeoJson()
+        {
+            return new GeoJsonPolygon { Type = "Polygon", Coordinates = Rings };
+        }
     }
 
     [DataContract]
@@ -316,6 +339,25 @@ namespace ArcGIS.ServiceModel.Common
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals((Extent)obj);
+        }
+
+        public IGeoJsonGeometry ToGeoJson()
+        {
+            return new GeoJsonPolygon
+            {
+                Type = "Polygon",
+                Coordinates = new PointCollectionList 
+                { 
+                    new PointCollection 
+                    {
+                        new[]{ XMin, YMin },                        
+                        new[]{ XMax, YMin },
+                        new[]{ XMax, YMax },
+                        new[]{ XMin, YMax }, 
+                        new[]{ XMin, YMin }
+                    }
+                }
+            };
         }
     }
 }

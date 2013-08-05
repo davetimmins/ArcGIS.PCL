@@ -33,6 +33,7 @@ namespace ArcGIS.ServiceModel.Common
         {
             if (String.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");
             RelativeUrl = relativePath.Trim('/');
+            if (RelativeUrl.IndexOf("rest/services") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("rest/services"));
             RelativeUrl = RelativeUrl.Replace("rest/services/", "");
             RelativeUrl = "rest/services/" + RelativeUrl;
         }

@@ -244,8 +244,7 @@ namespace ArcGIS.Test
 
             var queryPointPolygonResults = new Query(serviceUrl.AsEndpoint())
             {
-                Geometry = new Polygon { Rings = rings },
-                GeometryType = GeometryTypes.Polygon
+                Geometry = new Polygon { Rings = rings }
             };
             var resultPointPolygonResults = await gateway.QueryAsGet<Point>(queryPointPolygonResults);
 
