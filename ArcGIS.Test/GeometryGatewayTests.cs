@@ -24,10 +24,10 @@ namespace ArcGIS.Test
             Assert.NotNull(features);
             Assert.True(result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid);
 
-            if (result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid){
-
+            if (result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid)
+            {
                 var projectedFeatures = await gateway.Project<Polyline>(features, result.SpatialReference);
-                
+
                 Assert.NotNull(projectedFeatures);
                 Assert.Equal(features.Count, projectedFeatures.Count);
             }
@@ -49,7 +49,7 @@ namespace ArcGIS.Test
 
         public async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
         {
-            var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);           
+            var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
             for (int i = 0; i < projected.Geometries.Count; i++)
                 features[i].Geometry = projected.Geometries[i];

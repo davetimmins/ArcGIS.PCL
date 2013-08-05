@@ -40,7 +40,6 @@ namespace ArcGIS.ServiceModel.Operation
             {
                 Geometries = new GeometryCollection<T>();
                 Geometries.Geometries = features.Select(f => f.Geometry).ToList();
-                Geometries.Geometries.First().SpatialReference = outputSpatialReference;
             }
             OutputSpatialReference = outputSpatialReference;
         }
