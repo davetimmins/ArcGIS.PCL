@@ -16,7 +16,7 @@ namespace ArcGIS.ServiceModel.Extensions
                 { "LineString", () => typeof(Polyline) },
                 { "MultiLineString", () => typeof(Polyline) },
                 { "Polygon", () => typeof(Polygon) },
-                { "MultiPolygon", () => typeof(Polygon) }
+                { "MultiPolygon", () => typeof(Polygon) } 
             };
 
         public static List<Feature<IGeometry>> ToFeatures<TGeometry>(this FeatureCollection<TGeometry> featureCollection)

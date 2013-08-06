@@ -131,6 +131,28 @@ namespace ArcGIS.ServiceModel.GeoJson
         }
     }
 
+    [DataContract]
+    public class GeoJsonMultiPolygon : IGeoJsonGeometry
+    {
+        [DataMember(Name = "type")]
+        public String Type { get; set; }
+
+        [DataMember(Name = "coordinates")]
+        public List<PointCollectionList> Coordinates { get; set; }
+
+        public IGeometry ToGeometry(Type type)
+        {
+            if (Coordinates == null) return null;
+
+            var poly = new Polygon { Rings = new PointCollectionList() };
+
+            foreach (var polygon in Coordinates)
+                poly.Rings.AddRange(polygon);
+
+            return poly;
+        }
+    }    
+
     public interface IGeoJsonGeometry
     {
         [DataMember(Name = "type")]
