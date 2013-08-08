@@ -233,14 +233,14 @@ namespace ArcGIS.Test
             };
             var resultPointExtentResults = await gateway.QueryAsGet<Point>(queryPointExtentResults);
 
-            PointCollectionList rings = new PointCollectionList();
-            PointCollection pointCollection = new PointCollection();
-            pointCollection.Add(new double[] { 0, 0 });
-            pointCollection.Add(new double[] { 180, 0 });
-            pointCollection.Add(new double[] { 180, -90 });
-            pointCollection.Add(new double[] { 0, -90 });
-            pointCollection.Add(new double[] { 0, 0 });
-            rings.Add(pointCollection);
+            var rings = new Point[] 
+            { 
+                new Point { X = 0, Y = 0 }, 
+                new Point { X = 180, Y = 0 }, 
+                new Point { X = 180, Y = -90 }, 
+                new Point { X = 0, Y = -90 }, 
+                new Point { X = 0, Y = 0 }
+            }.ToPointCollectionList();
 
             var queryPointPolygonResults = new Query(serviceUrl.AsEndpoint())
             {

@@ -7,6 +7,9 @@ using System.Text;
 
 namespace ArcGIS.ServiceModel.Extensions
 {
+    /// <summary>
+    /// Extension methods for converting GeoJSON <-> ArcGIS Feature Set
+    /// </summary>
     public static class FeatureCollectionExtensions
     {
         static Dictionary<String, Func<Type>> _typeMap = new Dictionary<String, Func<Type>>
@@ -19,6 +22,12 @@ namespace ArcGIS.ServiceModel.Extensions
                 { "MultiPolygon", () => typeof(Polygon) } 
             };
 
+        /// <summary>
+        /// Convert a GeoJSON FeatureCollection into an ArcGIS FeatureSet
+        /// </summary>
+        /// <typeparam name="TGeometry">The type of GeoJSON geometry to convert. Can be Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon</typeparam>
+        /// <param name="featureCollection">A collection of one or more features of the same geometry type</param>
+        /// <returns>A converted set of features that can be used in ArcGIS Server operations</returns>
         public static List<Feature<IGeometry>> ToFeatures<TGeometry>(this FeatureCollection<TGeometry> featureCollection)
             where TGeometry : IGeoJsonGeometry
         {
@@ -36,6 +45,12 @@ namespace ArcGIS.ServiceModel.Extensions
             return features;
         }
 
+        /// <summary>
+        /// Convert an ArcGIS Feature Set into a GeoJSON FeatureCollection
+        /// </summary>
+        /// <typeparam name="TGeometry">The type of ArcGIS geometry to convert.</typeparam>
+        /// <param name="features">A collection of one or more ArcGIS Features</param>
+        /// <returns>A converted FeatureCollection of GeoJSON Features</returns>
         public static FeatureCollection<IGeoJsonGeometry> ToFeatureCollection<TGeometry>(this List<Feature<TGeometry>> features)
             where TGeometry : IGeometry
         {
