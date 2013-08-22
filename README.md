@@ -16,6 +16,10 @@ Supports the following as typed operations:
  - Single Input Geocode
  - Reverse Geocode
  - Describe site (returns a url for every service)
+ - Simplify
+ - Project
+
+It can also be used for just working with types and as well as some ArcGIS Server types you can also use GeoJSON FeatureCollections with the ability to convert GeoJSON <-> ArcGIS Features.
 
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
