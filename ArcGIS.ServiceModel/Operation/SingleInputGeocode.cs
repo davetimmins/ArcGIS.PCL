@@ -38,6 +38,13 @@ namespace ArcGIS.ServiceModel.Operation
         public int MaxResults { get; set; }
 
         /// <summary>
+        /// A set of bounding box coordinates that limit the search area to a specific region. 
+        /// This is especially useful for applications in which a user will search for places and addresses only within the current map extent. 
+        /// </summary>
+        [DataMember(Name = "bbox")]
+        public Extent SearchExtent { get; set; }
+
+        /// <summary>
         ///  The field names of the attributes to be returned.
         /// </summary>
         [IgnoreDataMember]

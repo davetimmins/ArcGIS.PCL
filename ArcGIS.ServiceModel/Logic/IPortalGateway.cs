@@ -54,24 +54,31 @@ namespace ArcGIS.ServiceModel.Logic
         HttpClient _httpClient;
 
         protected PortalGateway()
-            : this(AGOPortalUrl, String.Empty, String.Empty)
+            : this(AGOPortalUrl, String.Empty, String.Empty, false)
         { }
 
         protected PortalGateway(String rootUrl)
-            : this(rootUrl, String.Empty, String.Empty)
+            : this(rootUrl, String.Empty, String.Empty, false)
         { }
 
         protected PortalGateway(String username, String password)
-            : this(AGOPortalUrl, username, password)
+            : this(AGOPortalUrl, username, password, false)
+        { }
+
+        protected PortalGateway(String username, String password, bool forceArcGISOnlineToken)
+            : this(AGOPortalUrl, username, password, forceArcGISOnlineToken)
         { }
 
         protected PortalGateway(String rootUrl, String username, String password)
+            : this(rootUrl, username, password, false)
+        { }
+
+        protected PortalGateway(String rootUrl, String username, String password, bool forceArcGISOnlineToken)
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             rootUrl = rootUrl.TrimEnd('/');
             if (rootUrl.IndexOf("/rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services"));
-            rootUrl = rootUrl.Replace("/rest/services", "");
-            RootUrl = rootUrl.ToLower() + '/';
+            RootUrl = rootUrl.Replace("/rest/services", "") + "/";            
 
             _httpClientHandler = new HttpClientHandler();
             if (_httpClientHandler.SupportsAutomaticDecompression)
@@ -86,7 +93,7 @@ namespace ArcGIS.ServiceModel.Logic
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
 
             if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
-                TokenRequest = new GenerateToken { Username = username, Password = password };
+                TokenRequest = new GenerateToken { Username = username, Password = password, ForceAGOToken = forceArcGISOnlineToken };
         }
 
 #if DEBUG

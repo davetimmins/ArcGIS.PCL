@@ -52,6 +52,12 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "expiration")]
         public int ExpirationInMinutes { get; set; }
 
+        /// <summary>
+        /// Set to true to force the token to be generated against the ArcGIS Online token service
+        /// </summary>
+        [IgnoreDataMember]
+        public bool ForceAGOToken { get; set; }
+
         public String RelativeUrl
         {
             get { return "tokens/" + Operations.GenerateToken; }
@@ -60,10 +66,12 @@ namespace ArcGIS.ServiceModel.Operation
         public String BuildAbsoluteUrl(String rootUrl)
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
- 
-            return (String.Equals(rootUrl, ArcGIS.ServiceModel.Logic.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
-                ? rootUrl.Replace("http://", "https://") + RelativeUrl.Replace("tokens/", "")
-                : rootUrl.Replace("http://", "https://") + RelativeUrl;
+
+            var url = ForceAGOToken ? ArcGIS.ServiceModel.Logic.PortalGateway.AGOPortalUrl : rootUrl;
+
+            return (String.Equals(url, ArcGIS.ServiceModel.Logic.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
+                ? url.Replace("http://", "https://") + RelativeUrl.Replace("tokens/", "")
+                : url.Replace("http://", "https://") + RelativeUrl;
         }
     }
 
