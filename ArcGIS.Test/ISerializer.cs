@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ArcGIS.ServiceModel.Logic;
+using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Operation;
 using System.Diagnostics;
 

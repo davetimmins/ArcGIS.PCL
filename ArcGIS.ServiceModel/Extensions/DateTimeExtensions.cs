@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ArcGIS.ServiceModel.Extensions
+namespace ArcGIS.ServiceModel
 {
     public static class DateTimeExtensions
     {

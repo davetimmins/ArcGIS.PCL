@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ArcGIS.ServiceModel.Extensions
+namespace ArcGIS.ServiceModel
 {
     /// <summary>
     /// Extension methods for converting GeoJSON <-> ArcGIS Feature Set

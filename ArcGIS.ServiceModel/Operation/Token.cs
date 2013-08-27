@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Extensions;
 
 namespace ArcGIS.ServiceModel.Operation
 {
@@ -12,8 +11,10 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class GenerateToken : CommonParameters, IEndpoint
     {
-        public GenerateToken()
+        public GenerateToken(String username, String password)
         {
+            Username = username;
+            Password = password;
             Client = "referer";
             Referer = "requestip";
             ExpirationInMinutes = 60;
@@ -37,13 +38,13 @@ namespace ArcGIS.ServiceModel.Operation
         /// Username of user who wants to get a token.
         /// </summary>
         [DataMember(Name = "username")]
-        public String Username { get; set; }
+        public String Username { get; private set; }
 
         /// <summary>
         /// Password of user who wants to get a token.
         /// </summary>
         [DataMember(Name = "password")]
-        public String Password { get; set; }
+        public String Password { get; private set; }
 
         /// <summary>
         /// The token expiration time in minutes.
@@ -51,12 +52,6 @@ namespace ArcGIS.ServiceModel.Operation
         /// <remarks> The default is 60 minutes.</remarks>
         [DataMember(Name = "expiration")]
         public int ExpirationInMinutes { get; set; }
-
-        /// <summary>
-        /// Set to true to force the token to be generated against the ArcGIS Online token service
-        /// </summary>
-        [IgnoreDataMember]
-        public bool ForceAGOToken { get; set; }
 
         public String RelativeUrl
         {
@@ -67,11 +62,9 @@ namespace ArcGIS.ServiceModel.Operation
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
 
-            var url = ForceAGOToken ? ArcGIS.ServiceModel.Logic.PortalGateway.AGOPortalUrl : rootUrl;
-
-            return (String.Equals(url, ArcGIS.ServiceModel.Logic.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
-                ? url.Replace("http://", "https://") + RelativeUrl.Replace("tokens/", "")
-                : url.Replace("http://", "https://") + RelativeUrl;
+            return (String.Equals(rootUrl, ArcGIS.ServiceModel.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
+                ? rootUrl.Replace("http://", "https://") + RelativeUrl.Replace("tokens/", "")
+                : rootUrl.Replace("http://", "https://") + RelativeUrl;
         }
     }
 

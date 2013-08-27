@@ -43,7 +43,8 @@
     <Compile Include="Extensions\GeometryExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="GeoJson\FeatureCollection.cs" />
-    <Compile Include="Logic\IPortalGateway.cs" />
+    <Compile Include="ITokenProvider.cs" />
+    <Compile Include="IPortalGateway.cs" />
     <Compile Include="Operation\ApplyEdits.cs" />
     <Compile Include="Operation\ArcGISServerOperation.cs" />
     <Compile Include="Operation\CommonParameters.cs" />

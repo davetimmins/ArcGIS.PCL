@@ -1,14 +1,38 @@
 ﻿using System;
 using System.Text;
 using ArcGIS.ServiceModel.Common;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Linq;
 
-namespace ArcGIS.ServiceModel.Extensions
+namespace ArcGIS.ServiceModel
 {
     public static class StringExtensions
     {
         public static ArcGISServerEndpoint AsEndpoint(this String relativeUrl)
         {
             return new ArcGISServerEndpoint(relativeUrl);
+        }
+
+        public static String AsRootUrl(this String rootUrl)
+        {
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            rootUrl = rootUrl.TrimEnd('/');
+            if (rootUrl.IndexOf("/rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services"));
+            return rootUrl.Replace("/rest/services", "") + "/";            
+        }
+
+        public static Dictionary<String, String> ParseQueryString(this String queryString)
+        {
+            if (String.IsNullOrWhiteSpace(queryString)) return new Dictionary<String, String>();
+
+            // remove anything other than query string from url
+            if (queryString.Contains("?"))
+                queryString = queryString.Substring(queryString.IndexOf('?') + 1);
+
+            return Regex.Split(queryString, "&")
+                .Select(vp => Regex.Split(vp, "="))
+                .ToDictionary(singlePair => singlePair[0], singlePair => singlePair.Length == 2 ? singlePair[1] : String.Empty);
         }
 
         public static String UrlEncode(this String text)

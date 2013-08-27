@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Extensions;
 
 namespace ArcGIS.ServiceModel.Operation
 {

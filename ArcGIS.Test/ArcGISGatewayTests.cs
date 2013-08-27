@@ -5,8 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Extensions;
-using ArcGIS.ServiceModel.Logic;
+using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Operation;
 using Xunit;
 using ServiceStack.Text;
@@ -15,14 +14,13 @@ namespace ArcGIS.Test
 {
     public class ArcGISGateway : PortalGateway
     {
-        public ArcGISGateway()
-            : this(@"http://sampleserver3.arcgisonline.com/ArcGIS/", String.Empty, String.Empty)
+        public ArcGISGateway(ISerializer serializer)
+            : this(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer, null)
         { }
 
-        public ArcGISGateway(String root, String username, String password)
-            : base(root, username, password)
+        public ArcGISGateway(String root, ISerializer serializer, ITokenProvider tokenProvider)
+            : base(root, serializer, tokenProvider)
         {
-            Serializer = new ServiceStackSerializer();
         }
 
         public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
@@ -54,10 +52,19 @@ namespace ArcGIS.Test
 
     public class ArcGISGatewayTests
     {
+        ServiceStackSerializer _serviceStackSerializer;
+        JsonDotNetSerializer _jsonDotNetSerializer;
+
+        public ArcGISGatewayTests()
+        {
+            _serviceStackSerializer = new ServiceStackSerializer();
+            _jsonDotNetSerializer = new JsonDotNetSerializer();
+        }
+
         [Fact]
         public async Task CanGetAnythingFromServer()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
 
             var endpoint = new ArcGISServerEndpoint("/Earthquakes/EarthquakesFromLastSevenDays/MapServer");
 
@@ -73,7 +80,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanPingServer()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
 
             var endpoint = new ArcGISServerEndpoint("/");
 
@@ -85,7 +92,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanDescribeSite()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
 
             var response = await gateway.DescribeSite();
 
@@ -102,7 +109,7 @@ namespace ArcGIS.Test
         [Fact]
         public void RootUrlHasCorrectFormat()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
             Assert.True(gateway.RootUrl.EndsWith("/"));
             Assert.True(gateway.RootUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) || gateway.RootUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase));
             Assert.False(gateway.RootUrl.ToLowerInvariant().Contains("/rest/services/"));
@@ -111,7 +118,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task GatewayDoesAutoPost()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
 
             var longWhere = new StringBuilder("region = '");
             for (var i = 0; i < 3000; i++)
@@ -127,7 +134,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task QueryCanReturnFeatures()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
 
             var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
             var result = await gateway.Query<Point>(query);
@@ -141,7 +148,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task QueryCanReturnDifferentGeometryTypes()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
 
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
             var resultPoint = await gateway.Query<Point>(queryPoint);
@@ -155,7 +162,7 @@ namespace ArcGIS.Test
             Assert.True(resultPolyline.Features.Any());
             Assert.True(resultPolyline.Features.All(i => i.Geometry != null));
 
-            gateway.Serializer = new JsonDotNetSerializer();
+            gateway.Serializer = _jsonDotNetSerializer;
 
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = "areasqkm" };
             var resultPolygon = await gateway.Query<Polygon>(queryPolygon);
@@ -167,7 +174,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task QueryCanReturnNoGeometry()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
 
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { ReturnGeometry = false };
             var resultPoint = await gateway.QueryAsGet<Point>(queryPoint);
@@ -185,8 +192,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task QueryOutFieldsAreHonored()
         {
-            var gateway = new ArcGISGateway();
-            gateway.Serializer = new JsonDotNetSerializer();
+            var gateway = new ArcGISGateway(_jsonDotNetSerializer);
 
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm", ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
@@ -219,8 +225,7 @@ namespace ArcGIS.Test
             int countExtentResults = 0;
             int countPolygonResults = 0;
 
-            var gateway = new ArcGISGateway();
-            gateway.Serializer = new JsonDotNetSerializer();
+            var gateway = new ArcGISGateway(_jsonDotNetSerializer);
 
             var queryPointAllResults = new Query(serviceUrl.AsEndpoint());
 
@@ -280,7 +285,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanAddUpdateAndDelete()
         {
-            var gateway = new ArcGISGateway();
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
 
             var feature = new Feature<Point>();
             feature.Attributes.Add("type", 0);

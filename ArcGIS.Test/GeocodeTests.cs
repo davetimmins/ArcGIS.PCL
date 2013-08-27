@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Extensions;
-using ArcGIS.ServiceModel.Logic;
+using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Operation;
 using Xunit;
 
@@ -10,11 +9,9 @@ namespace ArcGIS.Test
 {
     public class GeocodeGateway : PortalGateway
     {
-        public GeocodeGateway()
-            : base("http://geocode.arcgis.com/arcgis")
-        {
-            Serializer = new ServiceStackSerializer();
-        }
+        public GeocodeGateway(ISerializer serializer)
+            : base("http://geocode.arcgis.com/arcgis", serializer, null)
+        { }
 
         public Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
         {
@@ -32,7 +29,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanGeocode()
         {
-            var gateway = new GeocodeGateway();
+            var gateway = new GeocodeGateway(new ServiceStackSerializer());
             var geocode = new SingleInputGeocode("/World/GeocodeServer/".AsEndpoint())
             {
                 Text = "100 Willis Street, Wellington",
@@ -51,7 +48,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanReverseGeocodePoint()
         {
-            var gateway = new GeocodeGateway();
+            var gateway = new GeocodeGateway(new ServiceStackSerializer());
             var reverseGeocode = new ReverseGeocode("/World/GeocodeServer/".AsEndpoint())
             {
                 Location = new Point

@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Extensions;
 using ArcGIS.ServiceModel.Operation;
 using System.Net.Http.Headers;
 
-namespace ArcGIS.ServiceModel.Logic
+namespace ArcGIS.ServiceModel
 {
     public interface IPortalGateway
     {
@@ -18,7 +16,9 @@ namespace ArcGIS.ServiceModel.Logic
         /// Made up of scheme://host:port/site
         /// </summary>
         String RootUrl { get; }
-        Token Token { get; }
+
+        ITokenProvider TokenProvider { get; set; }
+
         ISerializer Serializer { get; set; }
     }
 
@@ -46,39 +46,24 @@ namespace ArcGIS.ServiceModel.Logic
         T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse;
     }
 
+    public class ArcGISOnlineGateway : PortalGateway
+    {
+        public ArcGISOnlineGateway(ISerializer serializer, ArcGISOnlineTokenProvider tokenProvider)
+            : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
+        { }
+    }
+
     public abstract class PortalGateway : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
-        protected readonly GenerateToken TokenRequest;
         HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;
 
-        protected PortalGateway()
-            : this(AGOPortalUrl, String.Empty, String.Empty, false)
-        { }
-
-        protected PortalGateway(String rootUrl)
-            : this(rootUrl, String.Empty, String.Empty, false)
-        { }
-
-        protected PortalGateway(String username, String password)
-            : this(AGOPortalUrl, username, password, false)
-        { }
-
-        protected PortalGateway(String username, String password, bool forceArcGISOnlineToken)
-            : this(AGOPortalUrl, username, password, forceArcGISOnlineToken)
-        { }
-
-        protected PortalGateway(String rootUrl, String username, String password)
-            : this(rootUrl, username, password, false)
-        { }
-
-        protected PortalGateway(String rootUrl, String username, String password, bool forceArcGISOnlineToken)
+        protected PortalGateway(String rootUrl, ISerializer serializer, ITokenProvider tokenProvider)
         {
-            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
-            rootUrl = rootUrl.TrimEnd('/');
-            if (rootUrl.IndexOf("/rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services"));
-            RootUrl = rootUrl.Replace("/rest/services", "") + "/";            
+            RootUrl = rootUrl.AsRootUrl();
+            TokenProvider = tokenProvider;
+            Serializer = serializer;
 
             _httpClientHandler = new HttpClientHandler();
             if (_httpClientHandler.SupportsAutomaticDecompression)
@@ -91,9 +76,6 @@ namespace ArcGIS.ServiceModel.Logic
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
-
-            if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
-                TokenRequest = new GenerateToken { Username = username, Password = password, ForceAGOToken = forceArcGISOnlineToken };
         }
 
 #if DEBUG
@@ -130,27 +112,9 @@ namespace ArcGIS.ServiceModel.Logic
 
         public string RootUrl { get; private set; }
 
-        public Token Token { get; private set; }
+        public ITokenProvider TokenProvider { get; set; }
 
         public ISerializer Serializer { get; set; }
-
-        /// <summary>
-        /// Generates a token if a username and password have been set for this gateway.
-        /// </summary>
-        /// <returns>The generated token or null if not applicable</returns>
-        /// <remarks>This sets the Token property for the gateway. It will be auto appended to 
-        /// any requests sent through the gateway.</remarks>
-        protected async Task<Token> CheckGenerateToken()
-        {
-            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
-
-            if (TokenRequest == null) return null;
-            if (Token != null && !Token.IsExpired) return Token;
-
-            Token = null; // reset the Token
-            Token = await Post<Token>(TokenRequest, Serializer.AsDictionary(TokenRequest));
-            return Token;
-        }
 
         /// <summary>
         /// Recursively parses an ArcGIS Server site and discovers the resources available
@@ -203,6 +167,13 @@ namespace ArcGIS.ServiceModel.Logic
             return Get<PortalResponse>(endpoint);
         }
 
+        Token CheckGenerateToken()
+        {
+            if (TokenProvider == null) return null;
+
+            return TokenProvider.Token;
+        }
+
         protected Task<T> Get<T, TRequest>(TRequest requestObject)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
@@ -214,20 +185,20 @@ namespace ArcGIS.ServiceModel.Logic
         {
             if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
 
-            await CheckGenerateToken();
+            var token = CheckGenerateToken();
 
             var url = endpoint.BuildAbsoluteUrl(RootUrl);
             if (!url.Contains("f=")) url += (url.Contains("?") ? "&" : "?") + "f=json";
-            if (Token != null && !String.IsNullOrWhiteSpace(Token.Value) && !url.Contains("token="))
+            if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !url.Contains("token="))
             {
-                url += (url.Contains("?") ? "&" : "?") + "token=" + Token.Value;
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Token.Value);
-                if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
+                url += (url.Contains("?") ? "&" : "?") + "token=" + token.Value;
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.Value);
+                if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
 
             // use POST if request is too long
             if (url.Length > 2082)
-                return await Post<T>(endpoint, ParseQueryString(endpoint.RelativeUrl));
+                return await Post<T>(endpoint, endpoint.RelativeUrl.ParseQueryString());
 
             _httpClient.CancelPendingRequests();
             HttpResponseMessage response = await _httpClient.GetAsync(url);
@@ -255,13 +226,15 @@ namespace ArcGIS.ServiceModel.Logic
 
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
+            var token = CheckGenerateToken();
+
             // these should have already been added
             if (!parameters.ContainsKey("f")) parameters.Add("f", "json");
-            if (!parameters.ContainsKey("token") && Token != null && !String.IsNullOrWhiteSpace(Token.Value))
+            if (!parameters.ContainsKey("token") && token != null && !String.IsNullOrWhiteSpace(token.Value))
             {
-                parameters.Add("token", Token.Value);
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Token.Value);
-                if (Token.AlwaysUseSsl) url = url.Replace("http:", "https:");
+                parameters.Add("token", token.Value);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.Value);
+                if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
 
             HttpContent content = null;
@@ -296,19 +269,6 @@ namespace ArcGIS.ServiceModel.Logic
             var dictionary = Serializer.AsDictionary(objectToConvert);
 
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));
-        }
-
-        static Dictionary<String, String> ParseQueryString(String queryString)
-        {
-            if (String.IsNullOrWhiteSpace(queryString)) return new Dictionary<String, String>();
-
-            // remove anything other than query string from url
-            if (queryString.Contains("?"))
-                queryString = queryString.Substring(queryString.IndexOf('?') + 1);
-
-            return Regex.Split(queryString, "&")
-                .Select(vp => Regex.Split(vp, "="))
-                .ToDictionary(singlePair => singlePair[0], singlePair => singlePair.Length == 2 ? singlePair[1] : String.Empty);
         }
     }
 }

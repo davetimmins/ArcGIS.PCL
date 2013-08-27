@@ -1,7 +1,6 @@
 ﻿using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Logic;
 using ArcGIS.ServiceModel.Operation;
-using ArcGIS.ServiceModel.Extensions;
+using ArcGIS.ServiceModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanProject()
         {
-            var gateway = new GeometryGateway();
+            var gateway = new GeometryGateway(new ServiceStackSerializer());
             var result = await gateway.Query<Polyline>(new Query("Hurricanes/MapServer/1".AsEndpoint()));
 
             var features = result.Features.Where(f => f.Geometry.Paths.Any()).ToList();
@@ -36,11 +35,9 @@ namespace ArcGIS.Test
 
     public class GeometryGateway : PortalGateway
     {
-        public GeometryGateway()
-            : base(@"http://sampleserver6.arcgisonline.com/arcgis")
-        {
-            Serializer = new ServiceStackSerializer();
-        }
+        public GeometryGateway(ISerializer serializer)
+            : base(@"http://sampleserver6.arcgisonline.com/arcgis", serializer, null)
+        { }
 
         public async Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
         {

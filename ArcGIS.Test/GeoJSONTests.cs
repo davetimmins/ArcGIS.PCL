@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Xunit;
 using ServiceStack.Text;
 using ArcGIS.ServiceModel.GeoJson;
-using ArcGIS.ServiceModel.Extensions;
+using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Common;
 
 namespace ArcGIS.Test
