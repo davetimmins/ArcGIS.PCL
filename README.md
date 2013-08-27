@@ -21,6 +21,13 @@ Supports the following as typed operations:
 
 It can also be used for just working with types and as well as some ArcGIS Server types you can also use GeoJSON FeatureCollections with the ability to convert GeoJSON <-> ArcGIS Features.
 
+Some example of it in use for server side processing in web sites
+
+ - [Describe site] (https://arcgissitedescriptor.azurewebsites.net/)
+ - [Convert between GeoJSON and ArcGIS Features] (http://arcgisgeojson.azurewebsites.net/)
+ - [Server side geometry operations] (http://eqnz.azurewebsites.net/)
+ - [Server side geocode] (http://loc8.azurewebsites.net/map?text=wellington, new zealand)
+
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
 ###Gateway with ServiceStack.Text Json serializer example  
