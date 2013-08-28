@@ -32,5 +32,32 @@ namespace ArcGIS.Test
             var endpoint8 = new ArcGISServerEndpoint("/");
             Assert.True(endpoint8.RelativeUrl.StartsWith("rest/services/", StringComparison.InvariantCultureIgnoreCase));
         }
+
+        [Fact]
+        public void ArcGISServerAdminEndpointHasCorrectFormat()
+        {
+            Assert.Throws<ArgumentNullException>(() => new ArcGISServerAdminEndpoint(""));
+
+            var endpoint2 = new ArcGISServerAdminEndpoint("/admin/admin/admin/");
+            Assert.True(endpoint2.RelativeUrl.StartsWith("admin/", StringComparison.InvariantCultureIgnoreCase));
+
+            var endpoint3 = new ArcGISServerAdminEndpoint("something/MapServer");
+            Assert.True(endpoint3.RelativeUrl.StartsWith("admin/", StringComparison.InvariantCultureIgnoreCase));
+
+            var endpoint4 = new ArcGISServerAdminEndpoint("/admin/");
+            Assert.True(endpoint4.RelativeUrl.StartsWith("admin/", StringComparison.InvariantCultureIgnoreCase));
+
+            var endpoint5 = new ArcGISServerAdminEndpoint("admin/");
+            Assert.True(endpoint5.RelativeUrl.StartsWith("admin/", StringComparison.InvariantCultureIgnoreCase));
+
+            var endpoint6 = new ArcGISServerAdminEndpoint("admin");
+            Assert.True(endpoint6.RelativeUrl.StartsWith("admin/", StringComparison.InvariantCultureIgnoreCase));
+
+            var endpoint7 = new ArcGISServerAdminEndpoint("/admin");
+            Assert.True(endpoint7.RelativeUrl.StartsWith("admin/", StringComparison.InvariantCultureIgnoreCase));
+
+            var endpoint8 = new ArcGISServerAdminEndpoint("/");
+            Assert.True(endpoint8.RelativeUrl.StartsWith("admin/", StringComparison.InvariantCultureIgnoreCase));
+        }
     }
 }

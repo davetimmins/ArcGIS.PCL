@@ -14,6 +14,11 @@ namespace ArcGIS.ServiceModel
             return new ArcGISServerEndpoint(relativeUrl);
         }
 
+        public static ArcGISServerAdminEndpoint AsAdminEndpoint(this String relativeUrl)
+        {
+            return new ArcGISServerAdminEndpoint(relativeUrl);
+        }
+
         public static String AsRootUrl(this String rootUrl)
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
