@@ -162,7 +162,7 @@ namespace ArcGIS.Test
             Assert.True(resultPolyline.Features.Any());
             Assert.True(resultPolyline.Features.All(i => i.Geometry != null));
 
-            gateway.Serializer = _jsonDotNetSerializer;
+            gateway = new ArcGISGateway(_jsonDotNetSerializer);
 
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = "areasqkm" };
             var resultPolygon = await gateway.Query<Polygon>(queryPolygon);

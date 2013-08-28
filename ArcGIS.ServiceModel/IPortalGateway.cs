@@ -19,7 +19,7 @@ namespace ArcGIS.ServiceModel
 
         ITokenProvider TokenProvider { get; set; }
 
-        ISerializer Serializer { get; set; }
+        ISerializer Serializer { get; }
     }
 
     /// <summary>
@@ -46,24 +46,59 @@ namespace ArcGIS.ServiceModel
         T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse;
     }
 
+    /// <summary>
+    /// ArcGIS Online gateway
+    /// </summary>
     public class ArcGISOnlineGateway : PortalGateway
     {
+        /// <summary>
+        /// Create an ArcGIS Online gateway to access non secure resources
+        /// </summary>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        public ArcGISOnlineGateway(ISerializer serializer)
+            : base(PortalGateway.AGOPortalUrl, serializer, null)
+        { }
+
+        /// <summary>
+        /// Create an ArcGIS Online gateway to access secure resources
+        /// </summary>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        /// <param name="tokenProvider">Provide access to a token for secure resources</param>
         public ArcGISOnlineGateway(ISerializer serializer, ArcGISOnlineTokenProvider tokenProvider)
             : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
         { }
     }
 
+    /// <summary>
+    /// ArcGIS Server gateway
+    /// </summary>
     public abstract class PortalGateway : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;
 
+        /// <summary>
+        /// Create an ArcGIS Server gateway to access non secure resources
+        /// </summary>
+        /// <param name="rootUrl">Made up of scheme://host:port/site</param>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        protected PortalGateway(String rootUrl, ISerializer serializer)
+            : this(rootUrl, serializer, null)
+        { }
+
+        /// <summary>
+        /// Create an ArcGIS Server gateway to access secure resources
+        /// </summary>
+        /// <param name="rootUrl">Made up of scheme://host:port/site</param>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        /// <param name="tokenProvider">Provide access to a token for secure resources</param>
         protected PortalGateway(String rootUrl, ISerializer serializer, ITokenProvider tokenProvider)
         {
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
             Serializer = serializer;
+            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
 
             _httpClientHandler = new HttpClientHandler();
             if (_httpClientHandler.SupportsAutomaticDecompression)
@@ -114,7 +149,7 @@ namespace ArcGIS.ServiceModel
 
         public ITokenProvider TokenProvider { get; set; }
 
-        public ISerializer Serializer { get; set; }
+        public ISerializer Serializer { get; private set; }
 
         /// <summary>
         /// Recursively parses an ArcGIS Server site and discovers the resources available
@@ -183,8 +218,6 @@ namespace ArcGIS.ServiceModel
 
         protected async Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
         {
-            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
-
             var token = CheckGenerateToken();
 
             var url = endpoint.BuildAbsoluteUrl(RootUrl);
@@ -215,15 +248,11 @@ namespace ArcGIS.ServiceModel
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
-
             return Post<T>(requestObject, Serializer.AsDictionary(requestObject));
         }
 
         protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : IPortalResponse
         {
-            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
-
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
             var token = CheckGenerateToken();
@@ -264,8 +293,6 @@ namespace ArcGIS.ServiceModel
 
         String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
         {
-            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
-
             var dictionary = Serializer.AsDictionary(objectToConvert);
 
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));

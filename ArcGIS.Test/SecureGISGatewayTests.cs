@@ -55,7 +55,7 @@ namespace ArcGIS.Test
             Assert.False(tokenProvider.Token.IsExpired);
             Assert.Null(response.Error);
 
-            gateway.Serializer = new JsonDotNetSerializer();
+            gateway = new SecureGISGateway(new JsonDotNetSerializer(), tokenProvider);
 
             response = await gateway.Ping(endpoint);
 

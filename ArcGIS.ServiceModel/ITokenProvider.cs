@@ -21,26 +21,46 @@ namespace ArcGIS.ServiceModel
 
         Token Token { get; }
 
-        ISerializer Serializer { get; set; }
+        ISerializer Serializer { get; }
     }
 
+    /// <summary>
+    /// ArcGIS Online token provider
+    /// </summary>
     public class ArcGISOnlineTokenProvider : TokenProvider
     {
+        /// <summary>
+        /// Create a token provider to authenticate against ArcGIS Online
+        /// </summary>
+        /// <param name="username">ArcGIS Online user name</param>
+        /// <param name="password">ArcGIS Online user password</param>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer)
             : base(PortalGateway.AGOPortalUrl, username, password, serializer)
         { }
     }
 
+    /// <summary>
+    /// ArcGIS Server token provider
+    /// </summary>
     public class TokenProvider : ITokenProvider, IDisposable
     {
         HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;
         protected readonly GenerateToken TokenRequest;
 
+        /// <summary>
+        /// Create a token provider to authenticate against ArcGIS Server
+        /// </summary>
+        /// <param name="rootUrl">Made up of scheme://host:port/site</param>
+        /// <param name="username">ArcGIS Server user name</param>
+        /// <param name="password">ArcGIS Server user password</param>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public TokenProvider(String rootUrl, String username, String password, ISerializer serializer)
         {
             RootUrl = rootUrl.AsRootUrl();
             Serializer = serializer;
+            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             TokenRequest = new GenerateToken(username, password);
 
             _httpClientHandler = new HttpClientHandler();
@@ -100,7 +120,7 @@ namespace ArcGIS.ServiceModel
             }
         }
 
-        public ISerializer Serializer { get; set; }
+        public ISerializer Serializer { get; private set; }
 
         /// <summary>
         /// Generates a token using the username and password set for this provider.
@@ -110,8 +130,6 @@ namespace ArcGIS.ServiceModel
         /// any requests sent through the gateway used by this provider.</remarks>
         protected async Task<Token> CheckGenerateToken()
         {
-            if (Serializer == null) throw new NullReferenceException("Serializer has not been set.");
-
             if (TokenRequest == null) return null;
 
             _token = null; // reset the Token
