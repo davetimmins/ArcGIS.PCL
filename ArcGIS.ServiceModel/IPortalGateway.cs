@@ -17,7 +17,7 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         String RootUrl { get; }
 
-        ITokenProvider TokenProvider { get; set; }
+        ITokenProvider TokenProvider { get; }
 
         ISerializer Serializer { get; }
     }
@@ -165,7 +165,7 @@ namespace ArcGIS.ServiceModel
 
         public string RootUrl { get; private set; }
 
-        public ITokenProvider TokenProvider { get; set; }
+        public ITokenProvider TokenProvider { get; private set; }
 
         public ISerializer Serializer { get; private set; }
 
