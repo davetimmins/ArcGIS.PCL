@@ -135,6 +135,23 @@ public class ProxyGateway : PortalGateway
     }
 }
 
+public class ProjectGateway : PortalGateway
+{
+    public ProjectGateway(ISerializer serializer)
+        : base(@"http://services.arcgisonline.co.nz/ArcGIS/", serializer)
+    { }
+
+    public List<Feature<T>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
+    {
+        var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);
+        var projected = Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op).Result;
+        for (int i = 0; i < projected.Geometries.Count; i++)
+            features[i].Geometry = projected.Geometries[i];
+
+        return features;
+    }
+}
+
 ```
 ### Converting between GeoJSON FeatureCollection and ArcGIS Feature Set
 ```csharp
@@ -147,6 +164,10 @@ static Dictionary<String, Func<String, List<Feature<IGeometry>>>> _funcMap = new
     { "Polygon", (data) => JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonPolygon>>(data).ToFeatures<GeoJsonPolygon>() },
     { "MultiPolygon", (data) => JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonMultiPolygon>>(data).ToFeatures<GeoJsonMultiPolygon>() }
 };
+
+...
+
+return _funcMap["Point"](data);
 ```
 
 ### Download
