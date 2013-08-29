@@ -70,6 +70,24 @@ namespace ArcGIS.ServiceModel
     }
 
     /// <summary>
+    /// Provides a secure ArcGIS Server gateway where the token service is at the same root url
+    /// </summary>
+    public abstract class SecureArcGISServerGateway : PortalGateway
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rootUrl">The root url of ArcGIS Server and the token service</param>
+        /// <param name="username">ArcGIS Server user name</param>
+        /// <param name="password">ArcGIS Server user password</param>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        protected SecureArcGISServerGateway(String rootUrl, String username, String password, ISerializer serializer)
+            : base(rootUrl, serializer, new TokenProvider(rootUrl, username, password, serializer))
+        { }
+    }
+
+
+    /// <summary>
     /// ArcGIS Server gateway
     /// </summary>
     public abstract class PortalGateway : IPortalGateway, IDisposable

@@ -15,9 +15,16 @@ namespace ArcGIS.Test
         { }
     }
 
-    public class SecureGISGateway : ArcGISGateway
+    public class SecureGISGateway : SecureArcGISServerGateway
     {
-        public SecureGISGateway(ISerializer serializer, ITokenProvider tokenProvider)
+        public SecureGISGateway(ISerializer serializer)
+            : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
+        { }
+    }
+
+    public class SecureGISGateway2 : PortalGateway
+    {
+        public SecureGISGateway2(ISerializer serializer, ITokenProvider tokenProvider)
             : base(@"http://serverapps10.esri.com/arcgis", serializer, tokenProvider)
         { }
     }
@@ -44,7 +51,7 @@ namespace ArcGIS.Test
         public async Task CanGenerateToken()
         {
             var tokenProvider = new SecureTokenProvider(_serviceStackSerializer);
-            var gateway = new SecureGISGateway(_serviceStackSerializer, tokenProvider);
+            var gateway = new SecureGISGateway(_serviceStackSerializer);
 
             var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
 
@@ -55,7 +62,7 @@ namespace ArcGIS.Test
             Assert.False(tokenProvider.Token.IsExpired);
             Assert.Null(response.Error);
 
-            gateway = new SecureGISGateway(new JsonDotNetSerializer(), tokenProvider);
+            gateway = new SecureGISGateway(new JsonDotNetSerializer());
 
             response = await gateway.Ping(endpoint);
 
@@ -69,7 +76,7 @@ namespace ArcGIS.Test
         public async Task CanDescribeSite()
         {
             var tokenProvider = new SecureTokenProvider(_serviceStackSerializer);
-            var gateway = new SecureGISGateway(_serviceStackSerializer, tokenProvider);
+            var gateway = new SecureGISGateway(_serviceStackSerializer);
 
             var response = await gateway.DescribeSite();
 
@@ -112,7 +119,7 @@ namespace ArcGIS.Test
         public async Task InvalidTokenReported()
         {
             var tokenProvider = new SecureTokenProvider(_serviceStackSerializer);
-            var gateway = new SecureGISGateway(_serviceStackSerializer, tokenProvider);
+            var gateway = new SecureGISGateway2(_serviceStackSerializer, tokenProvider);
 
             var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
 
