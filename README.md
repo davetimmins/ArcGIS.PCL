@@ -1,7 +1,7 @@
 ArcGIS.PCL
 ==========
 
-Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.wordpress.com/2013/07/11/arcgis-pclthe-what-why-how/).
+Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.com/2013/July/ArcGIS-PCL/).
 
 It can also be used for just working with types and as well as some ArcGIS Server types you can also use GeoJSON FeatureCollections with the ability to convert GeoJSON <-> ArcGIS Features.
 
@@ -40,6 +40,8 @@ public class ArcGISGateway : PortalGateway
         : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer)
     { }
 }
+
+... new ArcGISGateway(serializer);
 ```
 #### ArcGIS Server with secure resources
 ```csharp
@@ -49,6 +51,8 @@ public class SecureGISGateway : SecureArcGISServerGateway
         : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
     { }
 }
+
+... new SecureGISGateway(serializer);
 ```
 #### ArcGIS Server with secure resources and token service at different location
 ```csharp
@@ -65,22 +69,15 @@ public class SecureGISGateway : PortalGateway
         : base(@"http://serverapps10.esri.com/arcgis", serializer, tokenProvider)
     { }
 }
+
+... new SecureGISGateway(serializer, new SecureTokenProvider(serializer));
 ```
 
 #### ArcGIS Online either secure or non secure  
 ```csharp
-public class ArcGISOnlineGateway : PortalGateway
-{
-    // non secure access
-    public ArcGISOnlineGateway(ISerializer serializer)
-        : base(PortalGateway.AGOPortalUrl, serializer, null)
-    { }
-
-    // secure access
-    public ArcGISOnlineGateway(ISerializer serializer, ArcGISOnlineTokenProvider tokenProvider)
-        : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
-    { }
-}
+... new ArcGISOnlineGateway(serializer);
+ 
+... new ArcGISOnlineGateway(serializer, new ArcGISOnlineTokenProvider("user", "pass", serializer));
 ```
 ### Converting between ArcGIS Feature Set from hosted FeatureService and GeoJSON FeatureCollection
 ```csharp
