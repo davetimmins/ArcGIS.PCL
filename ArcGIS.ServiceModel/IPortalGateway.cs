@@ -251,8 +251,13 @@ namespace ArcGIS.ServiceModel
             if (url.Length > 2082)
                 return await Post<T>(endpoint, endpoint.RelativeUrl.ParseQueryString());
 
+            Uri uri;
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            if (!validUrl)
+                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+
             _httpClient.CancelPendingRequests();
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
 
             var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
@@ -272,7 +277,7 @@ namespace ArcGIS.ServiceModel
         protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : IPortalResponse
         {
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
-
+            
             var token = CheckGenerateToken();
 
             // these should have already been added
@@ -299,7 +304,12 @@ namespace ArcGIS.ServiceModel
                 content = tempContent;
             }
             _httpClient.CancelPendingRequests();
-            HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+
+            Uri uri;
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            if (!validUrl)
+                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
             response.EnsureSuccessStatusCode();
 
             var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());

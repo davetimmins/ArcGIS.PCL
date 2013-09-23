@@ -135,10 +135,15 @@ namespace ArcGIS.ServiceModel
             _token = null; // reset the Token
 
             var url = TokenRequest.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
+            Uri uri;
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            if (!validUrl)
+                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
 
             _httpClient.CancelPendingRequests();
-            HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
             response.EnsureSuccessStatusCode();
 
             var result = Serializer.AsPortalResponse<Token>(await response.Content.ReadAsStringAsync());
