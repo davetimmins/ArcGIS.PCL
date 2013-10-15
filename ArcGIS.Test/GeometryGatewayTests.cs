@@ -63,10 +63,11 @@ namespace ArcGIS.Test
 
             Assert.NotNull(featuresBuffered);
             Assert.Equal(featuresCount, featuresBufferedCount);
-            Assert.True(pointsBufferedCount.Count == pointsCount.Count, "Expecting buffered polygon to contain more points than original");       // Possible more complex shape, so equal or greater than number of points.
+            Assert.True(pointsBufferedCount.Count == pointsCount.Count);
             for (int indexPointsCount = 0; indexPointsCount < pointsBufferedCount.Count; ++indexPointsCount)
             {
                 Assert.True(pointsBufferedCount[indexPointsCount] > pointsCount[indexPointsCount], "Expecting buffered polygon to contain more points than original");       // Possible more complex shape, so equal or greater than number of points.
+                Assert.True(featuresBuffered[indexPointsCount].Geometry.Rings[0].Points.Count > features[indexPointsCount].Geometry.Rings[0].Points.Count, "Expecting buffered polygon to contain more points than original");       // Possible more complex shape, so equal or greater than number of points.
             }
 
             /*
