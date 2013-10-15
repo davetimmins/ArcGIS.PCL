@@ -41,65 +41,18 @@ namespace ArcGIS.Test
             var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
             Assert.NotNull(features);
             
-            // Take a copy now, as gateway.Buffer oprration below will update features collection.
             int featuresCount = features.Count;
-            List<int> pointsCount = new List<int>();
-            foreach (Feature<Polygon> feature in features)
-            {
-                pointsCount.Add(feature.Geometry.Rings[0].Points.Count);
-            } 
 
-
-            double distance = 0.01;
+            double distance = 10.0;
             var featuresBuffered = await gateway.Buffer<Polygon>(features, result.SpatialReference, distance);
 
-            int featuresBufferedCount = featuresBuffered.Count;
-            List<int> pointsBufferedCount = new List<int>();
-            foreach (Feature<Polygon> featureBuffered in featuresBuffered)
-            {
-                pointsBufferedCount.Add(featureBuffered.Geometry.Rings[0].Points.Count);
-            } 
-
-
             Assert.NotNull(featuresBuffered);
-            Assert.Equal(featuresCount, featuresBufferedCount);
-            Assert.True(pointsBufferedCount.Count == pointsCount.Count);
-            for (int indexPointsCount = 0; indexPointsCount < pointsBufferedCount.Count; ++indexPointsCount)
+            Assert.Equal(featuresCount, featuresBuffered.Count);
+            for (int indexFeature = 0; indexFeature < featuresCount; ++indexFeature)
             {
-                Assert.True(pointsBufferedCount[indexPointsCount] > pointsCount[indexPointsCount], "Expecting buffered polygon to contain more points than original");       // Possible more complex shape, so equal or greater than number of points.
-                Assert.True(featuresBuffered[indexPointsCount].Geometry.Rings[0].Points.Count > features[indexPointsCount].Geometry.Rings[0].Points.Count, "Expecting buffered polygon to contain more points than original");       // Possible more complex shape, so equal or greater than number of points.
+                // Should be more complex shape, so expect greater number of points.
+                Assert.True(featuresBuffered[indexFeature].Geometry.Rings[0].Points.Count > features[indexFeature].Geometry.Rings[0].Points.Count, "Expecting buffered polygon to contain more points than original");
             }
-
-            /*
-             * This code doesn't work, as features and featuresBuffered point to the same object.
-            for (int indexFeature = 0; indexFeature < features.Count; ++indexFeature)
-            {
-                Feature<Polygon> featureOriginal = features[indexFeature];
-                Feature<Polygon> featureBuffered = featuresBuffered[indexFeature];
-                Assert.Equal(featureOriginal.Geometry.Rings.Count, featureBuffered.Geometry.Rings.Count);
-
-                for (int indexRing = 0; indexRing < featureOriginal.Geometry.Rings.Count; ++indexRing)
-                {
-                    PointCollection pointCollectionOriginal = featureOriginal.Geometry.Rings[indexRing];
-                    PointCollection pointCollectionBuffered = featureBuffered.Geometry.Rings[indexRing];
-                    Assert.Equal(pointCollectionOriginal.Count, pointCollectionBuffered.Count);
-
-                    for (int indexPoint = 0; indexPoint < pointCollectionOriginal.Count; ++indexPoint)
-                    {
-                        double[] pointOriginal = pointCollectionOriginal[indexPoint];
-                        double[] pointBuffered = pointCollectionBuffered[indexPoint];
-
-                        Assert.Equal(pointOriginal.Count(), 2);
-                        Assert.Equal(pointOriginal.Count(), pointBuffered.Count());
-
-                        Assert.True(Math.Abs(pointOriginal[0] - pointBuffered[0]) < distance);
-                        Assert.True(Math.Abs(pointOriginal[1] - pointBuffered[1]) < distance);
-                        Assert.True(Math.Abs(pointOriginal[0] - pointBuffered[0]) > 0);
-                        Assert.True(Math.Abs(pointOriginal[1] - pointBuffered[1]) > 0);
-                    }
-                }
-            }
-             * */
         }
     }
 
@@ -126,12 +79,16 @@ namespace ArcGIS.Test
 
         public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference inputSpatialReference, double distance) where T : IGeometry
         {
-            var op = new BufferGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, inputSpatialReference, distance);
+            // Want to ensure that we don't get a shallow copy
+            string jsonFeatures = Newtonsoft.Json.JsonConvert.SerializeObject(features);
+            List<Feature<T>> deepCopy = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Feature<T>>>(jsonFeatures);
+
+            var op = new BufferGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), deepCopy, inputSpatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
             for (int i = 0; i < buffered.Geometries.Count; i++)
-                features[i].Geometry = buffered.Geometries[i];
+                deepCopy[i].Geometry = buffered.Geometries[i];
 
-            return features;
+            return deepCopy;
         }
     }
 }
