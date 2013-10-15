@@ -29,6 +29,8 @@ namespace ArcGIS.Test
 
                 Assert.NotNull(projectedFeatures);
                 Assert.Equal(features.Count, projectedFeatures.Count);
+
+                Assert.NotEqual(features, projectedFeatures);
             }
         }
     }
