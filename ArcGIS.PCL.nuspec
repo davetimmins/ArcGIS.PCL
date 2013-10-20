@@ -41,6 +41,6 @@ Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and hi
     </metadata>
     <files>
         <file src="content\readme.txt" target="content\readme.txt" />
-        <file src="lib\ArcGIS.ServiceModel.dll" target="lib\ArcGIS.ServiceModel.dll" />
+        <file src="ArcGIS.ServiceModel\bin\Release\ArcGIS.ServiceModel.dll" target="lib\ArcGIS.ServiceModel.dll" />
     </files>
 </package>
