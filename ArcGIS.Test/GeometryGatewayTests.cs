@@ -22,6 +22,7 @@ namespace ArcGIS.Test
 
             Assert.NotNull(features);
             Assert.True(result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid);
+            Assert.True(features[0].Geometry.Paths.Count > 0);
 
             if (result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid)
             {
@@ -29,6 +30,10 @@ namespace ArcGIS.Test
 
                 Assert.NotNull(projectedFeatures);
                 Assert.Equal(features.Count, projectedFeatures.Count);
+
+                Assert.True(features[0].Geometry.Paths.Count > 0);  // If this fails, 2 issues: 1) features has been shallow copied, and 2) geometries aren't being populated.
+                Assert.True(projectedFeatures[0].Geometry.Paths.Count > 0); // If this fails, just problem 2 above - geometries aren't being copied.
+                Assert.NotEqual(features, projectedFeatures);
             }
         }
     }
