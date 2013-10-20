@@ -79,6 +79,7 @@
     <Compile Include="GeoJSONTests.cs" />
     <Compile Include="GeometryGatewayTests.cs" />
     <Compile Include="GeometryTests.cs" />
+    <Compile Include="ICloner.cs" />
     <Compile Include="ISerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecureGISGatewayTests.cs" />

@@ -23,7 +23,7 @@ namespace ArcGIS.ServiceModel.Common
         [DataMember(Name = "spatialReference")]
         SpatialReference SpatialReference { get; set; }
 
-        IGeoJsonGeometry ToGeoJson();
+        IGeoJsonGeometry ToGeoJson();        
     }
 
     [DataContract]

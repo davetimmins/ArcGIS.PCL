@@ -47,6 +47,14 @@ namespace ArcGIS.ServiceModel
     }
 
     /// <summary>
+    /// Provides the ability to deep copy an object
+    /// </summary>
+    public interface ICloner<T>
+    {
+        T DeepCopy(T objectToDeepCopy);
+    }
+
+    /// <summary>
     /// ArcGIS Online gateway
     /// </summary>
     public class ArcGISOnlineGateway : PortalGateway
