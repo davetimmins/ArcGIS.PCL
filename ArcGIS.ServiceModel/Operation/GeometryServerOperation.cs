@@ -24,6 +24,68 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
+    public class BufferGeometry<T> : ArcGISServerOperation where T : IGeometry
+    {
+        public BufferGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference inputSpatialReference, double distance)
+            : base(endpoint, Operations.Buffer)
+        {
+            if (features.Any())
+            {
+                Geometries = new GeometryCollection<T>();
+                Geometries.Geometries = features.Select(f => f.Geometry).ToList();
+            }
+            InputSpatialReference = inputSpatialReference;
+            OutputSpatialReference = inputSpatialReference;
+            BufferSpatialReference = inputSpatialReference;
+            Distances = new List<double>{distance};
+        }
+        
+        [DataMember(Name = "geometries")]
+        public GeometryCollection<T> Geometries { get; set; }
+
+        [DataMember(Name = "inSR")]
+        public SpatialReference InputSpatialReference { get; set; }
+
+        [DataMember(Name = "outSR")]
+        public SpatialReference OutputSpatialReference { get; set; }
+
+        [DataMember(Name = "bufferSR")]
+        public SpatialReference BufferSpatialReference { get; set; }
+
+        public List<double> Distances { get; set; }
+
+        [DataMember(Name = "distances")]
+        public string DistancesCSV
+        {
+            get
+            {
+                string strDistances = "";
+                foreach (double distance in Distances)
+                {
+                    strDistances += distance.ToString("0.000") + ", ";
+                }
+
+                if (strDistances.Length >= 2)
+                {
+                    strDistances = strDistances.Substring(0, strDistances.Length - 2);
+                }
+
+                return strDistances;
+            }
+        }
+
+        /// <summary>
+        /// See http://resources.esri.com/help/9.3/ArcGISDesktop/ArcObjects/esriGeometry/esriSRUnitType.htm and http://resources.esri.com/help/9.3/ArcGISDesktop/ArcObjects/esriGeometry/esriSRUnit2Type.htm
+        /// If not specified, derived from bufferSR, or inSR.
+        /// </summary>
+        [DataMember(Name = "unit")]
+        public string Unit { get; set; }
+
+        [DataMember(Name = "unionResults")]
+        public bool UnionResults { get; set; }
+    }
+
+    [DataContract]
     public class GeometryOperationResponse<T> : PortalResponse where T : IGeometry
     {
         [DataMember(Name = "geometries")]

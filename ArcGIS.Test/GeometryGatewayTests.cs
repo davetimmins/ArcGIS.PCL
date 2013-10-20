@@ -22,6 +22,7 @@ namespace ArcGIS.Test
 
             Assert.NotNull(features);
             Assert.True(result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid);
+            Assert.True(features[0].Geometry.Paths.Count > 0);
 
             if (result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid)
             {
@@ -29,6 +30,33 @@ namespace ArcGIS.Test
 
                 Assert.NotNull(projectedFeatures);
                 Assert.Equal(features.Count, projectedFeatures.Count);
+
+                Assert.True(features[0].Geometry.Paths.Count > 0);  // If this fails, 2 issues: 1) features has been shallow copied, and 2) geometries aren't being populated.
+                Assert.True(projectedFeatures[0].Geometry.Paths.Count > 0); // If this fails, just problem 2 above - geometries aren't being copied.
+                Assert.NotEqual(features, projectedFeatures);
+            }
+        }
+
+        [Fact]
+        public async Task CanBuffer()
+        {
+            var gateway = new GeometryGateway(new ServiceStackSerializer());
+            var result = await gateway.Query<Polygon>(new Query("MontgomeryQuarters/MapServer/0/".AsEndpoint()));
+
+            var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
+            Assert.NotNull(features);
+            
+            int featuresCount = features.Count;
+
+            double distance = 10.0;
+            var featuresBuffered = await gateway.Buffer<Polygon>(features, result.SpatialReference, distance);
+
+            Assert.NotNull(featuresBuffered);
+            Assert.Equal(featuresCount, featuresBuffered.Count);
+            for (int indexFeature = 0; indexFeature < featuresCount; ++indexFeature)
+            {
+                // Should be more complex shape, so expect greater number of points.
+                Assert.True(featuresBuffered[indexFeature].Geometry.Rings[0].Points.Count > features[indexFeature].Geometry.Rings[0].Points.Count, "Expecting buffered polygon to contain more points than original");
             }
         }
     }
@@ -52,6 +80,20 @@ namespace ArcGIS.Test
                 features[i].Geometry = projected.Geometries[i];
 
             return features;
+        }
+
+        public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference inputSpatialReference, double distance) where T : IGeometry
+        {
+            // Want to ensure that we don't get a shallow copy
+            string jsonFeatures = Newtonsoft.Json.JsonConvert.SerializeObject(features);
+            List<Feature<T>> deepCopy = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Feature<T>>>(jsonFeatures);
+
+            var op = new BufferGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), deepCopy, inputSpatialReference, distance);
+            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
+            for (int i = 0; i < buffered.Geometries.Count; i++)
+                deepCopy[i].Geometry = buffered.Geometries[i];
+
+            return deepCopy;
         }
     }
 }
