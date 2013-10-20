@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.Test", "ArcGIS.Test\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1EF606F2-E995-4D3D-BDE4-6AF81895C465}"
 	ProjectSection(SolutionItems) = preProject
+		ArcGIS.PCL.nuspec = ArcGIS.PCL.nuspec
+		pack.bat = pack.bat
 		readme.txt = readme.txt
 	EndProjectSection
 EndProject
