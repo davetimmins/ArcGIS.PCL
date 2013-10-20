@@ -1,46 +1,54 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-    <metadata>
-        <id>ArcGIS.PCL</id>
-        <version>2.1.0</version>
-        <title>ArcGIS Server Gateway</title>
-        <authors>Dave Timmins</authors>
-        <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>
-          Use ArcGIS Server REST types and resources without an official SDK.
+  <metadata>
+    <id>ArcGIS.PCL</id>
+    <version>2.1.0</version>
+    <title>ArcGIS Server Gateway</title>
+    <authors>Dave Timmins</authors>
+    <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Use ArcGIS Server REST types and resources without an official SDK.
 
-          Supports the following as typed operations:
+      Supports the following as typed operations:
 
-          • Generate Token (automatically if credentials are specified in gateway)
-          • Query
-          • Apply Edits
-          • Single Input Geocode
-          • Reverse Geocode
-          • Describe site (returns a url for every service)
-          • Simplify
-          • Project
-          • Buffer
+      • Generate Token (automatically if credentials are specified in gateway)
+      • Query
+      • Apply Edits
+      • Single Input Geocode
+      • Reverse Geocode
+      • Describe site (returns a url for every service)
+      • Simplify
+      • Project
+      • Buffer
 
-          Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
+      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
 
-Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher.</description>
-        <summary />
-        <releaseNotes>
- • Added Buffer operation
- • Refactored geometry operations to use common base where applicable
- • Added ICloner for creating deep copies of objects</releaseNotes>
-        <language />
-        <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>
-        <dependencies>
-            <dependency id="Microsoft.Bcl" version="1.1.3" />
-            <dependency id="Microsoft.Bcl.Async" version="1.0.16" />
-            <dependency id="Microsoft.Bcl.Build" version="1.0.10" />
-            <dependency id="Microsoft.Net.Http" version="2.2.13" />
-        </dependencies>
-    </metadata>
-    <files>
-        <file src="content\readme.txt" target="content\readme.txt" />
-        <file src="ArcGIS.ServiceModel\bin\Release\ArcGIS.ServiceModel.dll" target="lib\ArcGIS.ServiceModel.dll" />
-    </files>
+      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher.
+    </description>
+    <summary>
+      Use ArcGIS Server REST types and resources without an official SDK.
+
+      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
+
+      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher.
+    </summary>
+    <releaseNotes>
+      • Added Buffer operation
+      • Refactored geometry operations to use common base where applicable
+      • Added ICloner for creating deep copies of objects
+    </releaseNotes>
+    <language />
+    <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>
+    <dependencies>
+      <dependency id="Microsoft.Bcl" version="1.1.3" />
+      <dependency id="Microsoft.Bcl.Async" version="1.0.16" />
+      <dependency id="Microsoft.Bcl.Build" version="1.0.10" />
+      <dependency id="Microsoft.Net.Http" version="2.2.13" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="readme.txt" target="content\readme.txt" />
+    <file src="ArcGIS.ServiceModel\bin\Release\ArcGIS.ServiceModel.dll" target="lib\ArcGIS.ServiceModel.dll" />
+  </files>
 </package>
