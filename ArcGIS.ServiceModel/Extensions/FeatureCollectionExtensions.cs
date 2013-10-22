@@ -61,7 +61,7 @@ namespace ArcGIS.ServiceModel
                 featureCollection.CoordinateReferenceSystem = new Crs
                 {
                     Type = "EPSG",
-                    Properties = new CrsProperties { Wkid = features.First().Geometry.SpatialReference.Wkid }
+                    Properties = new CrsProperties { Wkid = (int)features.First().Geometry.SpatialReference.Wkid }
                 };
 
             foreach (var feature in features)
@@ -76,6 +76,26 @@ namespace ArcGIS.ServiceModel
                 });
             }
             return featureCollection;
+        }
+
+        /// <summary>
+        /// Updates the geometries of the feature collection but preserves the attributes and order of features
+        /// </summary>
+        /// <typeparam name="T">The type of geometry</typeparam>
+        /// <param name="features">collection of features to update</param>
+        /// <param name="geometries">The updated geometries</param>
+        /// <returns>An updated collection of features in the same order as was passed in</returns>
+        public static List<Feature<T>> UpdateGeometries<T>(this List<Feature<T>> features, List<T> geometries) where T : IGeometry
+        {
+            var result = new List<Feature<T>>();
+            for (int i = 0; i < features.Count; i++)
+            {
+                var attr = i < features.Count  ? features[i].Attributes : null;
+                var feature = new Feature<T> { Attributes = attr };
+                if (i < geometries.Count) feature.Geometry = geometries[i];
+                result.Insert(i, feature);
+            }
+            return result;
         }
     }
 }

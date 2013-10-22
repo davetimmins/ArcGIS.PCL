@@ -34,11 +34,11 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class BufferGeometry<T> : GeometryOperation<T> where T : IGeometry
     {
-        public BufferGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference inputSpatialReference, double distance, ICloner<T> cloner = null)
-            : base(endpoint, features, inputSpatialReference, Operations.Buffer, cloner)
+        public BufferGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference spatialReference, double distance)
+            : base(endpoint, features, spatialReference, Operations.Buffer)
         {
-            Geometries.Geometries.First().SpatialReference = inputSpatialReference;
-            BufferSpatialReference = inputSpatialReference;
+            Geometries.Geometries.First().SpatialReference = spatialReference;
+            BufferSpatialReference = spatialReference;
             Distances = new List<double> { distance };
         }
 
@@ -81,8 +81,8 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class ProjectGeometry<T> : GeometryOperation<T> where T : IGeometry
     {
-        public ProjectGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference outputSpatialReference, ICloner<T> cloner = null)
-            : base(endpoint, features, outputSpatialReference, Operations.Project, cloner)
+        public ProjectGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference outputSpatialReference)
+            : base(endpoint, features, outputSpatialReference, Operations.Project)
         { }
     }
 
@@ -109,27 +109,15 @@ namespace ArcGIS.ServiceModel.Operation
         public GeometryOperation(ArcGISServerEndpoint endpoint,
             List<Feature<T>> features,
             SpatialReference outputSpatialReference,
-            String operation,
-            ICloner<T> cloner)
+            String operation)
             : base(endpoint, operation)
         {
             if (features.Any())
             {
-                Geometries = new GeometryCollection<T>(); // todo : fix this for shallow copy issue
+                Geometries = new GeometryCollection<T> { Geometries = new List<T>(features.Select(f => f.Geometry)) };
 
-                var geometries = features.Select(f => f.Geometry);
-                var cloned = new List<T>();
-                if (cloner == null)
-                    cloned.AddRange(geometries);
-                else
-                    foreach (var geom in geometries)
-                    {
-                        cloned.Add(cloner.DeepCopy(geom));
-                    }
-
-                Geometries.Geometries = cloned;
                 if (Geometries.Geometries.First().SpatialReference == null && features.First().Geometry.SpatialReference != null)
-                    Geometries.Geometries.First().SpatialReference = new SpatialReference { Wkid = features.First().Geometry.SpatialReference.Wkid };               
+                    Geometries.Geometries.First().SpatialReference = new SpatialReference { Wkid = features.First().Geometry.SpatialReference.Wkid };
             }
             OutputSpatialReference = outputSpatialReference;
         }

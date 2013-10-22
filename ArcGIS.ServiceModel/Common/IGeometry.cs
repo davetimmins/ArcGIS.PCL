@@ -23,9 +23,12 @@ namespace ArcGIS.ServiceModel.Common
         [DataMember(Name = "spatialReference")]
         SpatialReference SpatialReference { get; set; }
 
-        IGeoJsonGeometry ToGeoJson();        
+        IGeoJsonGeometry ToGeoJson();
     }
 
+    /// <summary>
+    /// Spatial reference used for operations. If WKT is set then other properties are nulled
+    /// </summary>
     [DataContract]
     public class SpatialReference : IEquatable<SpatialReference>
     {
@@ -48,16 +51,31 @@ namespace ArcGIS.ServiceModel.Common
             };
 
         [DataMember(Name = "wkid")]
-        public int Wkid { get; set; }
+        public int? Wkid { get; set; }
 
         [DataMember(Name = "latestWkid")]
-        public int LatestWkid { get; set; }
+        public int? LatestWkid { get; set; }
 
         [DataMember(Name = "vcsWkid")]
-        public int VCSWkid { get; set; }
+        public int? VCSWkid { get; set; }
 
         [DataMember(Name = "latestVcsWkid")]
-        public int LatestVCSWkid { get; set; }
+        public int? LatestVCSWkid { get; set; }
+
+        String _wkt;
+        [DataMember(Name = "wkt")]
+        public String Wkt
+        {
+            get { return _wkt; }
+            set
+            {
+                _wkt = value;
+                Wkid = null;
+                LatestWkid = null;
+                VCSWkid = null;
+                LatestVCSWkid = null;
+            }
+        }
 
         public override bool Equals(object obj)
         {
@@ -71,17 +89,20 @@ namespace ArcGIS.ServiceModel.Common
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Wkid == other.Wkid && LatestWkid == other.LatestWkid && VCSWkid == other.VCSWkid && LatestVCSWkid == other.LatestVCSWkid;
+            return (String.IsNullOrWhiteSpace(Wkt))
+                ? (Wkid == other.Wkid && LatestWkid == other.LatestWkid && VCSWkid == other.VCSWkid && LatestVCSWkid == other.LatestVCSWkid)
+                : String.Equals(Wkt, other.Wkt);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                int hashCode = Wkid;
-                hashCode = (hashCode * 397) ^ LatestWkid;
-                hashCode = (hashCode * 397) ^ VCSWkid;
-                hashCode = (hashCode * 397) ^ LatestVCSWkid;
+                int hashCode = (Wkid != null ? Wkid.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (LatestWkid != null ? LatestWkid.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (VCSWkid != null ? VCSWkid.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (LatestVCSWkid != null ? LatestVCSWkid.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Wkt != null ? Wkt.GetHashCode() : 0);
                 return hashCode;
             }
         }

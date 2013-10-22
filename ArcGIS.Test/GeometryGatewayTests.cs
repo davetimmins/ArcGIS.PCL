@@ -74,29 +74,21 @@ namespace ArcGIS.Test
 
         public async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
         {
-            var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference, new JsonDotNetCloner<T>());
+            var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
 
-            var result = new List<Feature<T>>(); 
-            for (int i = 0; i < projected.Geometries.Count; i++)
-            {
-                var attr = features.Count < i ? features[i].Attributes : null;
-                result.Insert(i, new Feature<T> { Attributes = attr, Geometry = projected.Geometries[i] });
-            }
+            var result = features.UpdateGeometries<T>(projected.Geometries);
+            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
             return result;
         }
 
-        public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference inputSpatialReference, double distance) where T : IGeometry
+        public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
         {
-            var op = new BufferGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, inputSpatialReference, distance,
-                new ServiceStackCloner<T>());
+            var op = new BufferGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, spatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
-            var result = new List<Feature<T>>(); // number of results will likely be different so we need to do this
-            for (int i = 0; i < buffered.Geometries.Count; i++)
-            {
-                var attr = features.Count < i ? features[i].Attributes : null;
-                result.Insert(i, new Feature<T> { Attributes = attr, Geometry = buffered.Geometries[i] });
-            }
+
+            var result = features.UpdateGeometries<T>(buffered.Geometries);
+            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
             return result;
         }
     }

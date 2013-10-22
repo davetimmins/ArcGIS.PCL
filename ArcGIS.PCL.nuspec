@@ -12,7 +12,7 @@
 
       Supports the following as typed operations:
 
-      • Generate Token (automatically if credentials are specified in gateway)
+      • Generate Token (automatically if using a token provider)
       • Query
       • Apply Edits
       • Single Input Geocode
