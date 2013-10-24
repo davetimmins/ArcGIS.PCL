@@ -12,7 +12,7 @@ namespace ArcGIS.ServiceModel
     /// </summary>
     public static class FeatureCollectionExtensions
     {
-        static Dictionary<String, Func<Type>> _typeMap = new Dictionary<String, Func<Type>>
+        readonly static Dictionary<String, Func<Type>> _typeMap = new Dictionary<String, Func<Type>>
             {
                 { "Point", () => typeof(Point) },
                 { "MultiPoint", () => typeof(MultiPoint) },

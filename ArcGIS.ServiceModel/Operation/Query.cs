@@ -132,7 +132,7 @@ namespace ArcGIS.ServiceModel.Operation
 
     public static class GeometryTypes
     {
-        internal static Dictionary<Type, Func<String>> TypeMap = new Dictionary<Type, Func<String>>
+        internal readonly static Dictionary<Type, Func<String>> TypeMap = new Dictionary<Type, Func<String>>
             {
                 { typeof(Point), () => GeometryTypes.Point },
                 { typeof(MultiPoint), () => GeometryTypes.MultiPoint },

@@ -9,7 +9,7 @@ using ArcGIS.ServiceModel.Operation;
 using System.Net.Http.Headers;
 
 namespace ArcGIS.ServiceModel
-{
+{    
     public interface IPortalGateway
     {
         /// <summary>
@@ -129,6 +129,8 @@ namespace ArcGIS.ServiceModel
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+
+            System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
         }
 
 #if DEBUG
@@ -257,11 +259,14 @@ namespace ArcGIS.ServiceModel
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
 
             _httpClient.CancelPendingRequests();
+
+            System.Diagnostics.Debug.WriteLine(uri);
             HttpResponseMessage response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
 
-            var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
-
+            var resultString = await response.Content.ReadAsStringAsync();
+            System.Diagnostics.Debug.WriteLine(resultString);
+            var result = Serializer.AsPortalResponse<T>(resultString);            
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
             return result;
@@ -277,7 +282,7 @@ namespace ArcGIS.ServiceModel
         protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : IPortalResponse
         {
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
-            
+
             var token = CheckGenerateToken();
 
             // these should have already been added
@@ -309,10 +314,14 @@ namespace ArcGIS.ServiceModel
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+
+            System.Diagnostics.Debug.WriteLine(uri);
             HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
             response.EnsureSuccessStatusCode();
 
-            var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
+            var resultString = await response.Content.ReadAsStringAsync();
+            System.Diagnostics.Debug.WriteLine(resultString);
+            var result = Serializer.AsPortalResponse<T>(resultString);        
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 

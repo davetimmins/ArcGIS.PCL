@@ -88,7 +88,7 @@ namespace ArcGIS.ServiceModel.GeoJson
     [DataContract]
     public class GeoJsonLineString : IGeoJsonGeometry
     {
-        static Dictionary<Type, Func<PointCollection, IGeometry>> _geoJsonFactoryMap = new Dictionary<Type, Func<PointCollection, IGeometry>>
+        readonly static Dictionary<Type, Func<PointCollection, IGeometry>> _geoJsonFactoryMap = new Dictionary<Type, Func<PointCollection, IGeometry>>
         {
             { typeof(MultiPoint), (coords) => new MultiPoint { Points = coords } },
             { typeof(Polyline), (coords) => new Polyline { Paths = new PointCollectionList { coords } } } 
