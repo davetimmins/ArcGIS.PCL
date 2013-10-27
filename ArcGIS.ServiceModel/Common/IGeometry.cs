@@ -23,9 +23,25 @@ namespace ArcGIS.ServiceModel.Common
         [DataMember(Name = "spatialReference")]
         SpatialReference SpatialReference { get; set; }
 
+        /// <summary>
+        /// Calculates the minimum bounding extent for the geometry
+        /// </summary>
+        /// <returns>Extent that can contain the geometry </returns>
+        Extent GetExtent();
+
+        /// <summary>
+        /// Calculates the center of the minimum bounding extent for the geommetry
+        /// </summary>
+        /// <returns>The value for the center of the extent for the geometry</returns>
+        Point GetCenter();
+
+        /// <summary>
+        /// Converts the geometry to its GeoJSON representation
+        /// </summary>
+        /// <returns>The corresponding GeoJSON for the geometry</returns>
         IGeoJsonGeometry ToGeoJson();
     }
-
+    
     /// <summary>
     /// Spatial reference used for operations. If WKT is set then other properties are nulled
     /// </summary>
@@ -108,8 +124,10 @@ namespace ArcGIS.ServiceModel.Common
         }
     }
 
+    public abstract class GeometryBase { }
+
     [DataContract]
-    public class Point : IGeometry, IEquatable<Point>
+    public class Point : GeometryBase, IGeometry, IEquatable<Point>
     {
         [DataMember(Name = "spatialReference", Order = 5)]
         public SpatialReference SpatialReference { get; set; }
@@ -125,6 +143,16 @@ namespace ArcGIS.ServiceModel.Common
 
         [DataMember(Name = "m", Order = 4)]
         public double? M { get; set; }
+
+        public Extent GetExtent()
+        {
+            return new Extent { XMin = X - 1, YMin = Y - 1, XMax = X + 1, YMax = Y +1, SpatialReference = this.SpatialReference };
+        }
+
+        public Point GetCenter()
+        {
+            return this;
+        }
 
         public bool Equals(Point other)
         {
@@ -161,7 +189,7 @@ namespace ArcGIS.ServiceModel.Common
     }
 
     [DataContract]
-    public class MultiPoint : IGeometry, IEquatable<MultiPoint>
+    public class MultiPoint : GeometryBase, IGeometry, IEquatable<MultiPoint>
     {
         [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
@@ -174,6 +202,16 @@ namespace ArcGIS.ServiceModel.Common
 
         [DataMember(Name = "points", Order = 3)]
         public PointCollection Points { get; set; }
+
+        public Extent GetExtent()
+        {
+            return Points.CalculateExtent();
+        }
+
+        public Point GetCenter()
+        {
+            return GetExtent().GetCenter();
+        }
 
         public bool Equals(MultiPoint other)
         {
@@ -209,7 +247,7 @@ namespace ArcGIS.ServiceModel.Common
     }
 
     [DataContract]
-    public class Polyline : IGeometry, IEquatable<Polyline>
+    public class Polyline : GeometryBase, IGeometry, IEquatable<Polyline>
     {
         [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
@@ -222,6 +260,27 @@ namespace ArcGIS.ServiceModel.Common
 
         [DataMember(Name = "paths", Order = 3)]
         public PointCollectionList Paths { get; set; }
+
+        public Extent GetExtent()
+        {
+            Extent extent = null;
+            foreach (PointCollection path in this.Paths)
+            {
+                if (extent != null)
+                    extent = extent.Union(path.CalculateExtent());
+                else
+                    extent = path.CalculateExtent();
+            }
+            if (extent != null)
+                extent.SpatialReference = this.SpatialReference;
+
+            return extent;
+        }
+
+        public Point GetCenter()
+        {
+            return GetExtent().GetCenter();
+        }
 
         public bool Equals(Polyline other)
         {
@@ -258,18 +317,57 @@ namespace ArcGIS.ServiceModel.Common
 
     public class PointCollection : List<double[]>
     {
+        public Extent CalculateExtent()
+        {
+            SpatialReference spatialReference;
+            double x = double.NaN;
+            double y = double.NaN;
+            double num = double.NaN;
+            double y1 = double.NaN;
+            SpatialReference spatialReference1 = null;
+            foreach (var point in Points)
+            {
+                if (point == null) continue;
+
+                if (point.X < x || double.IsNaN(x)) x = point.X;
+
+                if (point.Y < y || double.IsNaN(y)) y = point.Y;
+
+                if (point.X > num || double.IsNaN(num)) num = point.X;
+
+                if (point.Y > y1 || double.IsNaN(y1)) y1 = point.Y;
+
+                if (spatialReference1 != null) continue;
+
+                spatialReference1 = point.SpatialReference;
+            }
+            if (double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(num) || double.IsNaN(y1))
+            {
+                return null;
+            }
+            var envelope = new Extent { XMin = x, YMin = y, XMax = num, YMax = y1 };
+            var envelope1 = envelope;
+            if (spatialReference1 == null)
+                spatialReference = null;
+            else
+                spatialReference = new SpatialReference { Wkid = spatialReference1.Wkid };
+
+            envelope1.SpatialReference = spatialReference;
+            return envelope;
+        }
+
         public List<Point> Points
         {
             get { return this.Select(point => point != null ? new Point { X = point.First(), Y = point.Last() } : null).ToList(); }
         }
+
     }
 
     public class PointCollectionList : List<PointCollection>
-    {
-    }
+    { }
 
     [DataContract]
-    public class Polygon : IGeometry, IEquatable<Polygon>
+    public class Polygon : GeometryBase, IGeometry, IEquatable<Polygon>
     {
         [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
@@ -282,6 +380,31 @@ namespace ArcGIS.ServiceModel.Common
 
         [DataMember(Name = "rings", Order = 3)]
         public PointCollectionList Rings { get; set; }
+
+        public Extent GetExtent()
+        {
+            Extent extent = null;
+            foreach (var ring in this.Rings)
+            {
+                if (ring == null) continue;
+
+                if (extent != null)
+                    extent = extent.Union(ring.CalculateExtent());
+                else
+                    extent = ring.CalculateExtent();
+            }
+            if (extent != null)
+            {
+                extent.SpatialReference = this.SpatialReference;
+                return extent;
+            }
+            return null;
+        }
+
+        public Point GetCenter()
+        {            
+            return GetExtent().GetCenter();
+        }
 
         public bool Equals(Polygon other)
         {
@@ -317,7 +440,7 @@ namespace ArcGIS.ServiceModel.Common
     }
 
     [DataContract]
-    public class Extent : IGeometry, IEquatable<Extent>
+    public class Extent : GeometryBase, IGeometry, IEquatable<Extent>
     {
         [DataMember(Name = "spatialReference", Order = 5)]
         public SpatialReference SpatialReference { get; set; }
@@ -333,6 +456,85 @@ namespace ArcGIS.ServiceModel.Common
 
         [DataMember(Name = "ymax", Order = 4)]
         public double YMax { get; set; }
+
+        public Extent GetExtent()
+        {
+            return this;
+        }
+
+        public Point GetCenter()
+        {
+            var point = new Point { SpatialReference = this.SpatialReference };
+            if (!double.IsNaN(this.XMin) && !double.IsNaN(this.XMax))
+                point.X = (this.XMin + this.XMax) / 2;
+
+            if (!double.IsNaN(this.YMin) && !double.IsNaN(this.YMax))
+                point.Y = (this.YMin + this.YMax) / 2;
+
+            return point;
+        }
+
+        public Extent Union(Extent extent)
+        {
+            var envelope = new Extent();
+            if (extent == null)
+            {
+                extent = this;
+            }
+            if (!this.SpatialReference.Equals(extent.SpatialReference))
+                throw new ArgumentException("Spatial references must match for union operation.");
+
+            envelope.SpatialReference = this.SpatialReference ?? extent.SpatialReference;
+            if (double.IsNaN(this.XMin))
+            {
+                envelope.XMin = extent.XMin;
+            }
+            else if (!double.IsNaN(extent.XMin))
+            {
+                envelope.XMin = Math.Min(extent.XMin, this.XMin);
+            }
+            else
+            {
+                envelope.XMin = this.XMin;
+            }
+            if (double.IsNaN(this.XMax))
+            {
+                envelope.XMax = extent.XMax;
+            }
+            else if (!double.IsNaN(extent.XMax))
+            {
+                envelope.XMax = Math.Max(extent.XMax, this.XMax);
+            }
+            else
+            {
+                envelope.XMax = this.XMax;
+            }
+            if (double.IsNaN(this.YMin))
+            {
+                envelope.YMin = extent.YMin;
+            }
+            else if (!double.IsNaN(extent.YMin))
+            {
+                envelope.YMin = Math.Min(extent.YMin, this.YMin);
+            }
+            else
+            {
+                envelope.YMin = this.YMin;
+            }
+            if (double.IsNaN(this.YMax))
+            {
+                envelope.YMax = extent.YMax;
+            }
+            else if (!double.IsNaN(extent.YMax))
+            {
+                envelope.YMax = Math.Max(extent.YMax, this.YMax);
+            }
+            else
+            {
+                envelope.YMax = this.YMax;
+            }
+            return envelope;
+        }
 
         public bool Equals(Extent other)
         {
