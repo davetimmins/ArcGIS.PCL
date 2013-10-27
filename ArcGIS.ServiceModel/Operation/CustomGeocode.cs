@@ -7,10 +7,11 @@ using System.Text;
 
 namespace ArcGIS.ServiceModel.Operation
 {
-    public abstract class CustomGeocodeBase : ArcGISServerOperation
+    [DataContract]
+    public class SingleInputCustomGeocode : ArcGISServerOperation
     {
-        protected CustomGeocodeBase(ArcGISServerEndpoint endpoint, String operationPath)
-            : base(endpoint, operationPath)
+        public SingleInputCustomGeocode(ArcGISServerEndpoint endpoint)
+            : base(endpoint, Operations.SingleInputCustomGeocode)
         { }
 
         /// <summary>
@@ -27,20 +28,12 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         [DataMember(Name = "outSR")]
         public SpatialReference OutputSpatialReference { get; set; }
-    }
-
-    [DataContract]
-    public class SingleInputCustomGeocode : CustomGeocodeBase
-    {
-        public SingleInputCustomGeocode(ArcGISServerEndpoint endpoint)
-            : base(endpoint, Operations.SingleInputCustomGeocode)
-        { }
 
         /// <summary>
         /// A set of bounding box coordinates that limit the search area to a specific region. 
         /// This is especially useful for applications in which a user will search for places and addresses only within the current map extent. 
         /// </summary>
-        [DataMember(Name = "bbox")]
+        [DataMember(Name = "searchExtent")]
         public Extent SearchExtent { get; set; }
 
         /// <summary>
@@ -80,11 +73,19 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
-    public class SuggestGeocode : CustomGeocodeBase
+    public class SuggestGeocode : GeocodeOperation
     {
         public SuggestGeocode(ArcGISServerEndpoint endpoint)
             : base(endpoint, Operations.SuggestGeocode)
-        { }
+        {
+            Distance = null;
+        }
+
+        /// <summary>
+        /// Specifies the location to be searched for.
+        /// </summary>
+        [DataMember(Name = "text")]
+        public String Text { get; set; }
 
         /// <summary>
         /// The maximum number of suggestions that can be returned.
