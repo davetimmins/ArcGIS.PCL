@@ -9,6 +9,7 @@ namespace ArcGIS.ServiceModel.Operation
         public const String ApplyEdits = "applyEdits";
         public const String SingleInputGeocode = "find";
         public const String SingleInputCustomGeocode = "findAddressCandidates";
+        public const String SuggestGeocode = "suggest";
         public const String ReverseGeocode = "reverseGeocode";
         public const String GenerateToken = "generateToken";
         public const String Simplify = "simplify";

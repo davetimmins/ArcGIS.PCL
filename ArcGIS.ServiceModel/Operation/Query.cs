@@ -58,7 +58,6 @@ namespace ArcGIS.ServiceModel.Operation
         /// <summary>
         /// The geometry to apply as the spatial filter.
         /// The structure of the geometry is the same as the structure of the json geometry objects returned by the ArcGIS REST API.
-        /// In addition to the JSON structures, for envelopes and points, you can specify the geometry with a simpler comma-separated syntax.
         /// </summary>
         /// <remarks>Default is empty</remarks>
         [DataMember(Name = "geometry")]
