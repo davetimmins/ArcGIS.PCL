@@ -9,7 +9,7 @@ using ArcGIS.ServiceModel.Operation;
 using System.Net.Http.Headers;
 
 namespace ArcGIS.ServiceModel
-{    
+{
     public interface IPortalGateway
     {
         /// <summary>
@@ -203,10 +203,11 @@ namespace ArcGIS.ServiceModel
 
             result.Add(folderDescription);
 
-            foreach (var folder in folderDescription.Folders)
-            {
-                result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint()));
-            }
+            if (folderDescription.Folders != null)
+                foreach (var folder in folderDescription.Folders)
+                {
+                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint()));
+                }
 
             return result;
         }
@@ -266,7 +267,7 @@ namespace ArcGIS.ServiceModel
 
             var resultString = await response.Content.ReadAsStringAsync();
             System.Diagnostics.Debug.WriteLine(resultString);
-            var result = Serializer.AsPortalResponse<T>(resultString);            
+            var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
             return result;
@@ -321,7 +322,7 @@ namespace ArcGIS.ServiceModel
 
             var resultString = await response.Content.ReadAsStringAsync();
             System.Diagnostics.Debug.WriteLine(resultString);
-            var result = Serializer.AsPortalResponse<T>(resultString);        
+            var result = Serializer.AsPortalResponse<T>(resultString);
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
