@@ -16,10 +16,12 @@ Supports the following as typed operations:
  - Query
  - Apply Edits
  - Single Input Geocode
+ - Suggest
  - Reverse Geocode
  - Describe site (returns a url for every service)
  - Simplify
  - Project
+ - Buffer
 
 Some example of it in use for server side processing in web sites
 
@@ -141,11 +143,11 @@ public class ProjectGateway : PortalGateway
     public List<Feature<T>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
     {
         var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);
-        var projected = Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op).Result;
-        for (int i = 0; i < projected.Geometries.Count; i++)
-            features[i].Geometry = projected.Geometries[i];
+        var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op).Result;
 
-        return features;
+        var result = features.UpdateGeometries<T>(projected.Geometries);
+        if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
+        return result;
     }
 }
 
