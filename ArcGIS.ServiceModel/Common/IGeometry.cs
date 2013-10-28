@@ -41,7 +41,7 @@ namespace ArcGIS.ServiceModel.Common
         /// <returns>The corresponding GeoJSON for the geometry</returns>
         IGeoJsonGeometry ToGeoJson();
     }
-    
+
     /// <summary>
     /// Spatial reference used for operations. If WKT is set then other properties are nulled
     /// </summary>
@@ -146,12 +146,12 @@ namespace ArcGIS.ServiceModel.Common
 
         public Extent GetExtent()
         {
-            return new Extent { XMin = X - 1, YMin = Y - 1, XMax = X + 1, YMax = Y +1, SpatialReference = this.SpatialReference };
+            return new Extent { XMin = X, YMin = Y, XMax = X, YMax = Y, SpatialReference = SpatialReference };
         }
 
         public Point GetCenter()
         {
-            return this;
+            return new Point { X = X, Y = Y, SpatialReference = SpatialReference };
         }
 
         public bool Equals(Point other)
@@ -264,15 +264,14 @@ namespace ArcGIS.ServiceModel.Common
         public Extent GetExtent()
         {
             Extent extent = null;
-            foreach (PointCollection path in this.Paths)
+            foreach (PointCollection path in Paths)
             {
-                if (extent != null)
-                    extent = extent.Union(path.CalculateExtent());
-                else
+                if (extent == null)
                     extent = path.CalculateExtent();
+                else
+                    extent = extent.Union(path.CalculateExtent());
             }
-            if (extent != null)
-                extent.SpatialReference = this.SpatialReference;
+            if (extent != null) extent.SpatialReference = SpatialReference;
 
             return extent;
         }
@@ -319,41 +318,25 @@ namespace ArcGIS.ServiceModel.Common
     {
         public Extent CalculateExtent()
         {
-            SpatialReference spatialReference;
             double x = double.NaN;
             double y = double.NaN;
-            double num = double.NaN;
+            double x1 = double.NaN;
             double y1 = double.NaN;
-            SpatialReference spatialReference1 = null;
-            foreach (var point in Points)
-            {
-                if (point == null) continue;
 
+            foreach (var point in Points.Where(p => p!= null))
+            {
                 if (point.X < x || double.IsNaN(x)) x = point.X;
 
                 if (point.Y < y || double.IsNaN(y)) y = point.Y;
 
-                if (point.X > num || double.IsNaN(num)) num = point.X;
+                if (point.X > x1 || double.IsNaN(x1)) x1 = point.X;
 
                 if (point.Y > y1 || double.IsNaN(y1)) y1 = point.Y;
-
-                if (spatialReference1 != null) continue;
-
-                spatialReference1 = point.SpatialReference;
             }
-            if (double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(num) || double.IsNaN(y1))
-            {
+            if (double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(x1) || double.IsNaN(y1))           
                 return null;
-            }
-            var envelope = new Extent { XMin = x, YMin = y, XMax = num, YMax = y1 };
-            var envelope1 = envelope;
-            if (spatialReference1 == null)
-                spatialReference = null;
-            else
-                spatialReference = new SpatialReference { Wkid = spatialReference1.Wkid };
 
-            envelope1.SpatialReference = spatialReference;
-            return envelope;
+            return new Extent { XMin = x, YMin = y, XMax = x1, YMax = y1 };
         }
 
         public List<Point> Points
@@ -384,25 +367,20 @@ namespace ArcGIS.ServiceModel.Common
         public Extent GetExtent()
         {
             Extent extent = null;
-            foreach (var ring in this.Rings)
+            foreach (var ring in Rings.Where(r => r != null))
             {
-                if (ring == null) continue;
-
-                if (extent != null)
-                    extent = extent.Union(ring.CalculateExtent());
-                else
+                if (extent == null)
                     extent = ring.CalculateExtent();
+                else
+                    extent = extent.Union(ring.CalculateExtent());
             }
-            if (extent != null)
-            {
-                extent.SpatialReference = this.SpatialReference;
-                return extent;
-            }
+            if (extent != null) extent.SpatialReference = SpatialReference;
+
             return null;
         }
 
         public Point GetCenter()
-        {            
+        {
             return GetExtent().GetCenter();
         }
 
@@ -464,75 +442,44 @@ namespace ArcGIS.ServiceModel.Common
 
         public Point GetCenter()
         {
-            var point = new Point { SpatialReference = this.SpatialReference };
-            if (!double.IsNaN(this.XMin) && !double.IsNaN(this.XMax))
-                point.X = (this.XMin + this.XMax) / 2;
-
-            if (!double.IsNaN(this.YMin) && !double.IsNaN(this.YMax))
-                point.Y = (this.YMin + this.YMax) / 2;
-
-            return point;
+            return new Point { X = ((XMin + XMax) / 2), Y = ((YMin + YMax) / 2), SpatialReference = SpatialReference };
         }
 
         public Extent Union(Extent extent)
         {
-            var envelope = new Extent();
-            if (extent == null)
-            {
-                extent = this;
-            }
-            if (!this.SpatialReference.Equals(extent.SpatialReference))
+            if (extent == null) extent = this;
+            if (!SpatialReference.Equals(extent.SpatialReference))
                 throw new ArgumentException("Spatial references must match for union operation.");
 
-            envelope.SpatialReference = this.SpatialReference ?? extent.SpatialReference;
-            if (double.IsNaN(this.XMin))
-            {
+            var envelope = new Extent { SpatialReference = SpatialReference ?? extent.SpatialReference };
+            if (double.IsNaN(XMin))
                 envelope.XMin = extent.XMin;
-            }
             else if (!double.IsNaN(extent.XMin))
-            {
-                envelope.XMin = Math.Min(extent.XMin, this.XMin);
-            }
+                envelope.XMin = Math.Min(extent.XMin, XMin);
             else
-            {
-                envelope.XMin = this.XMin;
-            }
-            if (double.IsNaN(this.XMax))
-            {
+                envelope.XMin = XMin;
+
+            if (double.IsNaN(XMax))
                 envelope.XMax = extent.XMax;
-            }
             else if (!double.IsNaN(extent.XMax))
-            {
-                envelope.XMax = Math.Max(extent.XMax, this.XMax);
-            }
+                envelope.XMax = Math.Max(extent.XMax, XMax);
             else
-            {
-                envelope.XMax = this.XMax;
-            }
-            if (double.IsNaN(this.YMin))
-            {
+                envelope.XMax = XMax;
+
+            if (double.IsNaN(YMin))
                 envelope.YMin = extent.YMin;
-            }
             else if (!double.IsNaN(extent.YMin))
-            {
-                envelope.YMin = Math.Min(extent.YMin, this.YMin);
-            }
+                envelope.YMin = Math.Min(extent.YMin, YMin);
             else
-            {
-                envelope.YMin = this.YMin;
-            }
-            if (double.IsNaN(this.YMax))
-            {
+                envelope.YMin = YMin;
+
+            if (double.IsNaN(YMax))
                 envelope.YMax = extent.YMax;
-            }
             else if (!double.IsNaN(extent.YMax))
-            {
-                envelope.YMax = Math.Max(extent.YMax, this.YMax);
-            }
+                envelope.YMax = Math.Max(extent.YMax, YMax);
             else
-            {
-                envelope.YMax = this.YMax;
-            }
+                envelope.YMax = YMax;
+
             return envelope;
         }
 
