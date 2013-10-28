@@ -58,6 +58,15 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "outFields")]
         public String OutFieldsValue { get { return OutFields == null ? String.Empty : String.Join(",", OutFields); } }
+
+        /// <summary>
+        /// The spatial reference of the x/y coordinates returned by a geocode request. 
+        /// This is useful for applications using a map with a spatial reference different than that of the geocode service. 
+        /// If the outSR is not specified, the spatial reference of the output locations is the same as that of the service. 
+        /// The world geocoding service spatial reference is WGS84 (WKID = 4326). 
+        /// </summary>
+        [DataMember(Name = "outSR")]
+        public SpatialReference OutputSpatialReference { get; set; }
     }
 
     [DataContract]
@@ -100,16 +109,10 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         [DataMember(Name = "text")]
         public String Text { get; set; }
-
-        /// <summary>
-        /// The maximum number of suggestions that can be returned.
-        /// </summary>
-        [DataMember(Name = "maxLocations")]
-        public Extent MaximumNumberOfSuggestions { get; set; }
     }
 
     [DataContract]
-    public class SuggestGeocodeResponse
+    public class SuggestGeocodeResponse : PortalResponse
     {
         [DataMember(Name = "suggestions")]
         public Suggestion[] Suggestions { get; set; }

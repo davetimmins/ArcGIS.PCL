@@ -9,23 +9,41 @@ namespace ArcGIS.ServiceModel.Operation
     {
         protected GeocodeOperation(ArcGISServerEndpoint endpoint, String operationPath)
             : base(endpoint, operationPath)
-        {
-            Distance = 100;
-        }
+        { }
 
         /// <summary>
-        /// The point from which to search for the closest address. 
-        /// If the spatial reference is not specified in the JSON object, the location is assumed to be in the same spatial reference as that of the geocode service. 
+        /// Defines an origin point location that is used with the distance parameter to sort geocoding candidates based upon their proximity to the location. 
+        /// The distance parameter specifies the radial distance from the location in meters. 
+        /// The priority of candidates within this radius is boosted relative to those outside the radius.
+        /// The location parameter can be specified without specifying a distance. If distance is not specified, it defaults to 2000 meters.
         /// </summary>
         [DataMember(Name = "location")]
         public Point Location { get; set; }
 
         /// <summary>
-        /// The optional distance parameter allows you to specify a radial distance in meters to search for an address from the specified location. 
+        /// Specifies the radius of an area around a point location which is used to boost the rank of geocoding candidates so that candidates closest to the location are returned first. The distance value is in meters. 
+        /// If the distance parameter is specified, then the location parameter must be specified as well.
+        /// It is important to note that unlike the bbox parameter, the location/distance parameters allow searches to extend beyond the specified search radius. 
+        /// They are not used to filter results, but rather to rank resulting candidates based on their distance from a location. 
+        /// You must pass a bbox value in addition to location/distance if you want to confine the search results to a specific area.
         /// </summary>
-        /// <remarks>Default value is 100 meters</remarks>
         [DataMember(Name = "distance")]
-        public double? Distance { get; set; }
+        public double? Distance { get; set; }        
+    }
+
+    /// <summary>
+    /// Reverse geocoding is useful for applications in which a user will click a location in a map and expect the address of that location to be returned.
+    /// It involves passing the coordinates of a point location to the geocoding service, which returns the address closest to the location.
+    /// </summary>
+    /// <remarks>If no distance value is specified then the value is assumed to be 100 meters. </remarks>
+    [DataContract]
+    public class ReverseGeocode : GeocodeOperation
+    {
+        public ReverseGeocode(ArcGISServerEndpoint endpoint)
+            : base(endpoint, Operations.ReverseGeocode)
+        {
+            Distance = 100;
+        }
 
         /// <summary>
         /// The spatial reference of the x/y coordinates returned by a geocode request. 
@@ -35,18 +53,6 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         [DataMember(Name = "outSR")]
         public SpatialReference OutputSpatialReference { get; set; }
-    }
-
-    /// <summary>
-    /// Reverse geocoding is useful for applications in which a user will click a location in a map and expect the address of that location to be returned.
-    /// It involves passing the coordinates of a point location to the geocoding service, which returns the address closest to the location.
-    /// </summary>
-    [DataContract]
-    public class ReverseGeocode : GeocodeOperation
-    {
-        public ReverseGeocode(ArcGISServerEndpoint endpoint)
-            : base(endpoint, Operations.ReverseGeocode)
-        { }
     }
 
     [DataContract]

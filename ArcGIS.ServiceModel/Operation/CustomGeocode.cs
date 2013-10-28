@@ -50,7 +50,7 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
-    public class SingleInputCustomGeocodeResponse
+    public class SingleInputCustomGeocodeResponse : PortalResponse
     {
         [DataMember(Name = "spatialReference")]
         public SpatialReference SpatialReference { get; set; }
