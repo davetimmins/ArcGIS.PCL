@@ -7,6 +7,9 @@ using System.Text;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    /// <summary>
+    /// Calls findAddressCandidates for a locator service using the single line address field to search against.
+    /// </summary>
     [DataContract]
     public class SingleInputCustomGeocode : ArcGISServerOperation
     {
@@ -70,44 +73,5 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "attributes")]
         public Dictionary<String, object> Attributes { get; set; }
-    }
-
-    [DataContract]
-    public class SuggestGeocode : GeocodeOperation
-    {
-        public SuggestGeocode(ArcGISServerEndpoint endpoint)
-            : base(endpoint, Operations.SuggestGeocode)
-        {
-            Distance = null;
-        }
-
-        /// <summary>
-        /// Specifies the location to be searched for.
-        /// </summary>
-        [DataMember(Name = "text")]
-        public String Text { get; set; }
-
-        /// <summary>
-        /// The maximum number of suggestions that can be returned.
-        /// </summary>
-        [DataMember(Name = "maxLocations")]
-        public Extent MaximumNumberOfSuggestions { get; set; }
-    }
-
-    [DataContract]
-    public class SuggestGeocodeResponse
-    {
-        [DataMember(Name = "suggestions")]
-        public Suggestion[] Suggestions { get; set; }
-    }
-
-    [DataContract]
-    public class Suggestion
-    {
-        [DataMember(Name = "text")]
-        public String Text { get; set; }
-
-        [DataMember(Name = "magicKey")]
-        public String MagicKey { get; set; }
     }
 }

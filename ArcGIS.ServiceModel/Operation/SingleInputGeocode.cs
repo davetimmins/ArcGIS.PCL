@@ -5,6 +5,9 @@ using ArcGIS.ServiceModel.Common;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    /// <summary>
+    /// Calls the find method for a locator service. This has the parameters used by the hosted world geocoding service at geocode.arcgis.com
+    /// </summary>
     [DataContract]
     public class SingleInputGeocode : GeocodeOperation
     {
@@ -78,5 +81,47 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "feature")]
         public Feature<Point> Feature { get; set; }
+    }
+
+    /// <summary>
+    /// Call the suggest method for a locator. This has the parameters used by the hosted world geocoding service at geocode.arcgis.com 
+    /// </summary>
+    [DataContract]
+    public class SuggestGeocode : GeocodeOperation
+    {
+        public SuggestGeocode(ArcGISServerEndpoint endpoint)
+            : base(endpoint, Operations.SuggestGeocode)
+        {
+            Distance = null;
+        }
+
+        /// <summary>
+        /// Specifies the location to be searched for.
+        /// </summary>
+        [DataMember(Name = "text")]
+        public String Text { get; set; }
+
+        /// <summary>
+        /// The maximum number of suggestions that can be returned.
+        /// </summary>
+        [DataMember(Name = "maxLocations")]
+        public Extent MaximumNumberOfSuggestions { get; set; }
+    }
+
+    [DataContract]
+    public class SuggestGeocodeResponse
+    {
+        [DataMember(Name = "suggestions")]
+        public Suggestion[] Suggestions { get; set; }
+    }
+
+    [DataContract]
+    public class Suggestion
+    {
+        [DataMember(Name = "text")]
+        public String Text { get; set; }
+
+        [DataMember(Name = "magicKey")]
+        public String MagicKey { get; set; }
     }
 }

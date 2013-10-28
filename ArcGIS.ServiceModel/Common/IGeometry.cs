@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace ArcGIS.ServiceModel.Common
 {
     /// <summary>
-    /// The REST API supports the following five geometry types:
+    /// The ArcGIS Server REST API supports the following five geometry types:
     /// Points,
     /// Multipoints,
     /// Polylines,
@@ -323,7 +323,7 @@ namespace ArcGIS.ServiceModel.Common
             double x1 = double.NaN;
             double y1 = double.NaN;
 
-            foreach (var point in Points.Where(p => p!= null))
+            foreach (var point in Points.Where(p => p != null))
             {
                 if (point.X < x || double.IsNaN(x)) x = point.X;
 
@@ -333,7 +333,7 @@ namespace ArcGIS.ServiceModel.Common
 
                 if (point.Y > y1 || double.IsNaN(y1)) y1 = point.Y;
             }
-            if (double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(x1) || double.IsNaN(y1))           
+            if (double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(x1) || double.IsNaN(y1))
                 return null;
 
             return new Extent { XMin = x, YMin = y, XMax = x1, YMax = y1 };
