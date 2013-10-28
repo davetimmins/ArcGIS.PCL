@@ -5,6 +5,9 @@ using ArcGIS.ServiceModel.Common;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    /// <summary>
+    /// Calls the find method for a locator service. This has the parameters used by the hosted world geocoding service at geocode.arcgis.com
+    /// </summary>
     [DataContract]
     public class SingleInputGeocode : GeocodeOperation
     {
@@ -37,6 +40,9 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "maxLocations")]
         public int MaxResults { get; set; }
 
+        [DataMember(Name = "magicKey")]
+        public String MagicKey { get; set; }
+
         /// <summary>
         /// A set of bounding box coordinates that limit the search area to a specific region. 
         /// This is especially useful for applications in which a user will search for places and addresses only within the current map extent. 
@@ -52,6 +58,15 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "outFields")]
         public String OutFieldsValue { get { return OutFields == null ? String.Empty : String.Join(",", OutFields); } }
+
+        /// <summary>
+        /// The spatial reference of the x/y coordinates returned by a geocode request. 
+        /// This is useful for applications using a map with a spatial reference different than that of the geocode service. 
+        /// If the outSR is not specified, the spatial reference of the output locations is the same as that of the service. 
+        /// The world geocoding service spatial reference is WGS84 (WKID = 4326). 
+        /// </summary>
+        [DataMember(Name = "outSR")]
+        public SpatialReference OutputSpatialReference { get; set; }
     }
 
     [DataContract]
@@ -75,5 +90,41 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "feature")]
         public Feature<Point> Feature { get; set; }
+    }
+
+    /// <summary>
+    /// Call the suggest method for a locator. This has the parameters used by the hosted world geocoding service at geocode.arcgis.com 
+    /// </summary>
+    [DataContract]
+    public class SuggestGeocode : GeocodeOperation
+    {
+        public SuggestGeocode(ArcGISServerEndpoint endpoint)
+            : base(endpoint, Operations.SuggestGeocode)
+        {
+            Distance = null;
+        }
+
+        /// <summary>
+        /// Specifies the location to be searched for.
+        /// </summary>
+        [DataMember(Name = "text")]
+        public String Text { get; set; }
+    }
+
+    [DataContract]
+    public class SuggestGeocodeResponse : PortalResponse
+    {
+        [DataMember(Name = "suggestions")]
+        public Suggestion[] Suggestions { get; set; }
+    }
+
+    [DataContract]
+    public class Suggestion
+    {
+        [DataMember(Name = "text")]
+        public String Text { get; set; }
+
+        [DataMember(Name = "magicKey")]
+        public String MagicKey { get; set; }
     }
 }

@@ -36,6 +36,8 @@ namespace ArcGIS.ServiceModel.Common
             if (RelativeUrl.IndexOf("rest/services") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("rest/services"));
             RelativeUrl = RelativeUrl.Replace("rest/services/", "");
             RelativeUrl = "rest/services/" + RelativeUrl;
+
+            System.Diagnostics.Debug.WriteLine("Created ArcGISServerEndpoint for " + RelativeUrl);
         }
         
         public String RelativeUrl { get; private set; }
@@ -65,6 +67,8 @@ namespace ArcGIS.ServiceModel.Common
             if (RelativeUrl.IndexOf("admin") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("admin"));
             RelativeUrl = RelativeUrl.Replace("admin/", "");
             RelativeUrl = "admin/" + RelativeUrl;
+
+            System.Diagnostics.Debug.WriteLine("Created ArcGISServerAdminEndpoint for " + RelativeUrl);
         }
 
         public String RelativeUrl { get; private set; }

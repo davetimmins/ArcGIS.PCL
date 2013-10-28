@@ -27,7 +27,7 @@ namespace ArcGIS.ServiceModel
     /// <summary>
     /// ArcGIS Online token provider
     /// </summary>
-    public class ArcGISOnlineTokenProvider : TokenProvider
+    public sealed class ArcGISOnlineTokenProvider : TokenProvider
     {
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Online
@@ -72,6 +72,8 @@ namespace ArcGIS.ServiceModel
 
             _httpClient = new HttpClient(_httpClientHandler);
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
 
 #if DEBUG
@@ -135,13 +137,20 @@ namespace ArcGIS.ServiceModel
             _token = null; // reset the Token
 
             var url = TokenRequest.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
+            Uri uri;
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            if (!validUrl)
+                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
 
             _httpClient.CancelPendingRequests();
-            HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
             response.EnsureSuccessStatusCode();
 
-            var result = Serializer.AsPortalResponse<Token>(await response.Content.ReadAsStringAsync());
+            var resultString = await response.Content.ReadAsStringAsync();
+            System.Diagnostics.Debug.WriteLine("Generate token result: " + resultString);
+            var result = Serializer.AsPortalResponse<Token>(resultString);
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 

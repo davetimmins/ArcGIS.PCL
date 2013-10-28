@@ -15,26 +15,26 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanProject()
         {
-            var gateway = new GeometryGateway(new ServiceStackSerializer());
-            var result = await gateway.Query<Polyline>(new Query("Hurricanes/MapServer/1".AsEndpoint()));
+            var gateway = new GeometryGateway(new ServiceStackSerializer(), @"http://services.arcgisonline.co.nz/arcgis");
+            var result = await gateway.Query<Polygon>(new Query("STATS/territorialauthorities/MapServer/0".AsEndpoint()) { Where = "NAME = 'Hamilton City'" });
 
-            var features = result.Features.Where(f => f.Geometry.Paths.Any()).ToList();
+            var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
 
             Assert.NotNull(features);
             Assert.True(result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid);
-            Assert.True(features[0].Geometry.Paths.Count > 0);
+            Assert.True(features[0].Geometry.Rings.Count > 0);
+            features[0].Geometry.SpatialReference = result.SpatialReference;
 
-            if (result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid)
-            {
-                var projectedFeatures = await gateway.Project<Polyline>(features, result.SpatialReference);
+            var projectedFeatures = await gateway.Project<Polygon>(features, SpatialReference.WGS84);
 
-                Assert.NotNull(projectedFeatures);
-                Assert.Equal(features.Count, projectedFeatures.Count);
+            Assert.NotNull(projectedFeatures);
+            Assert.Equal(features.Count, projectedFeatures.Count);
 
-                Assert.True(features[0].Geometry.Paths.Count > 0);  // If this fails, 2 issues: 1) features has been shallow copied, and 2) geometries aren't being populated.
-                Assert.True(projectedFeatures[0].Geometry.Paths.Count > 0); // If this fails, just problem 2 above - geometries aren't being copied.
-                Assert.NotEqual(features, projectedFeatures);
-            }
+            Assert.True(features[0].Geometry.Rings.Count > 0);  // If this fails, 2 issues: 1) features has been shallow copied, and 2) geometries aren't being populated.
+            Assert.True(projectedFeatures[0].Geometry.Rings.Count > 0); // If this fails, just problem 2 above - geometries aren't being copied.
+            Assert.NotEqual(features, projectedFeatures);
+           // foreach (var ring in projectedFeatures[0].Geometry.Rings)
+            Assert.NotEqual(projectedFeatures[0].Geometry.Rings[0], features[0].Geometry.Rings[0]);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace ArcGIS.Test
 
             var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
             Assert.NotNull(features);
-            
+
             int featuresCount = features.Count;
 
             double distance = 10.0;
@@ -63,8 +63,8 @@ namespace ArcGIS.Test
 
     public class GeometryGateway : PortalGateway
     {
-        public GeometryGateway(ISerializer serializer)
-            : base(@"http://sampleserver6.arcgisonline.com/arcgis", serializer, null)
+        public GeometryGateway(ISerializer serializer, String baseUrl = @"http://sampleserver6.arcgisonline.com/arcgis")
+            : base(baseUrl, serializer, null)
         { }
 
         public async Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
@@ -76,24 +76,20 @@ namespace ArcGIS.Test
         {
             var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
-            for (int i = 0; i < projected.Geometries.Count; i++)
-                features[i].Geometry = projected.Geometries[i];
 
-            return features;
+            var result = features.UpdateGeometries<T>(projected.Geometries);
+            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
+            return result;
         }
 
-        public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference inputSpatialReference, double distance) where T : IGeometry
+        public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
         {
-            // Want to ensure that we don't get a shallow copy
-            string jsonFeatures = Newtonsoft.Json.JsonConvert.SerializeObject(features);
-            List<Feature<T>> deepCopy = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Feature<T>>>(jsonFeatures);
-
-            var op = new BufferGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), deepCopy, inputSpatialReference, distance);
+            var op = new BufferGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, spatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
-            for (int i = 0; i < buffered.Geometries.Count; i++)
-                deepCopy[i].Geometry = buffered.Geometries[i];
 
-            return deepCopy;
+            var result = features.UpdateGeometries<T>(buffered.Geometries);
+            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
+            return result;
         }
     }
 }

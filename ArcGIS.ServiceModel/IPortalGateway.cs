@@ -129,6 +129,8 @@ namespace ArcGIS.ServiceModel
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+
+            System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
         }
 
 #if DEBUG
@@ -201,10 +203,11 @@ namespace ArcGIS.ServiceModel
 
             result.Add(folderDescription);
 
-            foreach (var folder in folderDescription.Folders)
-            {
-                result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint()));
-            }
+            if (folderDescription.Folders != null)
+                foreach (var folder in folderDescription.Folders)
+                {
+                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint()));
+                }
 
             return result;
         }
@@ -251,12 +254,20 @@ namespace ArcGIS.ServiceModel
             if (url.Length > 2082)
                 return await Post<T>(endpoint, endpoint.RelativeUrl.ParseQueryString());
 
+            Uri uri;
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            if (!validUrl)
+                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+
             _httpClient.CancelPendingRequests();
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+
+            System.Diagnostics.Debug.WriteLine(uri);
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
 
-            var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
-
+            var resultString = await response.Content.ReadAsStringAsync();
+            System.Diagnostics.Debug.WriteLine(resultString);
+            var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
             return result;
@@ -299,10 +310,19 @@ namespace ArcGIS.ServiceModel
                 content = tempContent;
             }
             _httpClient.CancelPendingRequests();
-            HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+
+            Uri uri;
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            if (!validUrl)
+                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+
+            System.Diagnostics.Debug.WriteLine(uri);
+            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
             response.EnsureSuccessStatusCode();
 
-            var result = Serializer.AsPortalResponse<T>(await response.Content.ReadAsStringAsync());
+            var resultString = await response.Content.ReadAsStringAsync();
+            System.Diagnostics.Debug.WriteLine(resultString);
+            var result = Serializer.AsPortalResponse<T>(resultString);
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 

@@ -1,4 +1,5 @@
-﻿using ArcGIS.ServiceModel.Common;
+﻿using ArcGIS.ServiceModel;
+using ArcGIS.ServiceModel.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,13 @@ using System.Text;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    [DataContract]
+    public class GeometryOperationResponse<T> : PortalResponse where T : IGeometry
+    {
+        [DataMember(Name = "geometries")]
+        public List<T> Geometries { get; set; }
+    }
+
     [DataContract]
     public class SimplifyGeometry<T> : ArcGISServerOperation where T : IGeometry
     {
@@ -24,30 +32,15 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
-    public class BufferGeometry<T> : ArcGISServerOperation where T : IGeometry
+    public class BufferGeometry<T> : GeometryOperation<T> where T : IGeometry
     {
-        public BufferGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference inputSpatialReference, double distance)
-            : base(endpoint, Operations.Buffer)
+        public BufferGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference spatialReference, double distance)
+            : base(endpoint, features, spatialReference, Operations.Buffer)
         {
-            if (features.Any())
-            {
-                Geometries = new GeometryCollection<T>();
-                Geometries.Geometries = features.Select(f => f.Geometry).ToList();
-            }
-            InputSpatialReference = inputSpatialReference;
-            OutputSpatialReference = inputSpatialReference;
-            BufferSpatialReference = inputSpatialReference;
-            Distances = new List<double>{distance};
+            Geometries.Geometries.First().SpatialReference = spatialReference;
+            BufferSpatialReference = spatialReference;
+            Distances = new List<double> { distance };
         }
-        
-        [DataMember(Name = "geometries")]
-        public GeometryCollection<T> Geometries { get; set; }
-
-        [DataMember(Name = "inSR")]
-        public SpatialReference InputSpatialReference { get; set; }
-
-        [DataMember(Name = "outSR")]
-        public SpatialReference OutputSpatialReference { get; set; }
 
         [DataMember(Name = "bufferSR")]
         public SpatialReference BufferSpatialReference { get; set; }
@@ -86,38 +79,11 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
-    public class GeometryOperationResponse<T> : PortalResponse where T : IGeometry
-    {
-        [DataMember(Name = "geometries")]
-        public List<T> Geometries { get; set; }
-    }
-
-    [DataContract]
-    public class ProjectGeometry<T> : ArcGISServerOperation where T : IGeometry
+    public class ProjectGeometry<T> : GeometryOperation<T> where T : IGeometry
     {
         public ProjectGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference outputSpatialReference)
-            : base(endpoint, Operations.Project)
-        {
-            if (features.Any())
-            {
-                Geometries = new GeometryCollection<T>();
-                Geometries.Geometries = features.Select(f => f.Geometry).ToList();
-            }
-            OutputSpatialReference = outputSpatialReference;
-        }
-
-        [DataMember(Name = "geometries")]
-        public GeometryCollection<T> Geometries { get; private set; }
-
-        [DataMember(Name = "inSR")]
-        public SpatialReference InputSpatialReference { get { return Geometries.Geometries.First().SpatialReference ?? SpatialReference.WGS84; } }
-
-        /// <summary>
-        /// The spatial reference of the returned geometry. 
-        /// If not specified, the geometry is returned in the spatial reference of the input.
-        /// </summary>
-        [DataMember(Name = "outSR")]
-        public SpatialReference OutputSpatialReference { get; private set; }
+            : base(endpoint, features, outputSpatialReference, Operations.Project)
+        { }
     }
 
     [DataContract]
@@ -136,5 +102,40 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "geometries")]
         public List<T> Geometries { get; set; }
+    }
+
+    public abstract class GeometryOperation<T> : ArcGISServerOperation where T : IGeometry
+    {
+        public GeometryOperation(ArcGISServerEndpoint endpoint,
+            List<Feature<T>> features,
+            SpatialReference outputSpatialReference,
+            String operation)
+            : base(endpoint, operation)
+        {
+            if (features.Any())
+            {
+                Geometries = new GeometryCollection<T> { Geometries = new List<T>(features.Select(f => f.Geometry)) };
+
+                if (Geometries.Geometries.First().SpatialReference == null && features.First().Geometry.SpatialReference != null)
+                    Geometries.Geometries.First().SpatialReference = new SpatialReference { Wkid = features.First().Geometry.SpatialReference.Wkid };
+            }
+            OutputSpatialReference = outputSpatialReference;
+        }
+
+        [DataMember(Name = "geometries")]
+        public GeometryCollection<T> Geometries { get; protected set; }
+
+        /// <summary>
+        /// Taken from the spatial reference of the first geometry, if that is null then assumed to be using Wgs84
+        /// </summary>
+        [DataMember(Name = "inSR")]
+        public SpatialReference InputSpatialReference { get { return Geometries.Geometries.First().SpatialReference ?? SpatialReference.WGS84; } }
+
+        /// <summary>
+        /// The spatial reference of the returned geometry. 
+        /// If not specified, the geometry is returned in the spatial reference of the input.
+        /// </summary>
+        [DataMember(Name = "outSR")]
+        public SpatialReference OutputSpatialReference { get; protected set; }
     }
 }

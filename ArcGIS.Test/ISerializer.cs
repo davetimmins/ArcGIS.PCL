@@ -39,7 +39,7 @@ namespace ArcGIS.Test
             var result = ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
             stopWatch.Stop();
             _totalAsPortalResponse += stopWatch.ElapsedMilliseconds;
-            System.Diagnostics.Trace.TraceInformation("Json.NET AsPortalResponse {0}", stopWatch.ElapsedMilliseconds);
+            System.Diagnostics.Trace.TraceInformation("ServiceStack AsPortalResponse {0}", stopWatch.ElapsedMilliseconds);
             return result;
         }
     }

@@ -22,6 +22,11 @@ namespace ArcGIS.Test
         {
             return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode);
         }
+
+        public Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode)
+        {
+            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode);
+        }
     }
 
     public class GeocodeTests
@@ -43,8 +48,26 @@ namespace ArcGIS.Test
             Assert.True(response.Results.Any());
             var result = response.Results.First();
             Assert.NotNull(result.Feature);
+            Assert.NotNull(result.Feature.Geometry);
         }
 
+        [Fact]
+        public async Task CanSuggest()
+        {
+            var gateway = new GeocodeGateway(new ServiceStackSerializer());
+            var suggest = new SuggestGeocode("/World/GeocodeServer/".AsEndpoint())
+            {
+                Text = "100 Willis Street, Wellington"
+            };
+            var response = await gateway.Suggest(suggest);
+
+            Assert.Null(response.Error);
+            Assert.NotNull(response.Suggestions);
+            Assert.True(response.Suggestions.Any());
+            var result = response.Suggestions.First();
+            Assert.True(!string.IsNullOrWhiteSpace(result.Text));
+        }
+        
         [Fact]
         public async Task CanReverseGeocodePoint()
         {
