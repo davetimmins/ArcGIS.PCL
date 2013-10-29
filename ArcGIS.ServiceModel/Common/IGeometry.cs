@@ -124,7 +124,7 @@ namespace ArcGIS.ServiceModel.Common
         }
     }
 
-    public abstract class GeometryBase { }
+    public class GeometryBase { }
 
     [DataContract]
     public class Point : GeometryBase, IGeometry, IEquatable<Point>

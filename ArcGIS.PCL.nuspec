@@ -15,7 +15,8 @@
       • Generate Token (automatically if using a token provider)
       • Query
       • Apply Edits
-      • Single Input Geocode
+      • Single Input Geocode (custom locator or Esri world locator)
+      • Suggest Geocode
       • Reverse Geocode
       • Describe site (returns a url for every service)
       • Simplify
@@ -34,9 +35,11 @@
       Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher.
     </summary>
     <releaseNotes>
-      • Added Buffer operation
-      • Refactored geometry operations to use common base where applicable
-      • Added ICloner for creating deep copies of objects
+      • Added new operations for Buffer, Suggest and SingleInputCustomGeocode (findAddressCandidates).
+      • Added GetCenter and GetExtent methods to IGeometry.
+      • Added Wkt to SpatialReference, setting this sets the other SR properties to null.
+      • Added UpdateGeometries extension method for updating geometries but preserving the attributes for a collection of features.
+      • Fix to DescribeSite when no folders are present.
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>

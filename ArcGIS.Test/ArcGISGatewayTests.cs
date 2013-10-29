@@ -42,6 +42,26 @@ namespace ArcGIS.Test
         {
             return Get<AgsObject>(endpoint);
         }
+
+        internal readonly static Dictionary<String, Func<Type>> TypeMap = new Dictionary<String, Func<Type>>
+            {
+                { GeometryTypes.Point, () => typeof(Point) },
+                { GeometryTypes.MultiPoint, () => typeof(MultiPoint) },
+                { GeometryTypes.Envelope, () => typeof(Extent) },
+                { GeometryTypes.Polygon, () => typeof(Polygon) },
+                { GeometryTypes.Polyline, () => typeof(Polyline) }
+            };
+
+        public async Task<FindResponse> Find(Find findOptions)
+        {
+            var response = await Get<FindResponse, Find>(findOptions);
+
+            foreach (var result in response.Results.Where(r => r.Geometry != null))
+            {
+                result.Geometry = ServiceStack.Text.JsonSerializer.DeserializeFromString(result.Geometry.SerializeToString(), TypeMap[result.GeometryType]());
+            }
+            return response;
+        }
     }
 
     public class AgsObject : JsonObject, IPortalResponse
@@ -324,6 +344,45 @@ namespace ArcGIS.Test
             Assert.True(resultDelete.Deletes.Any());
             Assert.True(resultDelete.Deletes.First().Success);
             Assert.Equal(resultDelete.Deletes.First().ObjectId, id);
+        }
+
+        [Fact]
+        public async Task FindCanReturnResultsAndGeometry()
+        {
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
+
+            var find = new Find(@"/Network/USA/MapServer".AsEndpoint())
+            {
+                SearchText = "route",
+                LayerIdsToSearch = new List<int> { 1, 2, 3 },
+                SearchFields = new List<String> { "Name", "RouteName" }
+            };
+            var result = await gateway.Find(find);
+
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.True(result.Results.Any());
+            Assert.True(result.Results.All(i => i.Geometry != null));
+        }
+
+        [Fact]
+        public async Task FindCanReturnResultsAndNoGeometry()
+        {
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
+
+            var find = new Find(@"/Network/USA/MapServer".AsEndpoint())
+            {
+                SearchText = "route",
+                LayerIdsToSearch = new List<int> { 1, 2, 3 },
+                SearchFields = new List<String> { "Name", "RouteName" },
+                ReturnGeometry = false
+            };
+            var result = await gateway.Find(find);
+
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.True(result.Results.Any());
+            Assert.True(result.Results.All(i => i.Geometry == null));
         }
     }
 }
