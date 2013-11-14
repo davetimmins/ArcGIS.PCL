@@ -202,9 +202,11 @@ namespace ArcGIS.ServiceModel
             {
                 folderDescription = await Get<SiteFolderDescription>(endpoint);
             }
-            catch (HttpRequestException) 
+            catch (HttpRequestException ex) 
             {
                 // don't have access to the folder
+                System.Diagnostics.Debug.WriteLine("HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
                 return result;
             }
 
