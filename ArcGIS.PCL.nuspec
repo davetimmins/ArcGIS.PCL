@@ -6,6 +6,7 @@
     <title>ArcGIS Server Gateway</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
+    <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       Use ArcGIS Server REST types and resources without an official SDK.
@@ -35,7 +36,11 @@
       Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher.
     </summary>
     <releaseNotes>
-      
+      Added find operation
+      Fixed issue with DescribeSite where folder is secured
+      Allow generate token client property to be set so that it can be omitted from the request
+      Added DontForceHttps option to generate token request
+      Updated NuGet references      
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>
