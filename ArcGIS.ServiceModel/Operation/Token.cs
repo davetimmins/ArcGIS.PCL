@@ -11,21 +11,22 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class GenerateToken : CommonParameters, IEndpoint
     {
+        String _client;
         public GenerateToken(String username, String password)
         {
             Username = username;
             Password = password;
             Client = "referer";
-            Referer = "requestip";
+            Referer = "ArcGIS.PCL";
             ExpirationInMinutes = 60;
         }
 
         /// <summary>
         /// The client identification type for which the token is to be granted.
         /// </summary>
-        /// <remarks>The default and only value supported is referer.</remarks>
+        /// <remarks>The default value is referer. Setting it to null will also set the Referer to null</remarks>
         [DataMember(Name = "client")]
-        public String Client { get; private set; }
+        public String Client { get { return _client; } set { _client = value; if (_client == null) Referer = null; } }
 
         /// <summary>
         /// The base URL of the web app that will invoke the Portal API. 
@@ -53,6 +54,12 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "expiration")]
         public int ExpirationInMinutes { get; set; }
 
+        /// <summary>
+        /// Set this to true to prevent the BuildAbsoluteUrl returning https as the default scheme
+        /// </summary>
+        [IgnoreDataMember]
+        public bool DontForceHttps { get; set; }
+
         public String RelativeUrl
         {
             get { return "tokens/" + Operations.GenerateToken; }
@@ -63,8 +70,8 @@ namespace ArcGIS.ServiceModel.Operation
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
 
             return (String.Equals(rootUrl, ArcGIS.ServiceModel.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
-                ? rootUrl.Replace("http://", "https://") + RelativeUrl.Replace("tokens/", "")
-                : rootUrl.Replace("http://", "https://") + RelativeUrl;
+                ? (DontForceHttps ? rootUrl : rootUrl.Replace("http://", "https://")) + RelativeUrl.Replace("tokens/", "")
+                : (DontForceHttps ? rootUrl : rootUrl.Replace("http://", "https://")) + RelativeUrl;
         }
     }
 

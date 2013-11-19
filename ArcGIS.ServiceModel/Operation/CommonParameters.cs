@@ -6,6 +6,7 @@ namespace ArcGIS.ServiceModel.Operation
     public static class Operations
     {
         public const String Query = "query";
+        public const String Find = "find";
         public const String ApplyEdits = "applyEdits";
         public const String SingleInputGeocode = "find";
         public const String SingleInputCustomGeocode = "findAddressCandidates";

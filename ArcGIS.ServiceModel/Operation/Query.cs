@@ -114,9 +114,46 @@ namespace ArcGIS.ServiceModel.Operation
                   From.Value.ToUnixTime(),
                   (To ?? From.Value).ToUnixTime());
             }
-        }        
+        }
 
-        // TODO : add more options
+        /// <summary>
+        /// This option can be used to specify the maximum allowable offset to be used for generalizing geometries returned by the query operation.
+        /// </summary>
+        [DataMember(Name = "maxAllowableOffset")]
+        public int? MaxAllowableOffset { get; set; }
+
+        /// <summary>
+        /// This option can be used to specify the number of decimal places in the response geometries returned by the query operation. 
+        /// This applies to X and Y values only (not m or z values).
+        /// </summary>
+        [DataMember(Name = "geometryPrecision")]
+        public int? GeometryPrecision { get; set; }
+
+        /// <summary>
+        /// If true, Z values will be included in the results if the features have Z values. Otherwise, Z values are not returned.
+        /// </summary>
+        /// <remarks>Default is false. This parameter only applies if returnGeometry=true.</remarks>
+        [DataMember(Name = "returnZ")]
+        public bool ReturnZ { get; set; }
+
+        /// <summary>
+        /// If true, M values will be included in the results if the features have M values. Otherwise, M values are not returned.
+        /// </summary>
+        /// <remarks>Default is false. This parameter only applies if returnGeometry=true.</remarks>
+        [DataMember(Name = "returnM")]
+        public bool ReturnM { get; set; }
+
+        /// <summary>
+        /// GeoDatabase version to query.
+        /// </summary>
+        [DataMember(Name = "gdbVersion")]
+        public String GdbVersion { get; set; }
+
+        /// <summary>
+        /// If true, returns distinct values based on the fields specified in outFields. 
+        /// This parameter applies only if supportsAdvancedQueries property of the layer is true.
+        [DataMember(Name = "returnDistinctValues")]
+        public bool ReturnDistinctValues { get; set; }
     }
 
     [DataContract]

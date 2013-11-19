@@ -1,6 +1,6 @@
-To get started first create an ISerializer implementation
+To get started with ArcGIS.PCL first create an ISerializer implementation
 
-ServiceStack.Text example
+==================== ServiceStack.Text example ==========================
 
 public class ServiceStackSerializer : ISerializer
 {
@@ -23,7 +23,7 @@ public class ServiceStackSerializer : ISerializer
     }
 }
 
-Json.NET example
+========================= Json.NET example ==============================
 
 public class JsonDotNetSerializer : ISerializer
 {
@@ -58,7 +58,7 @@ public class JsonDotNetSerializer : ISerializer
     }
 }
 
-Gateway use cases
+========================== Gateway use cases ============================
 
 ArcGIS Server with non secure resources
 

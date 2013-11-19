@@ -196,11 +196,21 @@ namespace ArcGIS.ServiceModel
 
         async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint)
         {
+            SiteFolderDescription folderDescription = null;
             var result = new List<SiteFolderDescription>();
+            try
+            {
+                folderDescription = await Get<SiteFolderDescription>(endpoint);
+            }
+            catch (HttpRequestException ex) 
+            {
+                // don't have access to the folder
+                System.Diagnostics.Debug.WriteLine("HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                return result;
+            }
 
-            var folderDescription = await Get<SiteFolderDescription>(endpoint);
-            folderDescription.Path = endpoint.RelativeUrl;
-
+            folderDescription.Path = endpoint.RelativeUrl;            
             result.Add(folderDescription);
 
             if (folderDescription.Folders != null)
