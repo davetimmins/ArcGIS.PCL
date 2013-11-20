@@ -17,7 +17,7 @@ namespace ArcGIS.ServiceModel.Operation
             Username = username;
             Password = password;
             Client = "referer";
-            Referer = "ArcGIS.PCL";
+            Referer = "https://github.com/davetimmins/ArcGIS.PCL";
             ExpirationInMinutes = 60;
         }
 

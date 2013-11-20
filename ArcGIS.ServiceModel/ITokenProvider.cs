@@ -136,6 +136,15 @@ namespace ArcGIS.ServiceModel
 
             _token = null; // reset the Token
 
+            if (!String.IsNullOrWhiteSpace(TokenRequest.Referer))
+            {
+                Uri referrer;
+                bool validReferrerUrl = Uri.TryCreate(TokenRequest.Referer, UriKind.Absolute, out referrer);
+                if (!validReferrerUrl)
+                    throw new HttpRequestException(String.Format("Not a valid url for referrer: {0}", referrer));
+                _httpClient.DefaultRequestHeaders.Referrer = referrer;
+            }
+
             var url = TokenRequest.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
