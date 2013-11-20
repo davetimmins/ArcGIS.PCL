@@ -99,6 +99,9 @@ namespace ArcGIS.ServiceModel.Operation
             get { return !String.IsNullOrWhiteSpace(Value) && Expiry > 0 && DateTime.Compare(Expiry.FromUnixTime(), DateTime.UtcNow) < 1; }
         }
 
+        [IgnoreDataMember]
+        internal String Referer { get; set; }
+
         /// <summary>
         /// True if the token must always pass over ssl.
         /// </summary>

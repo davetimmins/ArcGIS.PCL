@@ -237,7 +237,19 @@ namespace ArcGIS.ServiceModel
         {
             if (TokenProvider == null) return null;
 
+            CheckRefererHeader(TokenProvider.Token.Referer);
             return TokenProvider.Token;
+        }
+
+        void CheckRefererHeader(String referrer)
+        {
+            if (_httpClient == null || String.IsNullOrWhiteSpace(referrer)) return;
+
+            Uri referer;
+            bool validReferrerUrl = Uri.TryCreate(referrer, UriKind.Absolute, out referer);
+            if (!validReferrerUrl)
+                throw new HttpRequestException(String.Format("Not a valid url for referrer: {0}", referrer));
+            _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
 
         protected Task<T> Get<T, TRequest>(TRequest requestObject)
