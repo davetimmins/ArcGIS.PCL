@@ -63,7 +63,7 @@ namespace ArcGIS.ServiceModel
                 System.Diagnostics.Debug.WriteLine("TokenProvider for '" + RootUrl + "' not initialized as username/password not supplied.");
                 return;
             }
-            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+            if (serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
 
             RootUrl = rootUrl.AsRootUrl();
             Serializer = serializer;
