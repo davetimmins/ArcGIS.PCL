@@ -58,9 +58,15 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public TokenProvider(String rootUrl, String username, String password, ISerializer serializer)
         {
+            if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
+            {
+                System.Diagnostics.Debug.WriteLine("TokenProvider for '" + RootUrl + "' not initialized as username/password not supplied.");
+                return;
+            }
+            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+
             RootUrl = rootUrl.AsRootUrl();
             Serializer = serializer;
-            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             TokenRequest = new GenerateToken(username, password);
 
             _httpClientHandler = new HttpClientHandler();
