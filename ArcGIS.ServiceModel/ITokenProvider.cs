@@ -58,9 +58,15 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public TokenProvider(String rootUrl, String username, String password, ISerializer serializer)
         {
+            if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
+            {
+                System.Diagnostics.Debug.WriteLine("TokenProvider for '" + RootUrl + "' not initialized as username/password not supplied.");
+                return;
+            }
+            if (serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+
             RootUrl = rootUrl.AsRootUrl();
             Serializer = serializer;
-            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             TokenRequest = new GenerateToken(username, password);
 
             _httpClientHandler = new HttpClientHandler();
@@ -124,6 +130,17 @@ namespace ArcGIS.ServiceModel
 
         public ISerializer Serializer { get; private set; }
 
+        void CheckRefererHeader()
+        {
+            if (_httpClient == null || String.IsNullOrWhiteSpace(TokenRequest.Referer)) return;
+
+            Uri referer;
+            bool validReferrerUrl = Uri.TryCreate(TokenRequest.Referer, UriKind.Absolute, out referer);
+            if (!validReferrerUrl)
+                throw new HttpRequestException(String.Format("Not a valid url for referrer: {0}", TokenRequest.Referer));
+            _httpClient.DefaultRequestHeaders.Referrer = referer;
+        }
+
         /// <summary>
         /// Generates a token using the username and password set for this provider.
         /// </summary>
@@ -135,6 +152,8 @@ namespace ArcGIS.ServiceModel
             if (TokenRequest == null) return null;
 
             _token = null; // reset the Token
+
+            CheckRefererHeader();
 
             var url = TokenRequest.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
             Uri uri;
@@ -155,6 +174,8 @@ namespace ArcGIS.ServiceModel
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
             _token = result;
+            if (!String.IsNullOrWhiteSpace(TokenRequest.Referer)) _token.Referer = TokenRequest.Referer;
+
             return _token;
         }
     }
