@@ -38,6 +38,7 @@
     <releaseNotes>
       Add referrer header to requests if specified for generate token request.
       If no username/password passed to ITokenProvider then don't try to generate a token.
+      Don't set a default value for client or referer when generating a token.
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>

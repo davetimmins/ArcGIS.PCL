@@ -10,17 +10,15 @@ namespace ArcGIS.ServiceModel.Operation
     /// </summary>
     [DataContract]
     public class GenerateToken : CommonParameters, IEndpoint
-    {
-        String _client;
+    {        
         public GenerateToken(String username, String password)
         {
             Username = username;
             Password = password;
-            Client = "referer";
-            Referer = "https://github.com/davetimmins/ArcGIS.PCL";
             ExpirationInMinutes = 60;
         }
 
+        String _client;
         /// <summary>
         /// The client identification type for which the token is to be granted.
         /// </summary>
@@ -28,12 +26,13 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "client")]
         public String Client { get { return _client; } set { _client = value; if (_client == null) Referer = null; } }
 
+        String _referer;
         /// <summary>
         /// The base URL of the web app that will invoke the Portal API. 
         /// This parameter must be specified if the value of the client parameter is referer.
         /// </summary>
         [DataMember(Name = "referer")]
-        public String Referer { get; set; }
+        public String Referer { get { return _referer; } set { _referer = value; if (_referer != null) Client = "referer"; } }
 
         /// <summary>
         /// Username of user who wants to get a token.
