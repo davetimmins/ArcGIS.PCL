@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>ArcGIS.PCL</id>
-    <version>2.2.1</version>
+    <version>2.2.2</version>
     <title>ArcGIS Server Gateway</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -36,9 +36,7 @@
       Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher.
     </summary>
     <releaseNotes>
-      Add referrer header to requests if specified for generate token request.
-      If no username/password passed to ITokenProvider then don't try to generate a token.
-      Don't set a default value for client or referer when generating a token.
+      Fix issue when creating an invalid ITokenProvider
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>

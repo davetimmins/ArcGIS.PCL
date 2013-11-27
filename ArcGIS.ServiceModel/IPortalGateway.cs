@@ -237,8 +237,10 @@ namespace ArcGIS.ServiceModel
         {
             if (TokenProvider == null) return null;
 
-            CheckRefererHeader(TokenProvider.Token.Referer);
-            return TokenProvider.Token;
+            var token = TokenProvider.Token;
+
+            if (token != null) CheckRefererHeader(token.Referer);
+            return token;
         }
 
         void CheckRefererHeader(String referrer)
