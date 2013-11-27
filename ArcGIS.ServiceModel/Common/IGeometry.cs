@@ -205,7 +205,7 @@ namespace ArcGIS.ServiceModel.Common
 
         public Extent GetExtent()
         {
-            return Points.CalculateExtent();
+            return Points.CalculateExtent(SpatialReference);
         }
 
         public Point GetCenter()
@@ -267,9 +267,9 @@ namespace ArcGIS.ServiceModel.Common
             foreach (PointCollection path in Paths)
             {
                 if (extent == null)
-                    extent = path.CalculateExtent();
+                    extent = path.CalculateExtent(SpatialReference);
                 else
-                    extent = extent.Union(path.CalculateExtent());
+                    extent = extent.Union(path.CalculateExtent(SpatialReference));
             }
             if (extent != null) extent.SpatialReference = SpatialReference;
 
@@ -316,7 +316,7 @@ namespace ArcGIS.ServiceModel.Common
 
     public class PointCollection : List<double[]>
     {
-        public Extent CalculateExtent()
+        public Extent CalculateExtent(SpatialReference spatialReference)
         {
             double x = double.NaN;
             double y = double.NaN;
@@ -336,7 +336,7 @@ namespace ArcGIS.ServiceModel.Common
             if (double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(x1) || double.IsNaN(y1))
                 return null;
 
-            return new Extent { XMin = x, YMin = y, XMax = x1, YMax = y1 };
+            return new Extent { XMin = x, YMin = y, XMax = x1, YMax = y1, SpatialReference = spatialReference };
         }
 
         public List<Point> Points
@@ -370,13 +370,13 @@ namespace ArcGIS.ServiceModel.Common
             foreach (var ring in Rings.Where(r => r != null))
             {
                 if (extent == null)
-                    extent = ring.CalculateExtent();
+                    extent = ring.CalculateExtent(SpatialReference);
                 else
-                    extent = extent.Union(ring.CalculateExtent());
+                    extent = extent.Union(ring.CalculateExtent(SpatialReference));
             }
-            if (extent != null) extent.SpatialReference = SpatialReference;
+            if (extent != null && extent.SpatialReference == null) extent.SpatialReference = SpatialReference;
 
-            return null;
+            return extent;
         }
 
         public Point GetCenter()
