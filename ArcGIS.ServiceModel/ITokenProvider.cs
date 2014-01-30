@@ -35,8 +35,9 @@ namespace ArcGIS.ServiceModel
         /// <param name="username">ArcGIS Online user name</param>
         /// <param name="password">ArcGIS Online user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer)
-            : base(PortalGateway.AGOPortalUrl, username, password, serializer)
+        /// <param name="referer">Referer url to use for the token generation</param>
+        public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer, String referer = "https://www.arcgis.com")
+            : base(PortalGateway.AGOPortalUrl, username, password, serializer, referer)
         { }
     }
 
@@ -56,7 +57,8 @@ namespace ArcGIS.ServiceModel
         /// <param name="username">ArcGIS Server user name</param>
         /// <param name="password">ArcGIS Server user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer)
+        /// <param name="referer">Referer url to use for the token generation</param>
+        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer, String referer = "")
         {
             if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
             {
@@ -67,7 +69,7 @@ namespace ArcGIS.ServiceModel
 
             RootUrl = rootUrl.AsRootUrl();
             Serializer = serializer;
-            TokenRequest = new GenerateToken(username, password);
+            TokenRequest = new GenerateToken(username, password) { Referer = referer };
 
             _httpClientHandler = new HttpClientHandler();
             if (_httpClientHandler.SupportsAutomaticDecompression)
