@@ -233,11 +233,11 @@ namespace ArcGIS.ServiceModel
             return Get<PortalResponse>(endpoint);
         }
 
-        Token CheckGenerateToken()
+        async Task<Token> CheckGenerateToken()
         {
             if (TokenProvider == null) return null;
 
-            var token = TokenProvider.Token;
+            var token = await TokenProvider.CheckGenerateToken();
 
             if (token != null) CheckRefererHeader(token.Referer);
             return token;
@@ -258,14 +258,18 @@ namespace ArcGIS.ServiceModel
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            return Get<T>((requestObject.RelativeUrl + AsRequestQueryString(requestObject)).AsEndpoint());
+            var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(requestObject);
+
+            if (url.Length > 2000)
+                return Post<T>(requestObject, requestObject.RelativeUrl.ParseQueryString());
+
+            return Get<T>(url);
         }
 
-        protected async Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
+        protected async Task<T> Get<T>(String url) where T : IPortalResponse
         {
-            var token = CheckGenerateToken();
+            var token = await CheckGenerateToken();
 
-            var url = endpoint.BuildAbsoluteUrl(RootUrl);
             if (!url.Contains("f=")) url += (url.Contains("?") ? "&" : "?") + "f=json";
             if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !url.Contains("token="))
             {
@@ -274,9 +278,9 @@ namespace ArcGIS.ServiceModel
                 if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
 
-            // use POST if request is too long
-            if (url.Length > 2082)
-                return await Post<T>(endpoint, endpoint.RelativeUrl.ParseQueryString());
+            //// use POST if request is too long
+            //if (url.Length > 2000)
+            //    return await Post<T>(endpoint, endpoint.RelativeUrl.ParseQueryString());
 
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
@@ -297,6 +301,11 @@ namespace ArcGIS.ServiceModel
             return result;
         }
 
+        protected Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
+        {
+            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl));            
+        }
+
         protected Task<T> Post<T, TRequest>(TRequest requestObject)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
@@ -308,7 +317,7 @@ namespace ArcGIS.ServiceModel
         {
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
-            var token = CheckGenerateToken();
+            var token = await CheckGenerateToken();
 
             // these should have already been added
             if (!parameters.ContainsKey("f")) parameters.Add("f", "json");

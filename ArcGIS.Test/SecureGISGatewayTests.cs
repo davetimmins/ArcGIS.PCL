@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
 using Xunit;
 using ArcGIS.ServiceModel;
+using ArcGIS.ServiceModel.Operation;
 
 namespace ArcGIS.Test
 {
@@ -27,6 +28,11 @@ namespace ArcGIS.Test
         public SecureGISGateway2(ISerializer serializer, ITokenProvider tokenProvider)
             : base(@"http://serverapps10.esri.com/arcgis", serializer, tokenProvider)
         { }
+
+        public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
+        {
+            return Get<QueryResponse<T>, Query>(queryOptions);
+        }
     }
 
     public class NonSecureGISGateway : PortalGateway
@@ -57,18 +63,22 @@ namespace ArcGIS.Test
 
             var response = await gateway.Ping(endpoint);
 
-            Assert.NotNull(tokenProvider.Token);
-            Assert.NotNull(tokenProvider.Token.Value);
-            Assert.False(tokenProvider.Token.IsExpired);
+            var token = await tokenProvider.CheckGenerateToken();
+
+            Assert.NotNull(token);
+            Assert.NotNull(token.Value);
+            Assert.False(token.IsExpired);
             Assert.Null(response.Error);
 
             gateway = new SecureGISGateway(new JsonDotNetSerializer());
 
             response = await gateway.Ping(endpoint);
 
-            Assert.NotNull(tokenProvider.Token);
-            Assert.NotNull(tokenProvider.Token.Value);
-            Assert.False(tokenProvider.Token.IsExpired);
+            token = await tokenProvider.CheckGenerateToken();
+
+            Assert.NotNull(token);
+            Assert.NotNull(token.Value);
+            Assert.False(token.IsExpired);
             Assert.Null(response.Error);
         }
 
@@ -125,14 +135,20 @@ namespace ArcGIS.Test
 
             var response = await gateway.Ping(endpoint);
 
-            Assert.NotNull(tokenProvider.Token);
-            Assert.NotNull(tokenProvider.Token.Value);
-            Assert.False(tokenProvider.Token.IsExpired);
+            var token = await tokenProvider.CheckGenerateToken();
+
+            Assert.NotNull(token);
+            Assert.NotNull(token.Value);
+            Assert.False(token.IsExpired);
             Assert.Null(response.Error);
 
-            tokenProvider.Token.Value += "chuff";
-
-            var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Ping(endpoint));
+            token.Value += "chuff";
+            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) 
+            {
+                Token = token.Value
+            };
+            
+            var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Query<Point>(query));
             Assert.NotNull(exception);
             Assert.Contains("Invalid token", exception.Message);
         }

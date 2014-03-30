@@ -10,7 +10,7 @@ namespace ArcGIS.ServiceModel.Operation
     {
         readonly String _relativeUrl;
 
-        protected ArcGISServerOperation(ArcGISServerEndpoint endpoint, String operationPath)
+        protected ArcGISServerOperation(IEndpoint endpoint, String operationPath)
         {
             if (endpoint == null) throw new ArgumentNullException("endpoint");
             _relativeUrl = endpoint.RelativeUrl.Trim('/') + "/" + operationPath.Trim('/');

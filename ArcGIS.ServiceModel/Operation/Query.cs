@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ArcGIS.ServiceModel.Common;
@@ -10,7 +11,7 @@ namespace ArcGIS.ServiceModel.Operation
     /// </summary>
     [DataContract]
     public class Query : ArcGISServerOperation
-    {      
+    {
         /// <summary>
         /// Represents a request for a query against a service resource
         /// </summary>
@@ -19,7 +20,7 @@ namespace ArcGIS.ServiceModel.Operation
             : base(endpoint, Operations.Query)
         {
             Where = "1=1";
-            OutFields = "*";
+            OutFields = new List<String>();
             ReturnGeometry = true;
             SpatialRelationship = SpatialRelationshipTypes.Intersects;
         }
@@ -32,18 +33,25 @@ namespace ArcGIS.ServiceModel.Operation
         public String Where { get; set; }
 
         /// <summary>
+        ///  The names of the fields to search.
+        /// </summary>
+        [IgnoreDataMember]
+        public List<String> OutFields { get; set; }
+
+        /// <summary>
         /// The list of fields to be included in the returned resultset. This list is a comma delimited list of field names. 
         /// If you specify the shape field in the list of return fields, it is ignored. To request geometry, set returnGeometry to true. 
         /// </summary>
         /// <remarks>Default is '*' (all fields)</remarks>
         [DataMember(Name = "outFields")]
-        public String OutFields { get; set; }
+        public String OutFieldsValue { get { return OutFields == null || !OutFields.Any() ? "*" : String.Join(",", OutFields); } }
+
 
         /// <summary>
         /// The spatial reference of the input geometry. 
         /// </summary>
         [DataMember(Name = "inSR")]
-        public SpatialReference InputSpatialReference 
+        public SpatialReference InputSpatialReference
         {
             get { return Geometry == null ? null : Geometry.SpatialReference ?? SpatialReference.WGS84; }
         }
@@ -71,12 +79,14 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>Default is esriGeometryEnvelope</remarks>
         [DataMember(Name = "geometryType")]
-        public String GeometryType 
+        public String GeometryType
         {
-            get { return Geometry == null 
-                ? GeometryTypes.Envelope
-                : GeometryTypes.TypeMap[Geometry.GetType()]();
-            } 
+            get
+            {
+                return Geometry == null
+                    ? GeometryTypes.Envelope
+                    : GeometryTypes.TypeMap[Geometry.GetType()]();
+            }
         }
 
         /// <summary>
