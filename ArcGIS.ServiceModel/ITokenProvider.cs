@@ -79,7 +79,7 @@ namespace ArcGIS.ServiceModel
             if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
             if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
 
-            _httpClient = new HttpClient(_httpClientHandler);
+            _httpClient = HttpClientFactory.Get(_httpClientHandler);      
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);

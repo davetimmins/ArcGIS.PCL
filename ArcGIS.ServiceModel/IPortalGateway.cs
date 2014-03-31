@@ -125,7 +125,7 @@ namespace ArcGIS.ServiceModel
             if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
             if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
 
-            _httpClient = new HttpClient(_httpClientHandler);
+            _httpClient = HttpClientFactory.Get(_httpClientHandler);            
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
@@ -367,6 +367,16 @@ namespace ArcGIS.ServiceModel
             var dictionary = Serializer.AsDictionary(objectToConvert);
 
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));
+        }
+    }
+
+    public static class HttpClientFactory
+    {
+        public static Func<HttpClientHandler, HttpClient> Get { get; set; }
+
+        static HttpClientFactory()
+        {
+            Get = (httpClientHandler => new HttpClient(httpClientHandler));
         }
     }
 }
