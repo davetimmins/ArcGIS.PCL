@@ -188,6 +188,55 @@ namespace ArcGIS.ServiceModel.Operation
         public SpatialReference SpatialReference { get; set; }
     }
 
+    /// <summary>
+    /// Perform a query that only returns the ObjectIds for the results
+    /// </summary>
+    [DataContract]
+    public class QueryForIds : Query
+    {
+        public QueryForIds(ArcGISServerEndpoint endpoint)
+            : base(endpoint)
+        {
+            ReturnGeometry = false;
+        }
+
+        [DataMember(Name = "returnIdsOnly")]
+        public bool ReturnIdsOnly { get { return true; } }
+    }
+
+    [DataContract]
+    public class QueryForIdsResponse : PortalResponse
+    {
+        [DataMember(Name = "objectIdFieldName")]
+        public String ObjectIdFieldName { get; set; }
+
+        [DataMember(Name = "objectIds")]
+        public int[] ObjectIds { get; set; }
+    }
+    
+    /// <summary>
+    /// Perform a query that only returns a count of the results
+    /// </summary>
+    [DataContract]
+    public class QueryForCount : Query
+    {
+        public QueryForCount(ArcGISServerEndpoint endpoint)
+            : base(endpoint)
+        {
+            ReturnGeometry = false;
+        }
+
+        [DataMember(Name = "returnCountOnly")]
+        public bool ReturnCountOnly { get { return true; } }
+    }
+
+    [DataContract]
+    public class QueryForCountResponse : PortalResponse
+    {
+        [DataMember(Name = "count")]
+        public int NumberOfResults { get; set; }
+    }
+
     public static class GeometryTypes
     {
         internal readonly static Dictionary<Type, Func<String>> TypeMap = new Dictionary<Type, Func<String>>
