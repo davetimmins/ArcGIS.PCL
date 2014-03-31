@@ -207,7 +207,45 @@ namespace ArcGIS.Test
 
             Assert.True(resultPolyline.Features.Any());
             Assert.True(resultPolyline.Features.All(i => i.Geometry == null));
+        
         }
+
+        [Fact]
+        public async Task QueryObjectIdsAreHonored()
+        {
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
+
+            var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { ReturnGeometry = false };
+            var resultPoint = await gateway.QueryAsGet<Point>(queryPoint);
+
+            Assert.True(resultPoint.Features.Any());
+            Assert.True(resultPoint.Features.All(i => i.Geometry == null));
+
+            var queryPointByOID = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            {
+                ReturnGeometry = false,
+                ObjectIds = resultPoint.Features.Take(10).Select(f => int.Parse(f.Attributes["objectid"].ToString())).ToList()
+            };
+            var resultPointByOID = await gateway.QueryAsGet<Point>(queryPointByOID);
+
+            Assert.True(resultPointByOID.Features.Any());
+            Assert.True(resultPointByOID.Features.All(i => i.Geometry == null));
+            Assert.True(resultPoint.Features.Count() > 10);
+            Assert.True(resultPointByOID.Features.Count() == 10);
+
+            var queryPointByOIDFiltered = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            {
+                Where = "magnitude < 2",
+                ReturnGeometry = false,
+                ObjectIds = resultPoint.Features.Take(10).Select(f => int.Parse(f.Attributes["objectid"].ToString())).ToList()
+            };
+            var resultPointByOIDFiltered = await gateway.QueryAsGet<Point>(queryPointByOIDFiltered);
+
+            Assert.True(resultPointByOIDFiltered.Features.Any());
+            Assert.True(resultPointByOIDFiltered.Features.All(i => i.Geometry == null));
+            Assert.True(resultPointByOIDFiltered.Features.Count() < 10);
+        }
+
 
         [Fact]
         public async Task QueryOutFieldsAreHonored()

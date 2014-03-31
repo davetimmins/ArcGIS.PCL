@@ -46,6 +46,18 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "outFields")]
         public String OutFieldsValue { get { return OutFields == null || !OutFields.Any() ? "*" : String.Join(",", OutFields); } }
 
+        /// <summary>
+        ///  The object IDs of this layer/table to be queried.
+        /// </summary>
+        [IgnoreDataMember]
+        public List<int> ObjectIds { get; set; }
+
+        /// <summary>
+        /// The list of object Ids to be queried. This list is a comma delimited list of field names. 
+        /// </summary>
+        [DataMember(Name = "objectIds")]
+        public String ObjectIdsValue { get { return ObjectIds == null || !ObjectIds.Any() ? "" : String.Join(",", ObjectIds); } }
+
 
         /// <summary>
         /// The spatial reference of the input geometry. 
