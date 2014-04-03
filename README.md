@@ -29,6 +29,8 @@ Some example of it in use for server side processing in web sites
  - [Convert between GeoJSON and ArcGIS Features] (http://arcgisgeojson.azurewebsites.net/)
  - [Server side geometry operations] (http://eqnz.azurewebsites.net/)
  - [Server side geocode] (http://loc8.azurewebsites.net/map?text=wellington, new zealand)
+ 
+The code for these can be seen at [ArcGIS.PCL-Sample-Projects](https://github.com/davetimmins/ArcGIS.PCL-Sample-Projects)
 
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
