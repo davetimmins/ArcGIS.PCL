@@ -93,7 +93,6 @@ namespace ArcGIS.ServiceModel
     public abstract class PortalGateway : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
-        HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;
 
         /// <summary>
@@ -117,19 +116,8 @@ namespace ArcGIS.ServiceModel
             TokenProvider = tokenProvider;
             Serializer = serializer;
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
-
-            _httpClientHandler = new HttpClientHandler();
-            if (_httpClientHandler.SupportsAutomaticDecompression)
-                _httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            if (_httpClientHandler.SupportsUseProxy()) _httpClientHandler.UseProxy = true;
-            if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
-            if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
-
-            _httpClient = HttpClientFactory.Get(_httpClientHandler);            
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
-
+                      
+            _httpClient = HttpClientFactory.Get();         
             System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
         }
 
@@ -148,11 +136,6 @@ namespace ArcGIS.ServiceModel
                 {
                     _httpClient.Dispose();
                     _httpClient = null;
-                }
-                if (_httpClientHandler != null)
-                {
-                    _httpClientHandler.Dispose();
-                    _httpClientHandler = null;
                 }
             }
         }
@@ -372,11 +355,33 @@ namespace ArcGIS.ServiceModel
 
     public static class HttpClientFactory
     {
-        public static Func<HttpClientHandler, HttpClient> Get { get; set; }
+        public static Func<HttpClient> Get { get; set; }
+
+        public static Func<HttpClientHandler> GetHandler { get; set; }
 
         static HttpClientFactory()
         {
-            Get = (httpClientHandler => new HttpClient(httpClientHandler));
+            Get = (() => 
+            {
+                var httpClient = new HttpClient(GetHandler());
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+
+                return httpClient;
+            });
+
+            GetHandler = (() => 
+            {
+                var httpClientHandler = new HttpClientHandler();
+                if (httpClientHandler.SupportsAutomaticDecompression)
+                    httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                if (httpClientHandler.SupportsUseProxy()) httpClientHandler.UseProxy = true;
+                if (httpClientHandler.SupportsAllowAutoRedirect()) httpClientHandler.AllowAutoRedirect = true;
+                if (httpClientHandler.SupportsPreAuthenticate()) httpClientHandler.PreAuthenticate = true;
+
+                return httpClientHandler;
+            });
         }
     }
 }

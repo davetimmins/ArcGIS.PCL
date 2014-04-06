@@ -46,7 +46,6 @@ namespace ArcGIS.ServiceModel
     /// </summary>
     public class TokenProvider : ITokenProvider, IDisposable
     {
-        HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;
         protected readonly GenerateToken TokenRequest;
         Token _token;
@@ -71,16 +70,8 @@ namespace ArcGIS.ServiceModel
             RootUrl = rootUrl.AsRootUrl();
             Serializer = serializer;
             TokenRequest = new GenerateToken(username, password) { Referer = referer };
-
-            _httpClientHandler = new HttpClientHandler();
-            if (_httpClientHandler.SupportsAutomaticDecompression)
-                _httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            if (_httpClientHandler.SupportsUseProxy()) _httpClientHandler.UseProxy = true;
-            if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
-            if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
-
-            _httpClient = HttpClientFactory.Get(_httpClientHandler);      
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                      
+            _httpClient = HttpClientFactory.Get();                 
 
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
@@ -100,11 +91,6 @@ namespace ArcGIS.ServiceModel
                 {
                     _httpClient.Dispose();
                     _httpClient = null;
-                }
-                if (_httpClientHandler != null)
-                {
-                    _httpClientHandler.Dispose();
-                    _httpClientHandler = null;
                 }
                 _token = null;
             }
