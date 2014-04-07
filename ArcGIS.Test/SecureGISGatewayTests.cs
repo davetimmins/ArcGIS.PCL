@@ -45,12 +45,10 @@ namespace ArcGIS.Test
     public class SecureGISGatewayTests
     {
         ServiceStackSerializer _serviceStackSerializer;
-        JsonDotNetSerializer _jsonDotNetSerializer;
-
+        
         public SecureGISGatewayTests()
         {
             _serviceStackSerializer = new ServiceStackSerializer();
-            _jsonDotNetSerializer = new JsonDotNetSerializer();
         }
 
         [Fact]
@@ -85,7 +83,6 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanDescribeSite()
         {
-            var tokenProvider = new SecureTokenProvider(_serviceStackSerializer);
             var gateway = new SecureGISGateway(_serviceStackSerializer);
 
             var response = await gateway.DescribeSite();

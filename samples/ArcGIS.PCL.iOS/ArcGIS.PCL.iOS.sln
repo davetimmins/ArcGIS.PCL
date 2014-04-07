@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.PCL.iOS", "ArcGIS.PCL.iOS.csproj", "{B9473871-0CB8-46E9-912F-BD8FBAFAF363}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+		Release|iPhone = Release|iPhone
+		Ad-Hoc|iPhone = Ad-Hoc|iPhone
+		AppStore|iPhone = AppStore|iPhone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.AppStore|iPhone.Build.0 = AppStore|iPhone
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Debug|iPhone.Build.0 = Debug|iPhone
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Release|iPhone.ActiveCfg = Release|iPhone
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Release|iPhone.Build.0 = Release|iPhone
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{B9473871-0CB8-46E9-912F-BD8FBAFAF363}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = ArcGIS.PCL.iOS.csproj
+	EndGlobalSection
+EndGlobal
