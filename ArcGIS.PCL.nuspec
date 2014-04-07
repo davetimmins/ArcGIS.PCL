@@ -2,11 +2,12 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata minClientVersion="2.7">
     <id>ArcGIS.PCL</id>
-    <version>2.2.4</version>
+    <version>3.0.0</version>
     <title>ArcGIS Server Gateway</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
+    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/dev/gateway.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       Use ArcGIS Server REST types and resources without an official SDK.
@@ -14,7 +15,8 @@
       Supports the following as typed operations:
 
       • Generate Token (automatically if using a token provider)
-      • Query
+      • Query (attributes, spatial, count, objects Ids)
+      • Find
       • Apply Edits
       • Single Input Geocode (custom locator or Esri world locator)
       • Suggest Geocode
@@ -26,26 +28,39 @@
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
 
-      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher.
+      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher.
     </description>
     <summary>
       Use ArcGIS Server REST types and resources without an official SDK.
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
 
-      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher.
+      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher.
     </summary>
     <releaseNotes>
-      Add default referer for AGO token provider.
-      Remove nuget folder from solution
+      Breaking changes
+      
+      - Removed Silverlight 4 and Windows Phone 7.5 support
+      - Query operation OutFields is now set using an array to be consistent with other operations
+      
+      Other features in this release
+      
+      - Added ArcGIS Online endpoint
+      - Fixed issue calling hosted ArcGIS Online feature services
+      - Added ObjectIds property to Query operation
+      - Added query for Ids operation
+      - Added query for count operation
+      - Added HttpClientFactory for ModernHttpClient lib support in iOS and Android projects
+      - Added Xamarin iOS and Android support
+      - Updated NuGet package dependencies to latest versions
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>
     <dependencies>
-      <dependency id="Microsoft.Bcl" version="1.1.6" />
-      <dependency id="Microsoft.Bcl.Async" version="1.0.165" />
-      <dependency id="Microsoft.Bcl.Build" version="1.0.13" />
-      <dependency id="Microsoft.Net.Http" version="2.2.18" />
+      <dependency id="Microsoft.Bcl" version="1.1.7" />
+      <dependency id="Microsoft.Bcl.Async" version="1.0.166" />
+      <dependency id="Microsoft.Bcl.Build" version="1.0.14" />
+      <dependency id="Microsoft.Net.Http" version="2.2.19" />
     </dependencies>
   </metadata>
   <files>

@@ -244,7 +244,7 @@ namespace ArcGIS.ServiceModel
             var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(requestObject);
 
             if (url.Length > 2000)
-                return Post<T>(requestObject, requestObject.RelativeUrl.ParseQueryString());
+                return Post<T>(requestObject, url.ParseQueryString());
 
             return Get<T>(url);
         }
@@ -260,11 +260,7 @@ namespace ArcGIS.ServiceModel
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.Value);
                 if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
-
-            //// use POST if request is too long
-            //if (url.Length > 2000)
-            //    return await Post<T>(endpoint, endpoint.RelativeUrl.ParseQueryString());
-
+            
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
