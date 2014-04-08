@@ -24,6 +24,10 @@ namespace ArcGIS.PCL.iOS
 			base.ViewDidLoad ();
 			
 			// Perform any additional setup after loading the view, typically from a nib.
+            var gateway = new ArcGISGateway(new JsonDotNetSerializer());
+            var site = gateway.DescribeSite().Result;
+
+            
 		}
 	}
 }
