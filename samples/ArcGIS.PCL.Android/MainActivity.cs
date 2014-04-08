@@ -25,7 +25,12 @@ namespace ArcGIS.PCL.Android
 			Button button = FindViewById<Button> (Resource.Id.myButton);
 			
 			button.Click += delegate {
-				button.Text = string.Format ("{0} clicks!", count++);
+                var gateway = new ArcGISGateway(new JsonDotNetSerializer());
+                var site = gateway.DescribeSite().Result;
+
+				button.Text = string.Format ("{0} services", site.Resources.Count);
+
+                ListView listView = FindViewById<ListView>(Resource.Id.listView1);
 			};
 		}
 	}
