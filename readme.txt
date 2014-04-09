@@ -107,4 +107,20 @@ ArcGIS Online either secure or non secure
 ... new ArcGISOnlineGateway(serializer, new ArcGISOnlineTokenProvider("user", "pass", serializer));
 
 
+Once you have a gateway you can add operations to it, for example to query an endpoint add the following to your gateway
+
+public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
+{
+    return Get<QueryResponse<T>, Query>(queryOptions);
+}
+
+then call it from your code
+
+var gateway = new ArcGISGateway(_serializer);
+
+var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) 
+{ 
+    ReturnGeometry = false 
+};
+var resultPoint = await gateway.QueryAsGet<Point>(queryPoint);
 

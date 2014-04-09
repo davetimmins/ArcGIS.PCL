@@ -19,9 +19,9 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         String RootUrl { get; }
 
-        Token Token { get; }
-
         ISerializer Serializer { get; }
+
+        Task<Token> CheckGenerateToken();
     }
 
     /// <summary>
@@ -35,8 +35,9 @@ namespace ArcGIS.ServiceModel
         /// <param name="username">ArcGIS Online user name</param>
         /// <param name="password">ArcGIS Online user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer)
-            : base(PortalGateway.AGOPortalUrl, username, password, serializer)
+        /// <param name="referer">Referer url to use for the token generation</param>
+        public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer, String referer = "https://www.arcgis.com")
+            : base(PortalGateway.AGOPortalUrl, username, password, serializer, referer)
         { }
     }
 
@@ -45,9 +46,9 @@ namespace ArcGIS.ServiceModel
     /// </summary>
     public class TokenProvider : ITokenProvider, IDisposable
     {
-        HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;
         protected readonly GenerateToken TokenRequest;
+        Token _token;
 
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Server
@@ -56,7 +57,8 @@ namespace ArcGIS.ServiceModel
         /// <param name="username">ArcGIS Server user name</param>
         /// <param name="password">ArcGIS Server user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer)
+        /// <param name="referer">Referer url to use for the token generation</param>
+        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer, String referer = "")
         {
             if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
             {
@@ -67,17 +69,9 @@ namespace ArcGIS.ServiceModel
 
             RootUrl = rootUrl.AsRootUrl();
             Serializer = serializer;
-            TokenRequest = new GenerateToken(username, password);
-
-            _httpClientHandler = new HttpClientHandler();
-            if (_httpClientHandler.SupportsAutomaticDecompression)
-                _httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            if (_httpClientHandler.SupportsUseProxy()) _httpClientHandler.UseProxy = true;
-            if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
-            if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
-
-            _httpClient = new HttpClient(_httpClientHandler);
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            TokenRequest = new GenerateToken(username, password) { Referer = referer };
+                      
+            _httpClient = HttpClientFactory.Get();                 
 
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
@@ -98,11 +92,6 @@ namespace ArcGIS.ServiceModel
                     _httpClient.Dispose();
                     _httpClient = null;
                 }
-                if (_httpClientHandler != null)
-                {
-                    _httpClientHandler.Dispose();
-                    _httpClientHandler = null;
-                }
                 _token = null;
             }
         }
@@ -117,17 +106,6 @@ namespace ArcGIS.ServiceModel
 
         public string RootUrl { get; private set; }
 
-        Token _token;
-        public Token Token
-        {
-            get
-            {
-                return (_token != null && !_token.IsExpired) ?
-                    _token :
-                    CheckGenerateToken().Result;
-            }
-        }
-
         public ISerializer Serializer { get; private set; }
 
         void CheckRefererHeader()
@@ -140,17 +118,20 @@ namespace ArcGIS.ServiceModel
                 throw new HttpRequestException(String.Format("Not a valid url for referrer: {0}", TokenRequest.Referer));
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
-
+        
+        //Token _token;
         /// <summary>
         /// Generates a token using the username and password set for this provider.
         /// </summary>
         /// <returns>The generated token or null if not applicable</returns>
         /// <remarks>This sets the Token property for the provider. It will be auto appended to 
         /// any requests sent through the gateway used by this provider.</remarks>
-        protected async Task<Token> CheckGenerateToken()
+        public async Task<Token> CheckGenerateToken()
         {
             if (TokenRequest == null) return null;
 
+            if (_token != null && !_token.IsExpired) return _token;
+            
             _token = null; // reset the Token
 
             CheckRefererHeader();
@@ -173,9 +154,9 @@ namespace ArcGIS.ServiceModel
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
-            _token = result;
-            if (!String.IsNullOrWhiteSpace(TokenRequest.Referer)) _token.Referer = TokenRequest.Referer;
+            if (!String.IsNullOrWhiteSpace(TokenRequest.Referer)) result.Referer = TokenRequest.Referer;
 
+            _token = result;
             return _token;
         }
     }
