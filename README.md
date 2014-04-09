@@ -13,7 +13,8 @@ Since the serialization is specific to your implementation you will need to crea
 Supports the following as typed operations:
 
  - Generate Token (automatically if credentials are specified in gateway)
- - Query
+ - Query (attributes, spatial, count, objects Ids)
+ - Find
  - Apply Edits
  - Single Input Geocode
  - Suggest
@@ -115,19 +116,19 @@ public class ProxyGateway : PortalGateway
         : base(rootUrl, serializer)
     { }
 
-    public QueryResponse<T> Query<T>(Query queryOptions) where T : IGeometry
+    public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
     {
-        return Get<QueryResponse<T>, Query>(queryOptions).Result;
+        return Get<QueryResponse<T>, Query>(queryOptions);
     }
 
-    public AgsObject GetAnything(ArcGISServerEndpoint endpoint)
+    public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint)
     {
-        return Get<AgsObject>(endpoint).Result;
+        return Get<AgsObject>(endpoint);
     }
 
     public FeatureCollection<IGeoJsonGeometry> GetGeoJson<T>(String uri) where T : IGeometry
     {
-        var result = Query<T>(new Query(uri.AsEndpoint()));
+        var result = Query<T>(new Query(uri.AsEndpoint())).Result;
         result.Features.First().Geometry.SpatialReference = result.SpatialReference;
         var features = result.Features.ToList();
         if (result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid)
@@ -145,7 +146,7 @@ public class ProjectGateway : PortalGateway
     public List<Feature<T>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
     {
         var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);
-        var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op).Result;
+        var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
 
         var result = features.UpdateGeometries<T>(projected.Geometries);
         if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
