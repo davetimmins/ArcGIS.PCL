@@ -1,0 +1,37 @@
+require "rake/clean"
+
+CLEAN.include "*.xam"
+CLEAN.include "xamarin-component"
+
+COMPONENT = "ArcGIS.PCL-1.0.xam"
+
+file "xamarin-component/xamarin-component.exe" do
+	puts "* Downloading xamarin-component..."
+	mkdir "xamarin-component"
+	sh "curl -L https://components.xamarin.com/submit/xpkg > xamarin-component.zip"
+	sh "unzip -o -q xamarin-component.zip -d xamarin-component"
+	sh "rm xamarin-component.zip"
+end
+
+task :default => "xamarin-component/xamarin-component.exe" do
+	line = <<-END
+	mono xamarin-component/xamarin-component.exe create-manually #{COMPONENT} \
+		--name="ArcGIS.PCL" \
+		--summary="Use ArcGIS Server REST types and resources without an official SDK. Also supports converting GeoJSON to and from ArcGIS Features." \
+		--publisher="Dave Timmins" \
+		--website="https://github.com/davetimmins/ArcGIS.PCL" \
+		--details="Details.md" \
+		--license="License.md" \
+		--getting-started="GettingStarted.md" \
+		--icon="icons/awesome_128x128.png" \
+		--icon="icons/awesome_512x512.png" \
+		--library="ios":"bin/ArcGIS.ServiceModel.dll" \
+		--library="android":"bin/ArcGIS.ServiceModel.dll" \
+		--sample="iOS Sample. Demonstrates getting available ArcGIS Server services on iOS.":"../samples/ArcGIS.PCL.iOS/ArcGIS.PCL.iOS.sln" \
+		--sample="Android Sample. Demonstrates getting available ArcGIS Server services on Android":"../samples/ArcGIS.PCL.Android/ArcGIS.PCL.Android.sln"
+		END
+	puts "* Creating #{COMPONENT}..."
+	puts line.strip.gsub "\t\t", "\\\n    "
+	sh line, :verbose => false
+	puts "* Created #{COMPONENT}"
+end

@@ -70,6 +70,23 @@ namespace ArcGIS.Test
         public ArcGISError Error { get; set; }
     }
 
+    public class QueryGateway : PortalGateway
+    {
+        public QueryGateway(ISerializer serializer)
+            : base(@"http://services.arcgisonline.com/arcgis/", serializer)
+        { }
+
+        public Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions) 
+        {
+            return Get<QueryForCountResponse, QueryForCount>(queryOptions);
+        }
+
+        public Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions)
+        {
+            return Get<QueryForIdsResponse, QueryForIds>(queryOptions);
+        }
+    }
+
     public class ArcGISGatewayTests
     {
         ServiceStackSerializer _serviceStackSerializer;
@@ -176,7 +193,7 @@ namespace ArcGIS.Test
             Assert.True(resultPoint.Features.Any());
             Assert.True(resultPoint.Features.All(i => i.Geometry != null));
 
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm" };
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<String>{ "lengthkm" } };
             var resultPolyline = await gateway.QueryAsGet<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Features.Any());
@@ -184,7 +201,7 @@ namespace ArcGIS.Test
 
             gateway = new ArcGISGateway(_jsonDotNetSerializer);
 
-            var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = "areasqkm" };
+            var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = new List<String> { "areasqkm" } };
             var resultPolygon = await gateway.Query<Polygon>(queryPolygon);
 
             Assert.True(resultPolygon.Features.Any());
@@ -202,19 +219,57 @@ namespace ArcGIS.Test
             Assert.True(resultPoint.Features.Any());
             Assert.True(resultPoint.Features.All(i => i.Geometry == null));
 
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm", ReturnGeometry = false };
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<String> { "lengthkm" }, ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Features.Any());
             Assert.True(resultPolyline.Features.All(i => i.Geometry == null));
+        
         }
+
+        [Fact]
+        public async Task QueryObjectIdsAreHonored()
+        {
+            var gateway = new ArcGISGateway(_serviceStackSerializer);
+
+            var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { ReturnGeometry = false };
+            var resultPoint = await gateway.QueryAsGet<Point>(queryPoint);
+
+            Assert.True(resultPoint.Features.Any());
+            Assert.True(resultPoint.Features.All(i => i.Geometry == null));
+
+            var queryPointByOID = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            {
+                ReturnGeometry = false,
+                ObjectIds = resultPoint.Features.Take(10).Select(f => int.Parse(f.Attributes["objectid"].ToString())).ToList()
+            };
+            var resultPointByOID = await gateway.QueryAsGet<Point>(queryPointByOID);
+
+            Assert.True(resultPointByOID.Features.Any());
+            Assert.True(resultPointByOID.Features.All(i => i.Geometry == null));
+            Assert.True(resultPoint.Features.Count() > 10);
+            Assert.True(resultPointByOID.Features.Count() == 10);
+
+            var queryPointByOIDFiltered = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            {
+                Where = "magnitude < 2",
+                ReturnGeometry = false,
+                ObjectIds = resultPoint.Features.Take(10).Select(f => int.Parse(f.Attributes["objectid"].ToString())).ToList()
+            };
+            var resultPointByOIDFiltered = await gateway.QueryAsGet<Point>(queryPointByOIDFiltered);
+
+            Assert.True(resultPointByOIDFiltered.Features.Any());
+            Assert.True(resultPointByOIDFiltered.Features.All(i => i.Geometry == null));
+            Assert.True(resultPointByOIDFiltered.Features.Count() < 10);
+        }
+
 
         [Fact]
         public async Task QueryOutFieldsAreHonored()
         {
             var gateway = new ArcGISGateway(_jsonDotNetSerializer);
 
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = "lengthkm", ReturnGeometry = false };
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<String>{ "lengthkm" }, ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Features.Any());
@@ -224,7 +279,7 @@ namespace ArcGIS.Test
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint())
             {
                 Where = "areasqkm = 0.012",
-                OutFields = "areasqkm,elevation,resolution,reachcode"
+                OutFields = new List<String>{ "areasqkm", "elevation", "resolution", "reachcode" }
             };
             var resultPolygon = await gateway.QueryAsGet<Polygon>(queryPolygon);
 
@@ -233,6 +288,45 @@ namespace ArcGIS.Test
             Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
         }
 
+        [Fact]
+        public async Task CanQueryForCount()
+        {
+            var gateway = new QueryGateway(_jsonDotNetSerializer);
+
+            var query = new QueryForCount(@"/Specialty/Soil_Survey_Map/MapServer/2".AsEndpoint());
+            var result = await gateway.QueryForCount(query);
+
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.True(result.NumberOfResults > 0);
+        }
+
+        [Fact]
+        public async Task CanQueryForIds()
+        {
+            var gateway = new QueryGateway(_jsonDotNetSerializer);
+
+            var query = new QueryForIds(@"/Specialty/Soil_Survey_Map/MapServer/2".AsEndpoint());
+            var result = await gateway.QueryForIds(query);
+
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.NotNull(result.ObjectIds);
+            Assert.True(result.ObjectIds.Any());
+
+            var queryFiltered = new QueryForIds(@"/Specialty/Soil_Survey_Map/MapServer/2".AsEndpoint()) 
+            {
+                ObjectIds = result.ObjectIds.Take(100).ToList()
+            };
+            var resultFiltered = await gateway.QueryForIds(queryFiltered);
+
+            Assert.NotNull(resultFiltered);
+            Assert.Null(resultFiltered.Error);
+            Assert.NotNull(resultFiltered.ObjectIds);
+            Assert.True(resultFiltered.ObjectIds.Any());
+            Assert.True(resultFiltered.ObjectIds.Count() == queryFiltered.ObjectIds.Count);
+        }
+        
         /// <summary>
         /// Performs unfiltered query, then filters by Extent and Polygon to SE quadrant of globe and verifies both filtered
         /// results contain same number of features as each other, and that both filtered resultsets contain fewer features than unfiltered resultset.

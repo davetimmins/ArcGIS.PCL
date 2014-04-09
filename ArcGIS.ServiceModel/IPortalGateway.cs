@@ -50,21 +50,13 @@ namespace ArcGIS.ServiceModel
     /// ArcGIS Online gateway
     /// </summary>
     public class ArcGISOnlineGateway : PortalGateway
-    {
+    {       
         /// <summary>
-        /// Create an ArcGIS Online gateway to access non secure resources
-        /// </summary>
-        /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public ArcGISOnlineGateway(ISerializer serializer)
-            : base(PortalGateway.AGOPortalUrl, serializer, null)
-        { }
-
-        /// <summary>
-        /// Create an ArcGIS Online gateway to access secure resources
+        /// Create an ArcGIS Online gateway to access resources
         /// </summary>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        public ArcGISOnlineGateway(ISerializer serializer, ArcGISOnlineTokenProvider tokenProvider)
+        public ArcGISOnlineGateway(ISerializer serializer, ArcGISOnlineTokenProvider tokenProvider = null)
             : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
         { }
     }
@@ -93,7 +85,6 @@ namespace ArcGIS.ServiceModel
     public abstract class PortalGateway : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
-        HttpClientHandler _httpClientHandler;
         HttpClient _httpClient;
 
         /// <summary>
@@ -117,19 +108,8 @@ namespace ArcGIS.ServiceModel
             TokenProvider = tokenProvider;
             Serializer = serializer;
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
-
-            _httpClientHandler = new HttpClientHandler();
-            if (_httpClientHandler.SupportsAutomaticDecompression)
-                _httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            if (_httpClientHandler.SupportsUseProxy()) _httpClientHandler.UseProxy = true;
-            if (_httpClientHandler.SupportsAllowAutoRedirect()) _httpClientHandler.AllowAutoRedirect = true;
-            if (_httpClientHandler.SupportsPreAuthenticate()) _httpClientHandler.PreAuthenticate = true;
-
-            _httpClient = new HttpClient(_httpClientHandler);
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
-
+                      
+            _httpClient = HttpClientFactory.Get();         
             System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
         }
 
@@ -148,11 +128,6 @@ namespace ArcGIS.ServiceModel
                 {
                     _httpClient.Dispose();
                     _httpClient = null;
-                }
-                if (_httpClientHandler != null)
-                {
-                    _httpClientHandler.Dispose();
-                    _httpClientHandler = null;
                 }
             }
         }
@@ -233,11 +208,11 @@ namespace ArcGIS.ServiceModel
             return Get<PortalResponse>(endpoint);
         }
 
-        Token CheckGenerateToken()
+        async Task<Token> CheckGenerateToken()
         {
             if (TokenProvider == null) return null;
 
-            var token = TokenProvider.Token;
+            var token = await TokenProvider.CheckGenerateToken();
 
             if (token != null) CheckRefererHeader(token.Referer);
             return token;
@@ -258,14 +233,18 @@ namespace ArcGIS.ServiceModel
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            return Get<T>((requestObject.RelativeUrl + AsRequestQueryString(requestObject)).AsEndpoint());
+            var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(requestObject);
+
+            if (url.Length > 2000)
+                return Post<T>(requestObject, url.ParseQueryString());
+
+            return Get<T>(url);
         }
 
-        protected async Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
+        protected async Task<T> Get<T>(String url) where T : IPortalResponse
         {
-            var token = CheckGenerateToken();
+            var token = await CheckGenerateToken();
 
-            var url = endpoint.BuildAbsoluteUrl(RootUrl);
             if (!url.Contains("f=")) url += (url.Contains("?") ? "&" : "?") + "f=json";
             if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !url.Contains("token="))
             {
@@ -273,11 +252,7 @@ namespace ArcGIS.ServiceModel
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.Value);
                 if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
-
-            // use POST if request is too long
-            if (url.Length > 2082)
-                return await Post<T>(endpoint, endpoint.RelativeUrl.ParseQueryString());
-
+            
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
@@ -297,6 +272,11 @@ namespace ArcGIS.ServiceModel
             return result;
         }
 
+        protected Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
+        {
+            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl));            
+        }
+
         protected Task<T> Post<T, TRequest>(TRequest requestObject)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
@@ -308,7 +288,7 @@ namespace ArcGIS.ServiceModel
         {
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
-            var token = CheckGenerateToken();
+            var token = await CheckGenerateToken();
 
             // these should have already been added
             if (!parameters.ContainsKey("f")) parameters.Add("f", "json");
@@ -358,6 +338,38 @@ namespace ArcGIS.ServiceModel
             var dictionary = Serializer.AsDictionary(objectToConvert);
 
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));
+        }
+    }
+
+    public static class HttpClientFactory
+    {
+        public static Func<HttpClient> Get { get; set; }
+
+        public static Func<HttpClientHandler> GetHandler { get; set; }
+
+        static HttpClientFactory()
+        {
+            Get = (() => 
+            {
+                var httpClient = new HttpClient(GetHandler());
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+
+                return httpClient;
+            });
+
+            GetHandler = (() => 
+            {
+                var httpClientHandler = new HttpClientHandler();
+                if (httpClientHandler.SupportsAutomaticDecompression)
+                    httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                if (httpClientHandler.SupportsUseProxy()) httpClientHandler.UseProxy = true;
+                if (httpClientHandler.SupportsAllowAutoRedirect()) httpClientHandler.AllowAutoRedirect = true;
+                if (httpClientHandler.SupportsPreAuthenticate()) httpClientHandler.PreAuthenticate = true;
+
+                return httpClientHandler;
+            });
         }
     }
 }
