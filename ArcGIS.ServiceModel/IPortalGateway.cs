@@ -50,21 +50,13 @@ namespace ArcGIS.ServiceModel
     /// ArcGIS Online gateway
     /// </summary>
     public class ArcGISOnlineGateway : PortalGateway
-    {
+    {       
         /// <summary>
-        /// Create an ArcGIS Online gateway to access non secure resources
-        /// </summary>
-        /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public ArcGISOnlineGateway(ISerializer serializer)
-            : base(PortalGateway.AGOPortalUrl, serializer, null)
-        { }
-
-        /// <summary>
-        /// Create an ArcGIS Online gateway to access secure resources
+        /// Create an ArcGIS Online gateway to access resources
         /// </summary>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        public ArcGISOnlineGateway(ISerializer serializer, ArcGISOnlineTokenProvider tokenProvider)
+        public ArcGISOnlineGateway(ISerializer serializer, ArcGISOnlineTokenProvider tokenProvider = null)
             : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
         { }
     }

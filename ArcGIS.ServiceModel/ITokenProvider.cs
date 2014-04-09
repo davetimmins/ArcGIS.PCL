@@ -118,8 +118,7 @@ namespace ArcGIS.ServiceModel
                 throw new HttpRequestException(String.Format("Not a valid url for referrer: {0}", TokenRequest.Referer));
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
-
-
+        
         //Token _token;
         /// <summary>
         /// Generates a token using the username and password set for this provider.
@@ -156,7 +155,7 @@ namespace ArcGIS.ServiceModel
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
             if (!String.IsNullOrWhiteSpace(TokenRequest.Referer)) result.Referer = TokenRequest.Referer;
-            // todo : convert Uri types from string to uri
+
             _token = result;
             return _token;
         }
