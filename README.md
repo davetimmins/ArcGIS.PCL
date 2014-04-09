@@ -1,5 +1,5 @@
-ArcGIS.PCL
-==========
+![Icon](https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png)
+# ArcGIS.PCL
 
 Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.com/2013/July/ArcGIS-PCL/).
 
@@ -178,3 +178,7 @@ If you have [NuGet](http://nuget.org) installed, the easiest way to get started 
     PM> Install-Package ArcGIS.PCL
 
 or you can get the code from here.
+
+### Icon
+
+[Gateway](http://thenounproject.com/term/gateway/5477/) designed by [Piotr Gawiński](http://thenounproject.com/Piotrek/) from The Noun Project
