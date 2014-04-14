@@ -7,7 +7,7 @@
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
-    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/dev/gateway.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       Use ArcGIS Server REST types and resources without an official SDK.
