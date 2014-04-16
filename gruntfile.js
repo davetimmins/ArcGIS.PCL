@@ -1,5 +1,6 @@
 module.exports = function (grunt) {
-    // Project configuration.
+    "use strict";
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         clean: ["dist"],
@@ -9,39 +10,34 @@ module.exports = function (grunt) {
             }
         },
         msbuild: {
-            src: ['ArcGIS.ServiceModel\\ArcGIS.ServiceModel.csproj'],
+            src: ['*.sln'],
             options: {
                 projectConfiguration: 'Release',
                 targets: ['Clean', 'Rebuild'],
                 stdout: true
             }
         },
-        assemblyinfo: {
+        cs_xunit: {
             options: {
-                files: ['ArcGIS.ServiceModel\\ArcGIS.ServiceModel.csproj'],
-                info: {                    
-                    title: 'ArcGIS.ServiceModel',
-                }
+                xUnit: "xunit\\xunit.console.exe"
+            },
+            data: {
+                dll: "ArcGIS.Test\\bin\\Release\\ArcGIS.Test.dll"
             }
         },
         nugetpack: {
             dist: {
                 src: '*.nuspec',
-                dest: 'dist/',
-                options: {
-                    version: "3.0.0"
-                }
+                dest: 'dist/'
             }
         }
     });
-    grunt.loadNpmTasks('grunt-dotnet-assembly-info');
-    grunt.loadNpmTasks('grunt-msbuild');
-    // load contrib clean for prep
+   
     grunt.loadNpmTasks('grunt-contrib-clean');
-    // load the shell plugin for cmd goodies
     grunt.loadNpmTasks('grunt-shell');
-    // Load the plugin that provides the "nuget" task.
+    grunt.loadNpmTasks('grunt-msbuild');
+    grunt.loadNpmTasks('grunt-cs-xunit');
     grunt.loadNpmTasks('grunt-nuget');
-    // Default task(s).
-    grunt.registerTask('default', ['clean', 'shell', 'msbuild', 'assemblyinfo', 'nugetpack']);
+    
+    grunt.registerTask('default', ['clean', 'shell', 'msbuild', 'cs_xunit', 'nugetpack']);
 };
