@@ -1,12 +1,15 @@
 language: node_js
 node_js:
-  - 0.8
+  - "0.11"
   - "0.10"
-  - 0.11
 
 branches:
   only:
     - dev
+
+before_install: npm install -g grunt-cli
+install: npm install
+before_script: grunt build
 
 matrix:
   fast_finish: true
