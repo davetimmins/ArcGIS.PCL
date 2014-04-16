@@ -5,11 +5,11 @@ using System.Reflection;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ArcGIS.ServiceModel")]
-[assembly: AssemblyDescription("Operations and data types used with the ArcGIS Server REST API")]
+[assembly: AssemblyDescription("Operations and data types used with the ArcGIS Server REST API.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ArcGIS REST API ServiceModel PCL")]
-[assembly: AssemblyCopyright("Copyright Dave Timmins © 2013")]
+[assembly: AssemblyCopyright("Copyright Dave Timmins (c) 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]
@@ -23,6 +23,7 @@ using System.Reflection;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("3.0.0")]
 [assembly: AssemblyFileVersion("3.0.0")]
+[assembly: AssemblyInformationalVersion("3.0.0")]
+

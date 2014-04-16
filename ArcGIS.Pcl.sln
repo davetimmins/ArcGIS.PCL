@@ -7,9 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.Test", "ArcGIS.Test\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1EF606F2-E995-4D3D-BDE4-6AF81895C465}"
 	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
 		ArcGIS.PCL.nuspec = ArcGIS.PCL.nuspec
 		gateway.png = gateway.png
-		pack.bat = pack.bat
+		gruntfile.js = gruntfile.js
+		package.json = package.json
 		readme.txt = readme.txt
 	EndProjectSection
 EndProject
@@ -20,6 +22,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "component", "component", "{
 		component\License.md = component\License.md
 		component\Rakefile = component\Rakefile
 		component\README.md = component\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xunit", "xunit", "{D6601F8B-FBE3-4E9D-8891-B6C1B6CF00CE}"
+	ProjectSection(SolutionItems) = preProject
+		xunit\HTML.xslt = xunit\HTML.xslt
+		xunit\NUnitXml.xslt = xunit\NUnitXml.xslt
+		xunit\xunit.console.exe = xunit\xunit.console.exe
+		xunit\xunit.console.exe.config = xunit\xunit.console.exe.config
+		xunit\xunit.console.pdb = xunit\xunit.console.pdb
+		xunit\xunit.runner.utility.dll = xunit\xunit.runner.utility.dll
+		xunit\xunit.runner.utility.pdb = xunit\xunit.runner.utility.pdb
+		xunit\xunit.runner.utility.xml = xunit\xunit.runner.utility.xml
 	EndProjectSection
 EndProject
 Global
