@@ -8,8 +8,6 @@ branches:
     - dev
 
 before_install: npm install -g grunt-cli
-install: npm install
-before_script: grunt build
 
 matrix:
   fast_finish: true
