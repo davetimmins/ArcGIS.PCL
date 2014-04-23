@@ -34,10 +34,10 @@ namespace ArcGIS.ServiceModel
         Token _token;
 
         /// <summary>
-        /// Create a token provider to authenticate against ArcGIS Online
+        /// Create an OAuth token provider to authenticate against ArcGIS Online
         /// </summary>
-        /// <param name="clientId">ArcGIS Online user name</param>
-        /// <param name="clientSecret">ArcGIS Online user password</param>
+        /// <param name="clientId">The Client Id from your API access section of your application from developers.arcgis.com</param>
+        /// <param name="clientSecret">The Client Secret from your API access section of your application from developers.arcgis.com</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public ArcGISOnlineAppLoginOAuthProvider(String clientId, String clientSecret, ISerializer serializer)            
         {
