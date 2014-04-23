@@ -10,7 +10,7 @@ namespace ArcGIS.ServiceModel.Operation
     /// </summary>
     [DataContract]
     public class GenerateToken : CommonParameters, IEndpoint
-    {        
+    {
         public GenerateToken(String username, String password)
         {
             Username = username;
@@ -24,7 +24,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>The default value is referer. Setting it to null will also set the Referer to null</remarks>
         [DataMember(Name = "client")]
-        public String Client { get { return _client; } set { _client = value; if (_client == null) Referer = null; } }
+        public String Client { get { return _client; } set { _client = value; if (String.IsNullOrWhiteSpace(_client)) Referer = null; } }
 
         String _referer;
         /// <summary>
@@ -32,7 +32,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// This parameter must be specified if the value of the client parameter is referer.
         /// </summary>
         [DataMember(Name = "referer")]
-        public String Referer { get { return _referer; } set { _referer = value; if (_referer != null) Client = "referer"; } }
+        public String Referer { get { return _referer; } set { _referer = value; if (!String.IsNullOrWhiteSpace(_referer)) Client = "referer"; } }
 
         /// <summary>
         /// Username of user who wants to get a token.
@@ -71,6 +71,67 @@ namespace ArcGIS.ServiceModel.Operation
             return (String.Equals(rootUrl, ArcGIS.ServiceModel.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
                 ? (DontForceHttps ? rootUrl : rootUrl.Replace("http://", "https://")) + RelativeUrl.Replace("tokens/", "")
                 : (DontForceHttps ? rootUrl : rootUrl.Replace("http://", "https://")) + RelativeUrl;
+        }
+    }
+
+    /// <summary>
+    /// Request for generating a token from the hosted OAuth provider on ArcGIS Online  
+    /// that can be used to access credit-based ArcGIS Online services
+    /// </summary>
+    [DataContract]
+    public class GenerateOAuthToken : CommonParameters
+    {
+        public GenerateOAuthToken(String clientId, String clientSecret)
+        {
+            ClientId = clientId;
+            ClientSecret = clientSecret;
+            ExpirationInMinutes = 120;
+        }
+
+        /// <summary>
+        /// The Client Id from your API access section of your application from developers.arcgis.com
+        /// </summary>
+        [DataMember(Name = "client_id")]
+        public String ClientId { get; private set; }
+
+        /// <summary>
+        /// The Client Secret from your API access section of your application from developers.arcgis.com
+        /// </summary>
+        [DataMember(Name = "client_secret")]
+        public String ClientSecret { get; private set; }
+
+        [DataMember(Name = "grant_type")]
+        public virtual String Type { get { return "client_credentials"; } }
+
+        /// <summary>
+        /// The token expiration time in minutes.
+        /// </summary>
+        /// <remarks> The default is 120 minutes. Maximum value is 14 days (20160 minutes)</remarks>
+        [DataMember(Name = "expiration")]
+        public int ExpirationInMinutes { get; set; }
+    }
+
+    [DataContract]
+    public class OAuthToken : PortalResponse
+    {
+        [DataMember(Name = "access_token")]
+        public String Value { get; set; }
+
+        /// <summary>
+        /// The expiration time of the token in seconds.
+        /// </summary>
+        [DataMember(Name = "expires_in")]
+        public long Expiry { get; set; }
+
+        public Token AsToken()
+        {
+            return new Token
+            {
+                Value = Value,
+                Error = Error,
+                AlwaysUseSsl = true,
+                Expiry = DateTime.UtcNow.AddSeconds(Expiry).ToUnixTime()
+            };
         }
     }
 

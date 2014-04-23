@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata minClientVersion="2.7">
     <id>ArcGIS.PCL</id>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <title>ArcGIS Server Gateway</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -25,6 +25,8 @@
       • Simplify
       • Project
       • Buffer
+      
+      The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
 
@@ -38,21 +40,9 @@
       Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher.
     </summary>
     <releaseNotes>
-      Breaking changes
-      
-      - Removed Silverlight 4 and Windows Phone 7.5 support
-      - Query operation OutFields is now set using an array to be consistent with other operations
-      
-      Other features in this release
-      
-      - Added ArcGIS Online endpoint
-      - Fixed issue calling hosted ArcGIS Online feature services
-      - Added ObjectIds property to Query operation
-      - Added query for Ids operation
-      - Added query for count operation
-      - Added HttpClientFactory for ModernHttpClient lib support in iOS and Android projects
-      - Added Xamarin iOS and Android support
-      - Updated NuGet package dependencies to latest versions
+      Fixed issue checking null referer for generate token request
+
+      Added ArcGISOnlineAppLoginOAuthProvider for creating OAuth tokens to use with ArcGIS Online services
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>

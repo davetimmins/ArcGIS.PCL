@@ -25,6 +25,98 @@ namespace ArcGIS.ServiceModel
     }
 
     /// <summary>
+    /// ArcGIS Online application login type OAuth 2.0 token provider
+    /// </summary>
+    public class ArcGISOnlineAppLoginOAuthProvider : ITokenProvider, IDisposable
+    {
+        HttpClient _httpClient;
+        protected readonly GenerateOAuthToken OAuthRequest;
+        Token _token;
+
+        /// <summary>
+        /// Create a token provider to authenticate against ArcGIS Online
+        /// </summary>
+        /// <param name="clientId">ArcGIS Online user name</param>
+        /// <param name="clientSecret">ArcGIS Online user password</param>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        public ArcGISOnlineAppLoginOAuthProvider(String clientId, String clientSecret, ISerializer serializer)            
+        {
+            if (String.IsNullOrWhiteSpace(clientId) || String.IsNullOrWhiteSpace(clientSecret))
+            {
+                System.Diagnostics.Debug.WriteLine("ArcGISOnlineAppLoginOAuthProvider not initialized as client Id/secret not supplied.");
+                return;
+            }
+            if (serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+
+            Serializer = serializer;
+            OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
+
+            _httpClient = HttpClientFactory.Get();
+
+            System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
+        }
+
+        #if DEBUG
+        ~ArcGISOnlineAppLoginOAuthProvider()
+        {
+            Dispose(false);
+        }
+#endif
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_httpClient != null)
+                {
+                    _httpClient.Dispose();
+                    _httpClient = null;
+                }
+                _token = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+#if DEBUG
+            GC.SuppressFinalize(this);
+#endif
+        }
+
+        public string RootUrl
+        {
+            get { return "https://www.arcgis.com/sharing/oauth2/token"; }
+        }
+
+        public ISerializer Serializer { get; private set; }
+
+        public async Task<Token> CheckGenerateToken()
+        {
+            if (OAuthRequest == null) return null;
+
+            if (_token != null && !_token.IsExpired) return _token;
+
+            _token = null; // reset the Token            
+
+            HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(OAuthRequest));
+
+            _httpClient.CancelPendingRequests();
+            HttpResponseMessage response = await _httpClient.PostAsync(RootUrl, content);
+            response.EnsureSuccessStatusCode();
+
+            var resultString = await response.Content.ReadAsStringAsync();
+            System.Diagnostics.Debug.WriteLine("Generate OAuth token result: " + resultString);
+            var result = Serializer.AsPortalResponse<OAuthToken>(resultString);
+
+            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
+            
+            _token = result.AsToken();
+            return _token;
+        }
+    }
+
+    /// <summary>
     /// ArcGIS Online token provider
     /// </summary>
     public sealed class ArcGISOnlineTokenProvider : TokenProvider
