@@ -25,7 +25,7 @@
       • Simplify
       • Project
       • Buffer
-      
+
       The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
@@ -45,12 +45,15 @@
       Added ArcGISOnlineAppLoginOAuthProvider for creating OAuth tokens to use with ArcGIS Online services
     </releaseNotes>
     <language />
-    <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>
+    <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
     <dependencies>
-      <dependency id="Microsoft.Bcl" version="1.1.7" />
-      <dependency id="Microsoft.Bcl.Async" version="1.0.166" />
-      <dependency id="Microsoft.Bcl.Build" version="1.0.14" />
-      <dependency id="Microsoft.Net.Http" version="2.2.19" />
+      <group targetFramework="portable-net4+sl5+netcore45+wp8">
+        <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
+        <dependency id="Microsoft.Net.Http" version="2.2.20" />
+      </group>
+      <group targetFramework="portable-net45+netcore45+wp8+MonoAndroid1+MonoTouch1">
+        <dependency id="Microsoft.Net.Http" version="2.2.20" />
+      </group>
     </dependencies>
   </metadata>
   <files>
