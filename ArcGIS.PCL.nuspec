@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-  <metadata minClientVersion="2.7">
+  <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL</id>
     <version>3.1.0</version>
     <title>ArcGIS Server Gateway</title>
@@ -28,21 +28,27 @@
 
       The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
-      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
+      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher.
+      Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher.
     </description>
     <summary>
       Use ArcGIS Server REST types and resources without an official SDK.
 
-      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
+      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher.
+      Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher.
+      
+      PCL profiles Profile78, Profile136
     </summary>
     <releaseNotes>
-      Fixed issue checking null referer for generate token request
+      Fixed issue checking null referer for generate token request.
 
-      Added ArcGISOnlineAppLoginOAuthProvider for creating OAuth tokens to use with ArcGIS Online services
+      Added ArcGISOnlineAppLoginOAuthProvider for creating OAuth tokens to use with ArcGIS Online services.
+      
+      Added conditional dependencies to nuspec     .
+      
+      Can use .NET v4.
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>

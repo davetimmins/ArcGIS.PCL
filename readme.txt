@@ -1,28 +1,5 @@
 To get started with ArcGIS.PCL first create an ISerializer implementation
 
-==================== ServiceStack.Text example ==========================
-
-public class ServiceStackSerializer : ISerializer
-{
-    public ServiceStackSerializer()
-    {
-        ServiceStack.Text.JsConfig.EmitCamelCaseNames = true;
-        ServiceStack.Text.JsConfig.IncludeTypeInfo = false;
-        ServiceStack.Text.JsConfig.ConvertObjectTypesIntoStringDictionary = true;
-        ServiceStack.Text.JsConfig.IncludeNullValues = false;
-    }
-
-    public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
-    {
-        return ServiceStack.Text.TypeSerializer.ToStringDictionary<T>(objectToConvert);
-    }
-
-    public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
-    {
-        return ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
-    }
-}
-
 ========================= Json.NET example ==============================
 
 public class JsonDotNetSerializer : ISerializer
@@ -55,6 +32,29 @@ public class JsonDotNetSerializer : ISerializer
     public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
     {
         return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);           
+    }
+}
+
+==================== ServiceStack.Text example ==========================
+
+public class ServiceStackSerializer : ISerializer
+{
+    public ServiceStackSerializer()
+    {
+        ServiceStack.Text.JsConfig.EmitCamelCaseNames = true;
+        ServiceStack.Text.JsConfig.IncludeTypeInfo = false;
+        ServiceStack.Text.JsConfig.ConvertObjectTypesIntoStringDictionary = true;
+        ServiceStack.Text.JsConfig.IncludeNullValues = false;
+    }
+
+    public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
+    {
+        return ServiceStack.Text.TypeSerializer.ToStringDictionary<T>(objectToConvert);
+    }
+
+    public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
+    {
+        return ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
     }
 }
 
