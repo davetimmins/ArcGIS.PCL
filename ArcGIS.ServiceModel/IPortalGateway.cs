@@ -88,21 +88,12 @@ namespace ArcGIS.ServiceModel
         HttpClient _httpClient;
 
         /// <summary>
-        /// Create an ArcGIS Server gateway to access non secure resources
-        /// </summary>
-        /// <param name="rootUrl">Made up of scheme://host:port/site</param>
-        /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        protected PortalGateway(String rootUrl, ISerializer serializer)
-            : this(rootUrl, serializer, null)
-        { }
-
-        /// <summary>
         /// Create an ArcGIS Server gateway to access secure resources
         /// </summary>
         /// <param name="rootUrl">Made up of scheme://host:port/site</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        protected PortalGateway(String rootUrl, ISerializer serializer, ITokenProvider tokenProvider)
+        protected PortalGateway(String rootUrl, ISerializer serializer, ITokenProvider tokenProvider = null)
         {
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
