@@ -76,7 +76,7 @@
   <ItemGroup>
     <Compile Include="ArcGISGateway.cs" />
     <Compile Include="GeocodeGateway.cs" />
-    <Compile Include="JsonDotNetSerilizer.cs" />
+    <Compile Include="JsonDotNetSerializer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="Info.plist" />
@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ArcGIS.ServiceModel">
-      <HintPath>..\..\GitHub\ArcGIS.PCL\ArcGIS.ServiceModel\bin\Debug\ArcGIS.ServiceModel.dll</HintPath>
+      <HintPath>..\..\ArcGIS.ServiceModel\bin\Release\ArcGIS.ServiceModel.dll</HintPath>
     </Reference>
     <Reference Include="ModernHttpClient.iOS">
       <HintPath>Components\modernhttpclient-1.2.2\lib\ios\ModernHttpClient.iOS.dll</HintPath>
