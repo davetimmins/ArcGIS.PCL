@@ -82,7 +82,6 @@
       <Visible>False</Visible>
     </XamarinComponentReference>
     <XamarinComponentReference Include="modernhttpclient">
-      <InstallationInProgress>True</InstallationInProgress>
       <Version>1.2.2</Version>
       <Visible>False</Visible>
     </XamarinComponentReference>

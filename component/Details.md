@@ -40,6 +40,21 @@ public class JsonDotNetSerializer : ISerializer
 		}
 }
 ```
+
+If you need to override the HttpClient you can use the ModernHttpClient approach
+
+On iOS:
+
+```csharp
+var httpClient = new HttpClient(new NSUrlSessionHandler());
+```
+
+On Android:
+
+```csharp
+var httpClient = new HttpClient(new OkHttpNetworkHandler());
+```
+
 ### ArcGIS Server gateway with non secure resources
 
 ```csharp
