@@ -177,9 +177,9 @@ If you have [NuGet](http://nuget.org) installed, the easiest way to get started 
 
     PM> Install-Package ArcGIS.PCL
 
-On Xamarin you can add the ArcGIS.PCL component from the component store or use the [NuGet addin](https://github.com/mrward/monodevelop-nuget-addin) and add it from there.
+On Xamarin you can add the [ArcGIS.PCL component](http://components.xamarin.com/view/ArcGIS.PCL) from the component store or use the [NuGet addin](https://github.com/mrward/monodevelop-nuget-addin) and add it from there.
 
-or you can get the code from here.
+Of course you can also get the code from this site.
 
 ### Icon
 
