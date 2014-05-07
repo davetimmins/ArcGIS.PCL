@@ -172,10 +172,12 @@ static Dictionary<String, Func<String, List<Feature<IGeometry>>>> _funcMap = new
 return _funcMap["Point"](data);
 ```
 
-### Download
+### Usage
 If you have [NuGet](http://nuget.org) installed, the easiest way to get started is to install via NuGet:
 
     PM> Install-Package ArcGIS.PCL
+
+On Xamarin you can add the ArcGIS.PCL component from the component store or use the [NuGet addin](https://github.com/mrward/monodevelop-nuget-addin) and add it from there.
 
 or you can get the code from here.
 
