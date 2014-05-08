@@ -68,7 +68,7 @@ namespace ArcGIS.ServiceModel.Operation
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
 
-            return (String.Equals(rootUrl, ArcGIS.ServiceModel.PortalGateway.AGOPortalUrl, StringComparison.OrdinalIgnoreCase))
+            return (String.Equals(rootUrl, "http://www.arcgis.com/sharing/rest/", StringComparison.OrdinalIgnoreCase))
                 ? (DontForceHttps ? rootUrl : rootUrl.Replace("http://", "https://")) + RelativeUrl.Replace("tokens/", "")
                 : (DontForceHttps ? rootUrl : rootUrl.Replace("http://", "https://")) + RelativeUrl;
         }
@@ -160,7 +160,7 @@ namespace ArcGIS.ServiceModel.Operation
         }
 
         [IgnoreDataMember]
-        internal String Referer { get; set; }
+        public String Referer { get; set; }
 
         /// <summary>
         /// True if the token must always pass over ssl.

@@ -40,4 +40,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-nuget');
     
     grunt.registerTask('default', ['clean', 'shell', 'msbuild', 'cs_xunit', 'nugetpack']);
+
+    grunt.registerTask('dirty', ['clean', 'shell', 'msbuild', 'nugetpack']);
 };
