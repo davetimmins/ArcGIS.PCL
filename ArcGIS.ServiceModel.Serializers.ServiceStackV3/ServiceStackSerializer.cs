@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ArcGIS.ServiceModel.Serializers.ServiceStackV3
+namespace ArcGIS.ServiceModel.Serializers
 {
     public class ServiceStackSerializer : ISerializer
     {
