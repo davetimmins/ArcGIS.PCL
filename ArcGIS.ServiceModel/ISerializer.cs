@@ -27,4 +27,14 @@ namespace ArcGIS.ServiceModel
         /// <returns></returns>
         T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse;
     }
+
+    public static class SerializerFactory
+    {
+        public static Func<ISerializer> Get { get; set; }
+
+        static SerializerFactory()
+        {
+            Get = (() => { return null; });
+        }
+    }
 }

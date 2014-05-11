@@ -24,16 +24,16 @@ namespace ArcGIS.ServiceModel
         /// <param name="clientId">The Client Id from your API access section of your application from developers.arcgis.com</param>
         /// <param name="clientSecret">The Client Secret from your API access section of your application from developers.arcgis.com</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public ArcGISOnlineAppLoginOAuthProvider(String clientId, String clientSecret, ISerializer serializer)            
+        public ArcGISOnlineAppLoginOAuthProvider(String clientId, String clientSecret, ISerializer serializer = null)            
         {
             if (String.IsNullOrWhiteSpace(clientId) || String.IsNullOrWhiteSpace(clientSecret))
             {
                 System.Diagnostics.Debug.WriteLine("ArcGISOnlineAppLoginOAuthProvider not initialized as client Id/secret not supplied.");
                 return;
             }
-            if (serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
-
-            Serializer = serializer;
+            
+            Serializer = serializer ?? SerializerFactory.Get();
+            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
 
             _httpClient = HttpClientFactory.Get();
@@ -113,7 +113,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="password">ArcGIS Online user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation</param>
-        public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer, String referer = "https://www.arcgis.com")
+        public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer = null, String referer = "https://www.arcgis.com")
             : base(PortalGateway.AGOPortalUrl, username, password, serializer, referer)
         { }
     }
@@ -135,17 +135,17 @@ namespace ArcGIS.ServiceModel
         /// <param name="password">ArcGIS Server user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation</param>
-        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer, String referer = "")
+        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = "")
         {
             if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
             {
                 System.Diagnostics.Debug.WriteLine("TokenProvider for '" + RootUrl + "' not initialized as username/password not supplied.");
                 return;
             }
-            if (serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
-
+            
+            Serializer = serializer ?? SerializerFactory.Get();
+            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             RootUrl = rootUrl.AsRootUrl();
-            Serializer = serializer;
             TokenRequest = new GenerateToken(username, password) { Referer = referer };
                       
             _httpClient = HttpClientFactory.Get();                 

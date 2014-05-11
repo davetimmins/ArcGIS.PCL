@@ -20,7 +20,7 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        public ArcGISOnlineGateway(ISerializer serializer, ArcGISOnlineTokenProvider tokenProvider = null)
+        public ArcGISOnlineGateway(ISerializer serializer = null, ArcGISOnlineTokenProvider tokenProvider = null)
             : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
         { }
     }
@@ -37,7 +37,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="username">ArcGIS Server user name</param>
         /// <param name="password">ArcGIS Server user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        protected SecureArcGISServerGateway(String rootUrl, String username, String password, ISerializer serializer)
+        protected SecureArcGISServerGateway(String rootUrl, String username, String password, ISerializer serializer = null)
             : base(rootUrl, serializer, new TokenProvider(rootUrl, username, password, serializer))
         { }
     }
@@ -57,11 +57,11 @@ namespace ArcGIS.ServiceModel
         /// <param name="rootUrl">Made up of scheme://host:port/site</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        protected PortalGateway(String rootUrl, ISerializer serializer, ITokenProvider tokenProvider = null)
+        protected PortalGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
         {
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
-            Serializer = serializer;
+            Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
                       
             _httpClient = HttpClientFactory.Get();         
