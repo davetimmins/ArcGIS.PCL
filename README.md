@@ -8,7 +8,7 @@ It can also be used for just working with types and as well as some ArcGIS Serve
 Typical use case would be the need to call some ArcGIS REST resource from server .NET code or maybe a console app. Rather than having to fudge a dependency to an existing SDK you can use this. 
 Should work with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher and Xamarin iOS and Android.
 
-Since the serialization is specific to your implementation you will need to create an ISerializer to use in your gateway. The test project has ServiceStack.Text and Json.NET [example serializers](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ISerializer.cs) 
+Since the serialization is specific to your implementation you will need to create an ISerializer to use in your gateway. The test project has ServiceStack.Text and Json.NET [example serializers](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ISerializer.cs). There are also NuGet packages created for these called `ArcGIS.PCL.JsonDotNetSerializer` and `ArcGIS.PCL.ServiceStackV3Serializer`. To use one of these add a reference using NuGet then call the static `Init()` method e.g. `ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init()`. This will create an `ISerializer` instance and override the `SerializerFactory.Get()` method so that it is returned when requested. This also means that you no longer have to pass the `ISerializer` to your gateway or token providers when initialising them, though you can still use this mechanism if you prefer. 
 
 Supports the following as typed operations:
 
@@ -41,30 +41,30 @@ See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGI
 ```csharp
 public class ArcGISGateway : PortalGateway
 {
-    public ArcGISGateway(ISerializer serializer)
-        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer)
+    public ArcGISGateway()
+        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
     { }
 }
 
-... new ArcGISGateway(serializer);
+... new ArcGISGateway();
 ```
 #### ArcGIS Server with secure resources
 ```csharp
 public class SecureGISGateway : SecureArcGISServerGateway
 {
-    public SecureGISGateway(ISerializer serializer)
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
+    public SecureGISGateway()
+        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
     { }
 }
 
-... new SecureGISGateway(serializer);
+... new SecureGISGateway();
 ```
 #### ArcGIS Server with secure resources and token service at different location
 ```csharp
 public class SecureTokenProvider : TokenProvider
 {
-    public SecureTokenProvider(ISerializer serializer)
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
+    public SecureTokenProvider()
+        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
     { }
 }
 
@@ -80,9 +80,9 @@ public class SecureGISGateway : PortalGateway
 
 #### ArcGIS Online either secure or non secure  
 ```csharp
-... new ArcGISOnlineGateway(serializer);
+... new ArcGISOnlineGateway();
  
-... new ArcGISOnlineGateway(serializer, new ArcGISOnlineTokenProvider("user", "pass", serializer));
+... new ArcGISOnlineGateway(new ArcGISOnlineTokenProvider("user", "pass", serializer));
 ```
 ### Converting between ArcGIS Feature Set from hosted FeatureService and GeoJSON FeatureCollection
 ```csharp
@@ -172,12 +172,14 @@ static Dictionary<String, Func<String, List<Feature<IGeometry>>>> _funcMap = new
 return _funcMap["Point"](data);
 ```
 
-### Download
+### Usage
 If you have [NuGet](http://nuget.org) installed, the easiest way to get started is to install via NuGet:
 
     PM> Install-Package ArcGIS.PCL
 
-or you can get the code from here.
+On Xamarin you can add the [ArcGIS.PCL component](http://components.xamarin.com/view/ArcGIS.PCL) from the component store or use the [NuGet addin](https://github.com/mrward/monodevelop-nuget-addin) and add it from there.
+
+Of course you can also get the code from this site.
 
 ### Icon
 
