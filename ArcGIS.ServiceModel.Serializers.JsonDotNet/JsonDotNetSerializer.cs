@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Operation;
 
-namespace ArcGIS.Test
+namespace ArcGIS.ServiceModel.Serializers
 {
     public class JsonDotNetSerializer : ISerializer
     {
