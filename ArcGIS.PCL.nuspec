@@ -70,10 +70,10 @@
 			<group targetFramework="netcore45">
 				<dependency id="Microsoft.Net.Http" version="2.2.22" />
 			</group>
-			<group targetFramework="MonoAndroid22">
+			<group targetFramework="MonoAndroid1">
 				<dependency id="modernhttpclient" version="1.2.2" />
 			</group>
-			<group targetFramework="MonoTouch10">
+			<group targetFramework="MonoTouch1">
 				<dependency id="modernhttpclient" version="1.2.2" />
 			</group>
 		</dependencies>

@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.WinStor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.WP", "ArcGIS.ServiceModel.WP\ArcGIS.ServiceModel.WP.csproj", "{6BB0B847-A531-4653-9B2F-381CCA3D6A3D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{13B709EB-D87F-4E10-9285-4FE62EFBBE65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -362,6 +364,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{04B9D1A5-9905-47F6-B8C4-45A07430AC09} = {13B709EB-D87F-4E10-9285-4FE62EFBBE65}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = ArcGIS.ServiceModel\ArcGIS.ServiceModel.csproj
