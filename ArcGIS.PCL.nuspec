@@ -76,6 +76,8 @@
 			<group targetFramework="MonoTouch1">
 				<dependency id="modernhttpclient" version="1.2.2" />
 			</group>
+      <group targetFramework="portable-net4+sl5+netcore45+wp8+MonoAndroid1+MonoTouch1">
+      </group>
 		</dependencies>
 	</metadata>
 	<files>
