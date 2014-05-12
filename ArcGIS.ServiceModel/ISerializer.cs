@@ -28,8 +28,16 @@ namespace ArcGIS.ServiceModel
         T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse;
     }
 
+    /// <summary>
+    /// Simple factory for allowing the serializer to be accessed from gateway and token providers.
+    /// </summary>
     public static class SerializerFactory
     {
+        /// <summary>
+        /// Used to return the default ISerializer used by gateway and token providers assuming that 
+        /// none are passed to them in their constructors.
+        /// This should be overridden in the platform specific implementations.
+        /// </summary>
         public static Func<ISerializer> Get { get; set; }
 
         static SerializerFactory()

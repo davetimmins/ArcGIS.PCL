@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using ArcGIS.ServiceModel.Serializers;
 
 namespace ArcGIS.Test
 {

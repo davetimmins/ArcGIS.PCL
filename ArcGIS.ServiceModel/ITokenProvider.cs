@@ -14,8 +14,15 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         String RootUrl { get; }
 
+        /// <summary>
+        /// Used for (de)serializtion of requests and responses. 
+        /// </summary>
         ISerializer Serializer { get; }
 
+        /// <summary>
+        /// Returns a valid token for the corresponding request
+        /// </summary>
+        /// <returns>A token that can be used for subsequent requests to secure resources</returns>
         Task<Token> CheckGenerateToken();
     }
 }

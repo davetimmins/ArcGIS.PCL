@@ -5,6 +5,7 @@ using ArcGIS.ServiceModel.Common;
 using Xunit;
 using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Operation;
+using ArcGIS.ServiceModel.Serializers;
 
 namespace ArcGIS.Test
 {

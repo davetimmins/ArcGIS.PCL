@@ -13,8 +13,14 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         String RootUrl { get; }
 
+        /// <summary>
+        /// Used for generating a token which can then be appended to requests made through this gateway automatically
+        /// </summary>
         ITokenProvider TokenProvider { get; }
 
+        /// <summary>
+        /// Used for (de)serializtion of requests and responses. 
+        /// </summary>
         ISerializer Serializer { get; }
     }
 }
