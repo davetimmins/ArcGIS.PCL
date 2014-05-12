@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+	<metadata minClientVersion="2.8.1">
+		<id>ArcGIS.PCL.JsonDotNetSerializer</id>
+		<version>1.0.0</version>
+		<title>ArcGIS Server Gateway Json.NET Serializer</title>
+		<authors>Dave Timmins</authors>
+		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
+		<licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
+		<iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>
+      Json.NET implementation of an ISerializer to use with ArcGIS.PCL.
+
+      To use just call JsonDotNetSerializer.Init().
+    </description>
+		<summary>
+			Json.NET implementation of an ISerializer to use with ArcGIS.PCL.		
+		</summary>
+		<releaseNotes>
+			Initial release
+		</releaseNotes>
+		<language />
+		<tags>ArcGIS PCL Json Serializer</tags>
+		<dependencies>
+			<dependency id="Newtonsoft.Json" version="6.0.3" />
+			<dependency id="ArcGIS.PCL" version="3.1.0" />			
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="ArcGIS.ServiceModel.Serializers.JsonDotNet\bin\Release\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" target="lib\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" />
+	</files>
+</package>

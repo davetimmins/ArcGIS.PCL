@@ -23,12 +23,12 @@ task :default => "xamarin-component/xamarin-component.exe" do
 		--details="Details.md" \
 		--license="License.md" \
 		--getting-started="GettingStarted.md" \
-		--icon="icons/awesome_128x128.png" \
-		--icon="icons/awesome_512x512.png" \
+		--icon="icons/arcgispcl_128x128.png" \
+		--icon="icons/arcgispcl_512x512.png" \
 		--library="ios":"bin/ArcGIS.ServiceModel.dll" \
 		--library="android":"bin/ArcGIS.ServiceModel.dll" \
-		--sample="iOS Sample. Demonstrates getting available ArcGIS Server services on iOS.":"../samples/ArcGIS.PCL.iOS/ArcGIS.PCL.iOS.sln" \
-		--sample="Android Sample. Demonstrates getting available ArcGIS Server services on Android":"../samples/ArcGIS.PCL.Android/ArcGIS.PCL.Android.sln"
+		--sample="iOS Sample. Demonstrates calling a query and geocode ArcGIS Server service operation on iOS.":"../samples/ArcGIS.Portable.iOS/ArcGIS.Portable.iOS.sln" \
+		--sample="Android Sample. Demonstrates calling a query and geocode ArcGIS Server service operation on Android":"../samples/ArcGIS.Portable.Android/ArcGIS.Portable.Android.sln"
 		END
 	puts "* Creating #{COMPONENT}..."
 	puts line.strip.gsub "\t\t", "\\\n    "

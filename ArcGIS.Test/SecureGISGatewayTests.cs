@@ -5,6 +5,7 @@ using ArcGIS.ServiceModel.Common;
 using Xunit;
 using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Operation;
+using ArcGIS.ServiceModel.Serializers;
 
 namespace ArcGIS.Test
 {
@@ -137,6 +138,7 @@ namespace ArcGIS.Test
             Assert.NotNull(token);
             Assert.NotNull(token.Value);
             Assert.False(token.IsExpired);
+            Assert.Null(token.Error);
             Assert.Null(response.Error);
 
             token.Value += "chuff";
@@ -149,6 +151,20 @@ namespace ArcGIS.Test
             Assert.NotNull(exception);
             Assert.Contains("Invalid token", exception.Message);
         }
+
+        //[Fact]
+        //public async Task OAuthTokenCanBeGenerated()
+        //{
+        //    // Set your client Id and secret here
+        //    var tokenProvider = new ArcGISOnlineAppLoginOAuthProvider("", "", _serviceStackSerializer);
+
+        //    var token = await tokenProvider.CheckGenerateToken();
+
+        //    Assert.NotNull(token);
+        //    Assert.NotNull(token.Value);
+        //    Assert.False(token.IsExpired);
+        //    Assert.Null(token.Error);
+        //}
 
         public static async Task<TException> ThrowsAsync<TException>(Func<Task> func) where TException : Exception
         {

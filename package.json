@@ -7,8 +7,5 @@
     "grunt-nuget": "~0.1.1",
     "grunt-msbuild": "~0.1.11",
     "grunt-cs-xunit": "^0.1.0"
-  },
-  "scripts": {
-        "test": "grunt"
-    }
+  }
 }

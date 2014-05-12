@@ -16,7 +16,7 @@ namespace ArcGIS.Test
         [Fact]
         public void CanDeserialize()
         {
-            var url = "https://raw.github.com/benbalter/dc-wifi-social/master/bars.geojson/";
+            var url = "https://raw.github.com/benbalter/dc-wifi-social/master/bars.geojson";
             var data = url.GetJsonFromUrl();
 
             var points = JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonPoint>>(data);

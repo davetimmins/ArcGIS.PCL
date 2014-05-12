@@ -1,70 +1,87 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-  <metadata minClientVersion="2.7">
-    <id>ArcGIS.PCL</id>
-    <version>3.0.0</version>
-    <title>ArcGIS Server Gateway</title>
-    <authors>Dave Timmins</authors>
-    <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
-    <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
-    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>
-      Use ArcGIS Server REST types and resources without an official SDK.
+	<metadata minClientVersion="2.8.1">
+		<id>ArcGIS.PCL</id>
+		<version>3.1.0</version>
+		<title>ArcGIS Server Gateway</title>
+		<authors>Dave Timmins</authors>
+		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
+		<licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
+		<iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>
+			Use ArcGIS Server REST types and resources without an official SDK.
 
-      Supports the following as typed operations:
+			Supports the following as typed operations:
 
-      • Generate Token (automatically if using a token provider)
-      • Query (attributes, spatial, count, objects Ids)
-      • Find
-      • Apply Edits
-      • Single Input Geocode (custom locator or Esri world locator)
-      • Suggest Geocode
-      • Reverse Geocode
-      • Describe site (returns a url for every service)
-      • Simplify
-      • Project
-      • Buffer
+			• Generate Token (automatically if using a token provider)
+			• Query (attributes, spatial, count, objects Ids)
+			• Find
+			• Apply Edits
+			• Single Input Geocode (custom locator or Esri world locator)
+			• Suggest Geocode
+			• Reverse Geocode
+			• Describe site (returns a url for every service)
+			• Simplify
+			• Project
+			• Buffer
 
-      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
+			The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher.
-    </description>
-    <summary>
-      Use ArcGIS Server REST types and resources without an official SDK.
+			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features
+			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
+		</description>
+		<summary>
+			Use ArcGIS Server REST types and resources without an official SDK.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher.
-    </summary>
-    <releaseNotes>
-      Breaking changes
-      
-      - Removed Silverlight 4 and Windows Phone 7.5 support
-      - Query operation OutFields is now set using an array to be consistent with other operations
-      
-      Other features in this release
-      
-      - Added ArcGIS Online endpoint
-      - Fixed issue calling hosted ArcGIS Online feature services
-      - Added ObjectIds property to Query operation
-      - Added query for Ids operation
-      - Added query for count operation
-      - Added HttpClientFactory for ModernHttpClient lib support in iOS and Android projects
-      - Added Xamarin iOS and Android support
-      - Updated NuGet package dependencies to latest versions
-    </releaseNotes>
-    <language />
-    <tags>ArcGIS ArcGISServer Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation</tags>
-    <dependencies>
-      <dependency id="Microsoft.Bcl" version="1.1.7" />
-      <dependency id="Microsoft.Bcl.Async" version="1.0.166" />
-      <dependency id="Microsoft.Bcl.Build" version="1.0.14" />
-      <dependency id="Microsoft.Net.Http" version="2.2.19" />
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="readme.txt" target="readme.txt" />
-    <file src="ArcGIS.ServiceModel\bin\Release\ArcGIS.ServiceModel.dll" target="lib\ArcGIS.ServiceModel.dll" />
-  </files>
+			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
+
+			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
+		</summary>
+		<releaseNotes>
+			Split purely portable classes out.
+			
+			Fixed issue checking null referer for generate token request.
+
+			Added ArcGISOnlineAppLoginOAuthProvider for creating OAuth tokens to use with ArcGIS Online services.
+			
+			Added conditional dependencies to nuspec.
+			
+			Can use .NET v4.
+		</releaseNotes>
+		<language />
+		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
+		<dependencies>
+			<group targetFramework="net40">
+				<dependency id="Microsoft.Bcl.Async" version="1.0.168" />
+				<dependency id="Microsoft.Net.Http" version="2.2.22" />
+			</group>
+			<group targetFramework="sl5">
+				<dependency id="Microsoft.Bcl.Async" version="1.0.168" />
+				<dependency id="Microsoft.Net.Http" version="2.2.22" />
+			</group>
+			<group targetFramework="wp8">
+				<dependency id="Microsoft.Net.Http" version="2.2.22" />
+			</group>
+			<group targetFramework="net45">
+				<dependency id="Microsoft.Net.Http" version="2.2.22" />
+			</group>
+			<group targetFramework="netcore45">
+				<dependency id="Microsoft.Net.Http" version="2.2.22" />
+			</group>
+			<group targetFramework="MonoAndroid1">
+				<dependency id="modernhttpclient" version="1.2.2" />
+			</group>
+			<group targetFramework="MonoTouch1">
+				<dependency id="modernhttpclient" version="1.2.2" />
+			</group>
+      <group targetFramework="portable-net4+sl5+netcore45+wp8+MonoAndroid1+MonoTouch1">
+      </group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="readme.txt" target="readme.txt" />
+		<file src="lib\**\ArcGIS.Service*.dll" target="lib" />
+	</files>
 </package>

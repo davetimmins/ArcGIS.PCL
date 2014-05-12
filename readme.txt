@@ -1,62 +1,18 @@
 To get started with ArcGIS.PCL first create an ISerializer implementation
 
-==================== ServiceStack.Text example ==========================
+The easiest way is to add a reference to either ArcGIS.PCL.JsonDotNetSerializer or ArcGIS.PCL.ServiceStackV3Serializer via NuGet.
 
-public class ServiceStackSerializer : ISerializer
-{
-    public ServiceStackSerializer()
-    {
-        ServiceStack.Text.JsConfig.EmitCamelCaseNames = true;
-        ServiceStack.Text.JsConfig.IncludeTypeInfo = false;
-        ServiceStack.Text.JsConfig.ConvertObjectTypesIntoStringDictionary = true;
-        ServiceStack.Text.JsConfig.IncludeNullValues = false;
-    }
-
-    public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
-    {
-        return ServiceStack.Text.TypeSerializer.ToStringDictionary<T>(objectToConvert);
-    }
-
-    public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
-    {
-        return ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
-    }
-}
+Now you can have this ISerializer used by your gateway and token providers automatically by initializing it
 
 ========================= Json.NET example ==============================
 
-public class JsonDotNetSerializer : ISerializer
-{
-    readonly Newtonsoft.Json.JsonSerializerSettings _settings;
+ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init();
 
-    public JsonDotNetSerializer()
-    {
-        _settings = new Newtonsoft.Json.JsonSerializerSettings
-        {
-            NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-            MissingMemberHandling  = Newtonsoft.Json.MissingMemberHandling.Ignore,
-            ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-        };
-    }
+==================== ServiceStack.Text example ==========================
 
-    public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
-    {
-        var stringValue = Newtonsoft.Json.JsonConvert.SerializeObject(objectToConvert, _settings);
-         
-        var jobject = Newtonsoft.Json.Linq.JObject.Parse(stringValue);
-        var dict = new Dictionary<String, String>();
-        foreach (var item in jobject)
-        {
-            dict.Add(item.Key, item.Value.ToString());
-        }           
-        return dict;
-    }
+ArcGIS.ServiceModel.Serializers.ServiceStackSerializer.Init();
 
-    public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
-    {
-        return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);           
-    }
-}
+Now you can go ahead and create your gateway classes
 
 ========================== Gateway use cases ============================
 
@@ -64,47 +20,47 @@ ArcGIS Server with non secure resources
 
 public class ArcGISGateway : PortalGateway
 {
-    public ArcGISGateway(ISerializer serializer)
-        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer)
+    public ArcGISGateway()
+        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
     { }
 }
 
-... new ArcGISGateway(serializer);
+... new ArcGISGateway();
 
 ArcGIS Server with secure resources
 
 public class SecureGISGateway : SecureArcGISServerGateway
 {
-    public SecureGISGateway(ISerializer serializer)
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
+    public SecureGISGateway()
+        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
     { }
 }
 
-... new SecureGISGateway(serializer);
+... new SecureGISGateway();
 
 ArcGIS Server with secure resources and token service at different location
 
 public class SecureTokenProvider : TokenProvider
 {
-    public SecureTokenProvider(ISerializer serializer)
-        : base("http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
+    public SecureTokenProvider()
+        : base("http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
     { }
 }
  
 public class SecureGISGateway : PortalGateway
 {
-    public SecureGISGateway(ISerializer serializer, ITokenProvider tokenProvider)
-        : base("http://serverapps10.esri.com/arcgis", serializer, tokenProvider)
+    public SecureGISGateway(ITokenProvider tokenProvider)
+        : base("http://serverapps10.esri.com/arcgis", tokenProvider)
     { }
 }
  
-... new SecureGISGateway(serializer, new SecureTokenProvider(serializer));
+... new SecureGISGateway(new SecureTokenProvider());
 
 ArcGIS Online either secure or non secure
 
-... new ArcGISOnlineGateway(serializer);
+... new ArcGISOnlineGateway();
  
-... new ArcGISOnlineGateway(serializer, new ArcGISOnlineTokenProvider("user", "pass", serializer));
+... new ArcGISOnlineGateway(new ArcGISOnlineTokenProvider("user", "pass"));
 
 
 Once you have a gateway you can add operations to it, for example to query an endpoint add the following to your gateway
@@ -122,5 +78,5 @@ var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/
 { 
     ReturnGeometry = false 
 };
-var resultPoint = await gateway.QueryAsGet<Point>(queryPoint);
+var resultPoint = await gateway.Query<Point>(queryPoint);
 
