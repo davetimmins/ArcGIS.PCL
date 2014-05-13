@@ -55,6 +55,7 @@ _ReSharper*/
 #NuGet
 packages/
 dist/
+lib/
 
 #nodejs
 node_modules/
