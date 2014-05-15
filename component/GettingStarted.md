@@ -1,51 +1,21 @@
-To get started with ArcGIS.PCL first create an ISerializer implementation
+To get started with ArcGIS.PCL first create an ISerializer implementation. There is a Json.NET implementation packaged with the component that will be used by default if you initialise it
 
-### Json.NET example
+### Json.NET ISerializer initialisation
 
 ```csharp
-public class JsonDotNetSerializer : ISerializer
-{
-    readonly Newtonsoft.Json.JsonSerializerSettings _settings;
-
-    public JsonDotNetSerializer()
-    {
-        _settings = new Newtonsoft.Json.JsonSerializerSettings
-        {
-            NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-            MissingMemberHandling  = Newtonsoft.Json.MissingMemberHandling.Ignore,
-            ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-        };
-    }
-
-    public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
-    {
-        var stringValue = Newtonsoft.Json.JsonConvert.SerializeObject(objectToConvert, _settings);
-
-        var jobject = Newtonsoft.Json.Linq.JObject.Parse(stringValue);
-        var dict = new Dictionary<String, String>();
-        foreach (var item in jobject)
-        {
-            dict.Add(item.Key, item.Value.ToString());
-        }
-        return dict;
-    }
-
-    public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
-    {
-        return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);
-    }
-}
+ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init();
 ```
+To call ArcGIS Server resources you can create a gateway. There are a mixture of secure, non secure and ArcGIS Online base classes available.
+
 ### ArcGIS Server gateway with non secure resources
 
 ```csharp
 public class ArcGISGateway : PortalGateway
 {
-    public ArcGISGateway(ISerializer serializer)
-        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer)
+    public ArcGISGateway()
+        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
     { }
 }
-
 ```
 
 Once you have a gateway you can add operations to it, for example to query an endpoint add the following to your gateway
@@ -60,9 +30,9 @@ public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
 then call it from your code
 
 ```csharp
-var gateway = new ArcGISGateway(new JsonDotNetSerializer());
+var gateway = new ArcGISGateway();
 
 var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
 
-var resultPoint = await gateway.QueryAsGet<Point>(queryPoint);
+var resultPoint = await gateway.Query<Point>(queryPoint);
 ```

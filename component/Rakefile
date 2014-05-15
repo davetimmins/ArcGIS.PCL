@@ -3,7 +3,7 @@ require "rake/clean"
 CLEAN.include "*.xam"
 CLEAN.include "xamarin-component"
 
-COMPONENT = "ArcGIS.PCL-1.0.xam"
+COMPONENT = "ArcGIS.PCL-3.1.0.xam"
 
 file "xamarin-component/xamarin-component.exe" do
 	puts "* Downloading xamarin-component..."
@@ -23,10 +23,14 @@ task :default => "xamarin-component/xamarin-component.exe" do
 		--details="Details.md" \
 		--license="License.md" \
 		--getting-started="GettingStarted.md" \
-		--icon="icons/arcgispcl_128x128.png" \
-		--icon="icons/arcgispcl_512x512.png" \
-		--library="ios":"bin/ArcGIS.ServiceModel.dll" \
-		--library="android":"bin/ArcGIS.ServiceModel.dll" \
+		--icon="icons/ArcGIS.PCL_128x128.png" \
+		--icon="icons/ArcGIS.PCL_512x512.png" \
+		--library="ios":"Release/ArcGIS.ServiceModel.dll" \
+		--library="ios":"Release/ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" \
+		--library="ios":"Release/ArcGIS.ServiceModel.iOS.dll" \
+		--library="android":"Release/ArcGIS.ServiceModel.dll" \
+		--library="android":"Release/ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" \
+		--library="android":"Release/ArcGIS.ServiceModel.Android.dll" \
 		--sample="iOS Sample. Demonstrates calling a query and geocode ArcGIS Server service operation on iOS.":"../samples/ArcGIS.Portable.iOS/ArcGIS.Portable.iOS.sln" \
 		--sample="Android Sample. Demonstrates calling a query and geocode ArcGIS Server service operation on Android":"../samples/ArcGIS.Portable.Android/ArcGIS.Portable.Android.sln"
 		END

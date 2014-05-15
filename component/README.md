@@ -8,8 +8,6 @@ It can also be used for just working with types and as well as some ArcGIS Serve
 Typical use case would be the need to call some ArcGIS REST resource from server .NET code or maybe a console app. Rather than having to fudge a dependency to an existing SDK you can use this.
 Should work with .NET for Windows Store apps, .NET framework 4.5, Silverlight 4 and higher, Windows Phone 7.5 and higher
 
-Since the serialization is specific to your implementation you will need to create an ISerializer to use in your gateway. The test project has ServiceStack.Text and Json.NET [example serializers](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ISerializer.cs)
-
 Supports the following as typed operations:
 
  - Generate Token (automatically if using a token provider)
@@ -35,36 +33,46 @@ The code for these can be seen at [ArcGIS.PCL-Sample-Projects](https://github.co
 
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
+To get started with ArcGIS.PCL first create an ISerializer implementation. There is a Json.NET implementation packaged with the component that will be used by default if you initialise it
+
+### Json.NET ISerializer initialisation
+
+```csharp
+ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init();
+```
+
+To call ArcGIS Server resources you can create a gateway. You pass in the root url of the ArcGIS Server that you want to call operations against. There are a mixture of secure, non secure and ArcGIS Online base classes available.
+
 ###Gateway Use Cases
 
 #### ArcGIS Server with non secure resources
 ```csharp
 public class ArcGISGateway : PortalGateway
 {
-    public ArcGISGateway(ISerializer serializer)
-        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer)
+    public ArcGISGateway()
+        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
     { }
 }
 
-... new ArcGISGateway(serializer);
+... new ArcGISGateway();
 ```
 #### ArcGIS Server with secure resources
 ```csharp
 public class SecureGISGateway : SecureArcGISServerGateway
 {
-    public SecureGISGateway(ISerializer serializer)
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
+    public SecureGISGateway()
+        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
     { }
 }
 
-... new SecureGISGateway(serializer);
+... new SecureGISGateway();
 ```
 #### ArcGIS Server with secure resources and token service at different location
 ```csharp
 public class SecureTokenProvider : TokenProvider
 {
-    public SecureTokenProvider(ISerializer serializer)
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
+    public SecureTokenProvider()
+        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
     { }
 }
 
@@ -80,7 +88,7 @@ public class SecureGISGateway : PortalGateway
 
 #### ArcGIS Online either secure or non secure  
 ```csharp
-... new ArcGISOnlineGateway(serializer);
+... new ArcGISOnlineGateway();
 
 ... new ArcGISOnlineGateway(serializer, new ArcGISOnlineTokenProvider("user", "pass", serializer));
 ```
@@ -112,8 +120,8 @@ public class AgsObject : JsonObject, IPortalResponse
 
 public class ProxyGateway : PortalGateway
 {
-    public ProxyGateway(String rootUrl, ISerializer serializer)
-        : base(rootUrl, serializer)
+    public ProxyGateway(String rootUrl)
+        : base(rootUrl)
     { }
 
     public QueryResponse<T> Query<T>(Query queryOptions) where T : IGeometry
@@ -139,8 +147,8 @@ public class ProxyGateway : PortalGateway
 
 public class ProjectGateway : PortalGateway
 {
-    public ProjectGateway(ISerializer serializer)
-        : base(@"http://services.arcgisonline.co.nz/ArcGIS/", serializer)
+    public ProjectGateway()
+        : base(@"http://services.arcgisonline.co.nz/ArcGIS/")
     { }
 
     public List<Feature<T>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry

@@ -7,8 +7,8 @@ namespace ArcGIS.Portable.Android
 {
 	public class GeocodeGateway : PortalGateway
 	{
-		public GeocodeGateway(ISerializer serializer)
-			: base("http://geocode.arcgis.com/arcgis", serializer, null)
+		public GeocodeGateway()
+			: base("http://geocode.arcgis.com/arcgis")
 		{ }
 
 		public Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MonoTouch.UIKit;
 using System.Drawing;
 using System.Linq;
@@ -9,74 +9,76 @@ using ModernHttpClient;
 
 namespace ArcGIS.Portable.iOS
 {
-    public class MyViewController : UIViewController
-    {
-        UIButton button;
-        int numClicks = 0;
-        float buttonWidth = 200;
-        float buttonHeight = 50;
-        UILabel label1;
+	public class MyViewController : UIViewController
+	{
+		UIButton button;
+		float buttonWidth = 200;
+		float buttonHeight = 50;
+		UITextView textView;
 
-        public MyViewController()
-        {
-        }
+		public MyViewController()
+		{
+		}
 
-        public override void ViewDidLoad()
-        {
-            base.ViewDidLoad();
+		public override void ViewDidLoad()
+		{
+			base.ViewDidLoad();
 
-            View.Frame = UIScreen.MainScreen.Bounds;
-            View.BackgroundColor = UIColor.White;
-            View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+			View.Frame = UIScreen.MainScreen.Bounds;
+			View.BackgroundColor = UIColor.White;
+			View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
 
-            button = UIButton.FromType(UIButtonType.RoundedRect);
+			button = UIButton.FromType(UIButtonType.RoundedRect);
 
-            button.Frame = new RectangleF(
-                View.Frame.Width / 2 - buttonWidth / 2,
-                View.Frame.Height / 2 - buttonHeight / 2,
-                buttonWidth,
-                buttonHeight);
+			button.Frame = new RectangleF(
+				View.Frame.Width / 2 - buttonWidth / 2,
+				buttonHeight,
+				buttonWidth,
+				buttonHeight);
 
-            button.SetTitle("GO", UIControlState.Normal);
+			button.SetTitle("GO", UIControlState.Normal);
 
-            label1 = new UILabel(View.Frame);     
+			textView = new UITextView(new RectangleF(
+					View.Frame.Width / 2 - buttonWidth / 2,
+				(View.Frame.Height / 2 - buttonHeight / 2) - buttonHeight,
+					buttonWidth,
+				(View.Frame.Height / 2 - buttonHeight / 2) - buttonHeight));
 
-            HttpClientFactory.Get = (() => new HttpClient(new AFNetworkHandler()));
 
-            var serializer = new JsonDotNetSerializer();
-            var locator = new GeocodeGateway(serializer);
-            var geocode = new SingleInputGeocode("/World/GeocodeServer/".AsEndpoint())
-            {
-                Text = "Wellington",
-                SourceCountry = "NZL"
-            };
+			ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init ();
 
-            var gateway = new ArcGISGateway(serializer);
+			var locator = new GeocodeGateway();
+			var geocode = new SingleInputGeocode("/World/GeocodeServer/".AsEndpoint())
+			{
+				Text = "Wellington",
+				SourceCountry = "NZL"
+			};
 
-            button.TouchUpInside += async (object sender, EventArgs e) =>
-            {
-                var geocodeResult = await locator.Geocode(geocode);
+			var gateway = new ArcGISGateway();
 
-                var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
-                {
-                    ReturnGeometry = false,
-                    Where = "MAGNITUDE > 4.5"
-                };
-                var resultPoint = await gateway.Query<ArcGIS.ServiceModel.Common.Point>(queryPoint);
+			button.TouchUpInside += async (object sender, EventArgs e) =>
+			{
+				var geocodeResult = await locator.Geocode(geocode);
 
-                label1.Text = string.Format("Query for earthquakes in last 7 days where magnitidue is more than 4.5, {0} features found. Geocode result for Wellington, NZ x:{1}, y:{2}",
-                    resultPoint.Features.Count(),
-                    geocodeResult.Results.First().Feature.Geometry.X,
-                    geocodeResult.Results.First().Feature.Geometry.Y);
-            };
+				var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+				{
+					ReturnGeometry = false,
+					Where = "MAGNITUDE > 4.5"
+				};
+				var resultPoint = await gateway.Query<ArcGIS.ServiceModel.Common.Point>(queryPoint);
 
-            button.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleTopMargin |
-                UIViewAutoresizing.FlexibleBottomMargin;
+				textView.Text = string.Format("Query for earthquakes in last 7 days where magnitidue is more than 4.5, {0} features found. Geocode result for Wellington, NZ x:{1}, y:{2}",
+					resultPoint.Features.Count(),
+					geocodeResult.Results.First().Feature.Geometry.X,
+					geocodeResult.Results.First().Feature.Geometry.Y);
+			};
 
-            View.AddSubview(button);
-            View.Add(label1);
-        }
+			button.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleTopMargin |
+				UIViewAutoresizing.FlexibleBottomMargin;
 
-    }
+			View.AddSubview(button);
+			View.Add(textView);
+		}
+
+	}
 }
-
