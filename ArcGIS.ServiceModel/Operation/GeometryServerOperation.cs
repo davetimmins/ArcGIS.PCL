@@ -18,10 +18,11 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class SimplifyGeometry<T> : ArcGISServerOperation where T : IGeometry
     {
-        public SimplifyGeometry(ArcGISServerEndpoint endpoint)
+        public SimplifyGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features = null, SpatialReference spatialReference = null)
             : base(endpoint, Operations.Simplify)
         {
-            Geometries = new GeometryCollection<T>();
+            Geometries = new GeometryCollection<T> { Geometries = features == null ? null : features.Select(f => f.Geometry).ToList() };
+            SpatialReference = spatialReference;
         }
 
         [DataMember(Name = "geometries")]

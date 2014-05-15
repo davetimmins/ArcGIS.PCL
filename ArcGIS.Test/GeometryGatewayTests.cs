@@ -67,30 +67,5 @@ namespace ArcGIS.Test
         public GeometryGateway(ISerializer serializer, String baseUrl = @"http://sampleserver6.arcgisonline.com/arcgis")
             : base(baseUrl, serializer, null)
         { }
-
-        public async Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
-        {
-            return await Get<QueryResponse<T>, Query>(queryOptions);
-        }
-
-        public async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
-        {
-            var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);
-            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
-
-            var result = features.UpdateGeometries<T>(projected.Geometries);
-            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
-            return result;
-        }
-
-        public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
-        {
-            var op = new BufferGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, spatialReference, distance);
-            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
-
-            var result = features.UpdateGeometries<T>(buffered.Geometries);
-            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
-            return result;
-        }
     }
 }

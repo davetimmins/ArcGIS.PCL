@@ -49,6 +49,7 @@ namespace ArcGIS.ServiceModel
     public abstract class PortalGateway : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
+        protected const String GeometryServerUrl = "/Utilities/Geometry/GeometryServer";
         HttpClient _httpClient;
 
         /// <summary>
@@ -161,6 +162,145 @@ namespace ArcGIS.ServiceModel
         public Task<PortalResponse> Ping(IEndpoint endpoint)
         {
             return Get<PortalResponse>(endpoint);
+        }
+
+        /// <summary>
+        /// Call the query operation
+        /// </summary>
+        /// <typeparam name="T">The geometry type for the result set</typeparam>
+        /// <param name="queryOptions">Query filter parameters</param>
+        /// <returns>The matching features for the query</returns>
+        public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
+        {
+            return Get<QueryResponse<T>, Query>(queryOptions);
+        }
+
+        /// <summary>
+        /// Call the count operation for the query resource.
+        /// </summary>
+        /// <param name="queryOptions">Query filter parameters</param>
+        /// <returns>The number of results that match the query</returns>
+        public Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions)
+        {
+            return Get<QueryForCountResponse, QueryForCount>(queryOptions);
+        }
+
+        /// <summary>
+        /// Call the object Ids query for the query resource
+        /// </summary>
+        /// <param name="queryOptions">Query filter parameters</param>
+        /// <returns>The Object IDs for the features that match the query</returns>
+        public Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions)
+        {
+            return Get<QueryForIdsResponse, QueryForIds>(queryOptions);
+        }
+
+        /// <summary>
+        /// Call the apply edits operation for a feature service layer
+        /// </summary>
+        /// <typeparam name="T">The geometry type for the input set</typeparam>
+        /// <param name="edits">The edits to perform</param>
+        /// <returns>A collection of add, update and delete results</returns>
+        public Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
+        {
+            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits);
+        }
+
+        /// <summary>
+        /// Call the reverse geocode operation. 
+        /// </summary>
+        /// <param name="reverseGeocode"></param>
+        /// <returns></returns>
+        public Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
+        {
+            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode);
+        }
+
+        /// <summary>
+        /// Call the single line geocode operation.
+        /// </summary>
+        /// <param name="geocode"></param>
+        /// <returns></returns>
+        public Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
+        {
+            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode);
+        }
+
+        /// <summary>
+        /// Call the suggest geocode operation.
+        /// </summary>
+        /// <param name="suggestGeocode"></param>
+        /// <returns></returns>
+        public Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode)
+        {
+            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode);
+        }
+
+        /// <summary>
+        /// Projects the list of geometries passed in using the GeometryServer
+        /// </summary>
+        /// <typeparam name="T">The type of the geometries</typeparam>
+        /// <param name="features">A collection of features which will have their geometries projected</param>
+        /// <param name="outputSpatialReference">The spatial reference you want the result set to be</param>
+        /// <returns>The corresponding features with the newly projected geometries</returns>
+        public async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
+        {
+            var op = new ProjectGeometry<T>(GeometryServerUrl.AsEndpoint(), features, outputSpatialReference);
+            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
+
+            var result = features.UpdateGeometries<T>(projected.Geometries);
+            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
+            return result;
+        }
+
+        /// <summary>
+        /// Buffer the list of geometries passed in using the GeometryServer
+        /// </summary>
+        /// <typeparam name="T">The type of the geometries</typeparam>
+        /// <param name="features">A collection of features which will have their geometries buffered</param>
+        /// <param name="spatialReference">The spatial reference of the geometries</param>
+        /// <param name="distance">Distance in meters to buffer the geometries by</param>
+        /// <returns>The corresponding features with the newly buffered geometries</returns>
+        public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
+        {
+            var op = new BufferGeometry<T>(GeometryServerUrl.AsEndpoint(), features, spatialReference, distance);
+            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
+
+            var result = features.UpdateGeometries<T>(buffered.Geometries);
+            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
+            return result;
+        }
+
+        /// <summary>
+        /// Simplify the list of geometries passed in using the GeometryServer. Simplify permanently alters the input geometry so that it becomes topologically consistent.
+        /// </summary>
+        /// <typeparam name="T">The type of the geometries</typeparam>
+        /// <param name="features">A collection of features which will have their geometries buffered</param>
+        /// <param name="spatialReference">The spatial reference of the geometries</param>
+        /// <returns>The corresponding features with the newly simplified geometries</returns>
+        public async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference) where T : IGeometry
+        {
+            var op = new SimplifyGeometry<T>(GeometryServerUrl.AsEndpoint(), features, spatialReference);
+            var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op);
+
+            var result = features.UpdateGeometries<T>(simplified.Geometries);
+            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
+            return result;
+        }
+
+        /// <summary>
+        /// Call the find operation, note that since this can return more than one geometry type you will need to deserialize
+        /// the geometry string on the result set e.g.
+        /// foreach (var result in response.Results.Where(r => r.Geometry != null))
+        /// {
+        ///     result.Geometry = ServiceStack.Text.JsonSerializer.DeserializeFromString(result.Geometry.SerializeToString(), TypeMap[result.GeometryType]());
+        /// }
+        /// </summary>
+        /// <param name="findOptions"></param>
+        /// <returns></returns>
+        public Task<FindResponse> Find(Find findOptions)
+        {
+            return Get<FindResponse, Find>(findOptions);
         }
 
         async Task<Token> CheckGenerateToken()
