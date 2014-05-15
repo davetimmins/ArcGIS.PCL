@@ -28,7 +28,7 @@ namespace ArcGIS.ServiceModel
     /// <summary>
     /// Provides a secure ArcGIS Server gateway where the token service is at the same root url
     /// </summary>
-    public abstract class SecureArcGISServerGateway : PortalGateway
+    public class SecureArcGISServerGateway : PortalGateway
     {
         /// <summary>
         /// 
@@ -37,7 +37,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="username">ArcGIS Server user name</param>
         /// <param name="password">ArcGIS Server user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        protected SecureArcGISServerGateway(String rootUrl, String username, String password, ISerializer serializer = null)
+        public SecureArcGISServerGateway(String rootUrl, String username, String password, ISerializer serializer = null)
             : base(rootUrl, serializer, new TokenProvider(rootUrl, username, password, serializer))
         { }
     }
@@ -46,7 +46,7 @@ namespace ArcGIS.ServiceModel
     /// <summary>
     /// ArcGIS Server gateway
     /// </summary>
-    public abstract class PortalGateway : IPortalGateway, IDisposable
+    public class PortalGateway : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         protected const String GeometryServerUrl = "/Utilities/Geometry/GeometryServer";
@@ -58,7 +58,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="rootUrl">Made up of scheme://host:port/site</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        protected PortalGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+        public PortalGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
         {
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
