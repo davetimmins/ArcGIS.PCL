@@ -183,4 +183,5 @@ Of course you can also get the code from this site.
 
 ### Icon
 
-[Gateway](http://thenounproject.com/term/gateway/5477/) designed by [Piotr Gawiński](http://thenounproject.com/Piotrek/) from The Noun Project
+Icon made by [Freepik](http://www.freepik.com) from [www.flaticon.com](http://www.flaticon.com/free-icon/triangle-of-triangles_32915)
+                
