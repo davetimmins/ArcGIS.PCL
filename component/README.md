@@ -1,4 +1,4 @@
-ArcGIS.PCL
+﻿ArcGIS.PCL
 ==========
 
 Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.com/2013/July/ArcGIS-PCL/).
@@ -38,60 +38,32 @@ To get started with ArcGIS.PCL first create an ISerializer implementation. There
 ### Json.NET ISerializer initialisation
 
 ```csharp
+
 ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init();
+
 ```
 
 To call ArcGIS Server resources you can create a gateway. You pass in the root url of the ArcGIS Server that you want to call operations against. There are a mixture of secure, non secure and ArcGIS Online base classes available.
 
 ###Gateway Use Cases
 
-#### ArcGIS Server with non secure resources
 ```csharp
-public class ArcGISGateway : PortalGateway
-{
-    public ArcGISGateway()
-        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
-    { }
-}
 
-... new ArcGISGateway();
-```
-#### ArcGIS Server with secure resources
-```csharp
-public class SecureGISGateway : SecureArcGISServerGateway
-{
-    public SecureGISGateway()
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
-    { }
-}
+// ArcGIS Server with non secure resources
+var gateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/");
 
-... new SecureGISGateway();
-```
-#### ArcGIS Server with secure resources and token service at different location
-```csharp
-public class SecureTokenProvider : TokenProvider
-{
-    public SecureTokenProvider()
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
-    { }
-}
+// ArcGIS Server with secure resources
+var secureGateway = new SecureArcGISServerGateway("http://serverapps10.esri.com/arcgis", "user1", "pass.word1");
 
-public class SecureGISGateway : PortalGateway
-{
-    public SecureGISGateway(ISerializer serializer, ITokenProvider tokenProvider)
-        : base(@"http://serverapps10.esri.com/arcgis", serializer, tokenProvider)
-    { }
-}
+// ArcGIS Server with secure resources and token service at different location
+var otherSecureGateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/", tokenProvider: new TokenProvider("http://serverapps10.esri.com/arcgis", "user1", "pass.word1"));
 
-... new SecureGISGateway(serializer, new SecureTokenProvider(serializer));
+// ArcGIS Online either secure or non secure
+var arcgisOnlineGateway = new ArcGISOnlineGateway();
+ 
+var secureArcGISOnlineGateway = new ArcGISOnlineGateway(new ArcGISOnlineTokenProvider("user", "pass"));
 ```
 
-#### ArcGIS Online either secure or non secure  
-```csharp
-... new ArcGISOnlineGateway();
-
-... new ArcGISOnlineGateway(serializer, new ArcGISOnlineTokenProvider("user", "pass", serializer));
-```
 ### Converting between ArcGIS Feature Set from hosted FeatureService and GeoJSON FeatureCollection
 ```csharp
 static ISerializer _serializer = new ServiceStackSerializer();
@@ -178,4 +150,8 @@ static Dictionary<String, Func<String, List<Feature<IGeometry>>>> _funcMap = new
 ...
 
 return _funcMap["Point"](data);
+
 ```
+### Icon
+
+[Gateway](http://thenounproject.com/term/gateway/5477/) designed by [Piotr Gawiński](http://thenounproject.com/Piotrek/) from The Noun Project
