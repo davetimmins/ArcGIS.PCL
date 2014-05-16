@@ -37,52 +37,21 @@ See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGI
 
 ###Gateway Use Cases
 
-#### ArcGIS Server with non secure resources
 ```csharp
-public class ArcGISGateway : PortalGateway
-{
-    public ArcGISGateway()
-        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
-    { }
-}
 
-... new ArcGISGateway();
-```
-#### ArcGIS Server with secure resources
-```csharp
-public class SecureGISGateway : SecureArcGISServerGateway
-{
-    public SecureGISGateway()
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
-    { }
-}
+// ArcGIS Server with non secure resources
+var gateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/");
 
-... new SecureGISGateway();
-```
-#### ArcGIS Server with secure resources and token service at different location
-```csharp
-public class SecureTokenProvider : TokenProvider
-{
-    public SecureTokenProvider()
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
-    { }
-}
+// ArcGIS Server with secure resources
+var secureGateway = new SecureArcGISServerGateway("http://serverapps10.esri.com/arcgis", "user1", "pass.word1");
 
-public class SecureGISGateway : PortalGateway
-{
-    public SecureGISGateway(ISerializer serializer, ITokenProvider tokenProvider)
-        : base(@"http://serverapps10.esri.com/arcgis", serializer, tokenProvider)
-    { }
-}
+// ArcGIS Server with secure resources and token service at different location
+var otherSecureGateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/", tokenProvider: new TokenProvider("http://serverapps10.esri.com/arcgis", "user1", "pass.word1"));
 
-... new SecureGISGateway(serializer, new SecureTokenProvider(serializer));
-```
-
-#### ArcGIS Online either secure or non secure  
-```csharp
-... new ArcGISOnlineGateway();
+// ArcGIS Online either secure or non secure
+var arcgisOnlineGateway = new ArcGISOnlineGateway();
  
-... new ArcGISOnlineGateway(new ArcGISOnlineTokenProvider("user", "pass", serializer));
+var secureArcGISOnlineGateway = new ArcGISOnlineGateway(new ArcGISOnlineTokenProvider("user", "pass"));
 ```
 ### Converting between ArcGIS Feature Set from hosted FeatureService and GeoJSON FeatureCollection
 ```csharp
@@ -112,45 +81,23 @@ public class AgsObject : JsonObject, IPortalResponse
 
 public class ProxyGateway : PortalGateway
 {
-    public ProxyGateway(String rootUrl, ISerializer serializer)
-        : base(rootUrl, serializer)
+    public ProxyGateway(String rootUrl)
+        : base(rootUrl)
     { }
-
-    public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
-    {
-        return Get<QueryResponse<T>, Query>(queryOptions);
-    }
 
     public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint)
     {
         return Get<AgsObject>(endpoint);
     }
 
-    public FeatureCollection<IGeoJsonGeometry> GetGeoJson<T>(String uri) where T : IGeometry
+    public async Task<FeatureCollection<IGeoJsonGeometry>> GetGeoJson<T>(String uri) where T : IGeometry
     {
-        var result = Query<T>(new Query(uri.AsEndpoint())).Result;
+        var result = await Query<T>(new Query(uri.AsEndpoint()));
         result.Features.First().Geometry.SpatialReference = result.SpatialReference;
         var features = result.Features.ToList();
         if (result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid)
-            features = new ProjectGateway(Serializer).Project<T>(features, SpatialReference.WGS84);
+            features = Project<T>(features, SpatialReference.WGS84);
         return features.ToFeatureCollection();
-    }
-}
-
-public class ProjectGateway : PortalGateway
-{
-    public ProjectGateway(ISerializer serializer)
-        : base(@"http://services.arcgisonline.co.nz/ArcGIS/", serializer)
-    { }
-
-    public List<Feature<T>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
-    {
-        var op = new ProjectGeometry<T>("/Utilities/Geometry/GeometryServer".AsEndpoint(), features, outputSpatialReference);
-        var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
-
-        var result = features.UpdateGeometries<T>(projected.Geometries);
-        if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
-        return result;
     }
 }
 
