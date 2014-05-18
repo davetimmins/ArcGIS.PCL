@@ -32,11 +32,13 @@ ArcGIS Online either secure or non secure
 
 var arcgisonlineGateway = new ArcGISOnlineGateway();
  
-var secureArcGISOnlineGateway = new ArcGISOnlineGateway(new ArcGISOnlineTokenProvider("user", "pass"));
+var secureArcGISOnlineGateway = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineTokenProvider("user", "pass"));
+
+var secureArcGISOnlineGatewayOAuth = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineAppLoginOAuthProvider("clientId", "clientSecret"));
+
+========================== Calling operations ===========================
 
 Once you have a gateway you can call operations on it, for example to query an endpoint 
-
-var gateway = new ArcGISGateway();
 
 var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) 
 { 
