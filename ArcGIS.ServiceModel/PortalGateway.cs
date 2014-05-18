@@ -23,6 +23,15 @@ namespace ArcGIS.ServiceModel
         public ArcGISOnlineGateway(ISerializer serializer = null, ArcGISOnlineTokenProvider tokenProvider = null)
             : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
         { }
+     
+        /// <summary>
+        /// Create an ArcGIS Online gateway to access resources
+        /// </summary>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        /// <param name="tokenProvider">Provide access to an OAuth token for secure resources</param>
+        public ArcGISOnlineGateway(ISerializer serializer = null, ArcGISOnlineAppLoginOAuthProvider tokenProvider = null)
+            : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
+        { }
     }
 
     /// <summary>
