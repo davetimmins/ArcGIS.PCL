@@ -44,8 +44,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ModernHttpClient.iOS">
-      <HintPath>..\packages\modernhttpclient.1.2.2\lib\MonoTouch\ModernHttpClient.iOS.dll</HintPath>
+    <Reference Include="ModernHttpClient">
+      <HintPath>..\packages\modernhttpclient.2.0.0\lib\MonoTouch\ModernHttpClient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http" />
@@ -54,13 +54,13 @@
     <Reference Include="monotouch" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ArcGIS.ServiceModel\ArcGIS.ServiceModel.csproj">
       <Project>{bd6d09f4-fcd7-4894-971b-87e6294393bc}</Project>
       <Name>ArcGIS.ServiceModel</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
 </Project>
