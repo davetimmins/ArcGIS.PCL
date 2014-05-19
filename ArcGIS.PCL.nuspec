@@ -44,7 +44,7 @@
 			Added all operations to PortalGateway.			
 			Removed access restrictions for PortalGateway.
 			
-			Now instead of having to extent PortalGateway and add your own operations you can just create a PortalGateway instance and use the default operations.
+			Now instead of having to extend PortalGateway and add your own operations you can just create a PortalGateway instance and use the default operations.
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
