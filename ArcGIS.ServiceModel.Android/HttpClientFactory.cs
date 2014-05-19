@@ -12,7 +12,7 @@ namespace ArcGIS.ServiceModel
         {
             Get = (() =>
             {
-                var httpClient = new HttpClient(new ModernHttpClient.OkHttpNetworkHandler());
+                var httpClient = new HttpClient(new ModernHttpClient.NativeMessageHandler());
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 return httpClient;

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata minClientVersion="2.8.1">
 		<id>ArcGIS.PCL</id>
-		<version>3.2.0</version>
+		<version>3.2.1</version>
 		<title>ArcGIS Server Gateway</title>
 		<authors>Dave Timmins</authors>
 		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -67,10 +67,10 @@
 				<dependency id="Microsoft.Net.Http" version="2.2.22" />
 			</group>
 			<group targetFramework="MonoAndroid1">
-				<dependency id="modernhttpclient" version="1.2.2" />
+				<dependency id="modernhttpclient" version="2.0.0" />
 			</group>
 			<group targetFramework="MonoTouch1">
-				<dependency id="modernhttpclient" version="1.2.2" />
+				<dependency id="modernhttpclient" version="2.0.0" />
 			</group>
 			<group targetFramework="portable-net4+sl5+netcore45+wp8+MonoAndroid1+MonoTouch1">
 			</group>
