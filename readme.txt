@@ -40,9 +40,7 @@ var secureArcGISOnlineGatewayOAuth = new ArcGISOnlineGateway(tokenProvider: new 
 
 Once you have a gateway you can call operations on it, for example to query an endpoint 
 
-var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) 
-{ 
-    ReturnGeometry = false 
-};
+var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
+
 var resultPoint = await gateway.Query<Point>(queryPoint);
 

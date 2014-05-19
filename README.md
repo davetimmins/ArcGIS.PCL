@@ -12,17 +12,20 @@ Since the serialization is specific to your implementation you will need to crea
 
 Supports the following as typed operations:
 
- - Generate Token (automatically if credentials are specified in gateway)
- - Query (attributes, spatial, count, objects Ids)
- - Find
- - Apply Edits
- - Single Input Geocode
- - Suggest
- - Reverse Geocode
- - Describe site (returns a url for every service)
- - Simplify
- - Project
- - Buffer
+ - `CheckGenerateToken` - create a token automatically via an `ITokenProvider`
+ - `Query<T>` - query a layer by attribute and / or spatial filters
+ - `QueryForCount` - only return the number of results for the query operation
+ - `QueryForIds` - only return the ObjectIds for the results of the query operation
+ - `Find` - search across n layers and fields in a service
+ - `ApplyEdits<T>` - post adds, updates and deletes to a feature service layer
+ - `Geocode` - single line of input to perform a geocode usning a custom locator or the Esri world locator
+ - `Suggest` - lightweight geocode operation that only returns text results, commonly used for predictive searching
+ - `ReverseGeocode` - find location candidates for a input point location
+ - `Simplify<T>` - alter geometries to be topologically consistent
+ - `Project<T>` - convert geometries to a different spatial reference
+ - `Buffer<T>` - buffers geometries by the distance requested
+ - `DescribeSite` - returns a url for every service discovered
+ - `Ping` - verify that the server can be accessed
 
 Some example of it in use for server side processing in web sites
 

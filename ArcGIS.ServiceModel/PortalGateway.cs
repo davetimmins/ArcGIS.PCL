@@ -106,7 +106,7 @@ namespace ArcGIS.ServiceModel
         /// Recursively parses an ArcGIS Server site and discovers the resources available
         /// </summary>
         /// <returns>An ArcGIS Server site hierarchy</returns>
-        public async Task<SiteDescription> DescribeSite()
+        public virtual async Task<SiteDescription> DescribeSite()
         {
             var result = new SiteDescription();
 
@@ -159,7 +159,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="endpoint"></param>
         /// <returns>HTTP error if there is a problem with the request, otherwise an
         /// empty <see cref="IPortalResponse"/> object if successful otherwise the Error property is populated</returns>
-        public Task<PortalResponse> Ping(IEndpoint endpoint)
+        public virtual Task<PortalResponse> Ping(IEndpoint endpoint)
         {
             return Get<PortalResponse>(endpoint);
         }
@@ -170,7 +170,7 @@ namespace ArcGIS.ServiceModel
         /// <typeparam name="T">The geometry type for the result set</typeparam>
         /// <param name="queryOptions">Query filter parameters</param>
         /// <returns>The matching features for the query</returns>
-        public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
+        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
         {
             return Get<QueryResponse<T>, Query>(queryOptions);
         }
@@ -180,7 +180,7 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <param name="queryOptions">Query filter parameters</param>
         /// <returns>The number of results that match the query</returns>
-        public Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions)
+        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions)
         {
             return Get<QueryForCountResponse, QueryForCount>(queryOptions);
         }
@@ -190,7 +190,7 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <param name="queryOptions">Query filter parameters</param>
         /// <returns>The Object IDs for the features that match the query</returns>
-        public Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions)
+        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions)
         {
             return Get<QueryForIdsResponse, QueryForIds>(queryOptions);
         }
@@ -201,7 +201,7 @@ namespace ArcGIS.ServiceModel
         /// <typeparam name="T">The geometry type for the input set</typeparam>
         /// <param name="edits">The edits to perform</param>
         /// <returns>A collection of add, update and delete results</returns>
-        public Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
+        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
         {
             return Post<ApplyEditsResponse, ApplyEdits<T>>(edits);
         }
@@ -211,7 +211,7 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <param name="reverseGeocode"></param>
         /// <returns></returns>
-        public Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
+        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
         {
             return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode);
         }
@@ -221,7 +221,7 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <param name="geocode"></param>
         /// <returns></returns>
-        public Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
+        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
         {
             return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode);
         }
@@ -231,7 +231,7 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <param name="suggestGeocode"></param>
         /// <returns></returns>
-        public Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode)
+        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode)
         {
             return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode);
         }
@@ -243,7 +243,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="features">A collection of features which will have their geometries projected</param>
         /// <param name="outputSpatialReference">The spatial reference you want the result set to be</param>
         /// <returns>The corresponding features with the newly projected geometries</returns>
-        public async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
         {
             var op = new ProjectGeometry<T>(GeometryServerUrl.AsEndpoint(), features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
@@ -261,7 +261,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="spatialReference">The spatial reference of the geometries</param>
         /// <param name="distance">Distance in meters to buffer the geometries by</param>
         /// <returns>The corresponding features with the newly buffered geometries</returns>
-        public async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
         {
             var op = new BufferGeometry<T>(GeometryServerUrl.AsEndpoint(), features, spatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
@@ -278,7 +278,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="features">A collection of features which will have their geometries buffered</param>
         /// <param name="spatialReference">The spatial reference of the geometries</param>
         /// <returns>The corresponding features with the newly simplified geometries</returns>
-        public async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference) where T : IGeometry
         {
             var op = new SimplifyGeometry<T>(GeometryServerUrl.AsEndpoint(), features, spatialReference);
             var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op);
@@ -298,7 +298,7 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <param name="findOptions"></param>
         /// <returns></returns>
-        public Task<FindResponse> Find(Find findOptions)
+        public virtual Task<FindResponse> Find(Find findOptions)
         {
             return Get<FindResponse, Find>(findOptions);
         }

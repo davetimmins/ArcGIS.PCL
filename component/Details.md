@@ -1,18 +1,21 @@
-﻿ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online.
+﻿ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
 Available typed operations available are:
 
- - Generate Token (automatically if credentials are specified in gateway)
- - Query (attributes, spatial, count, objects Ids)
- - Find
- - Apply Edits
- - Single Input Geocode
- - Suggest
- - Reverse Geocode
- - Describe site (returns a url for every service)
- - Simplify
- - Project
- - Buffer
+ - `CheckGenerateToken` - create a token automatically via an `ITokenProvider`
+ - `Query<T>` - query a layer by attribute and / or spatial filters
+ - `QueryForCount` - only return the number of results for the query operation
+ - `QueryForIds` - only return the ObjectIds for the results of the query operation
+ - `Find` - search across n layers and fields in a service
+ - `ApplyEdits<T>` - post adds, updates and deletes to a feature service layer
+ - `Geocode` - single line of input to perform a geocode usning a custom locator or the Esri world locator
+ - `Suggest` - lightweight geocode operation that only returns text results, commonly used for predictive searching
+ - `ReverseGeocode` - find location candidates for a input point location
+ - `Simplify<T>` - alter geometries to be topologically consistent
+ - `Project<T>` - convert geometries to a different spatial reference
+ - `Buffer<T>` - buffers geometries by the distance requested
+ - `DescribeSite` - returns a url for every service discovered
+ - `Ping` - verify that the server can be accessed
 
 In addition to these you can use it to convert between GeoJSON and ArcGIS JSON features.
 
@@ -21,8 +24,11 @@ To get started with ArcGIS.PCL first create an ISerializer implementation. There
 ### Json.NET ISerializer initialisation
 
 ```csharp
+
 ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init();
+
 ```
+
 To call ArcGIS Server resources you can create a gateway. You pass in the root url of the ArcGIS Server that you want to call operations against. There are a mixture of secure, non secure and ArcGIS Online base classes available.
 
 ### ArcGIS Server gateway
@@ -54,6 +60,7 @@ Once you have a gateway you can call operations on it, for example to query an e
 var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
 
 var resultPoint = await gateway.Query<Point>(queryPoint);
+
 ```
 
 ### Icon

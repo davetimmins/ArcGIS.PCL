@@ -10,39 +10,41 @@
 		<iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>
-			Use ArcGIS Server REST types and resources without an official SDK.
+			ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
 			Supports the following as typed operations:
 
-			• Generate Token (automatically if using a token provider)
-			• Query (attributes, spatial, count, objects Ids)
-			• Find
-			• Apply Edits
-			• Single Input Geocode (custom locator or Esri world locator)
-			• Suggest Geocode
-			• Reverse Geocode
-			• Describe site (returns a url for every service)
-			• Simplify
-			• Project
-			• Buffer
-
-			The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
-
+			• CheckGenerateToken - create a token automatically via an ITokenProvider
+			• Query&lt;T&gt; - query a layer by attribute and / or spatial filters
+			• QueryForCount - only return the number of results for the query operation
+			• QueryForIds - only return the ObjectIds for the results of the query operation
+			• Find - search across n layers and fields in a service
+			• ApplyEdits&lt;T&gt; - post adds, updates and deletes to a feature service layer
+			• Geocode - single line of input to perform a geocode usning a custom locator or the Esri world locator
+			• Suggest - lightweight geocode operation that only returns text results, commonly used for predictive searching
+			• ReverseGeocode - find location candidates for a input point location
+			• Simplify&lt;T&gt; - alter geometries to be topologically consistent
+			• Project&lt;T&gt; - convert geometries to a different spatial reference
+			• Buffer&lt;T&gt; - buffers geometries by the distance requested
+			• DescribeSite - returns a url for every service discovered
+			• Ping - verify that the server can be accessed
+			
 			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
 			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
 		</description>
 		<summary>
-			Use ArcGIS Server REST types and resources without an official SDK.
+			ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
 			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
 			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
 		</summary>
 		<releaseNotes>
-			Added all operations to PortalGateway.
-			
+			Added all operations to PortalGateway.			
 			Removed access restrictions for PortalGateway.
+			
+			Now instead of having to extent PortalGateway and add your own operations you can just create a PortalGateway instance and use the default operations.
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
