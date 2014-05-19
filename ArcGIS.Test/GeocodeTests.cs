@@ -13,21 +13,6 @@ namespace ArcGIS.Test
         public GeocodeGateway(ISerializer serializer)
             : base("http://geocode.arcgis.com/arcgis", serializer, null)
         { }
-
-        public Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
-        {
-            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode);
-        }
-
-        public Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
-        {
-            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode);
-        }
-
-        public Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode)
-        {
-            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode);
-        }
     }
 
     public class GeocodeTests

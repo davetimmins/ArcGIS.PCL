@@ -104,7 +104,7 @@ namespace ArcGIS.ServiceModel
     /// <summary>
     /// ArcGIS Online token provider
     /// </summary>
-    public sealed class ArcGISOnlineTokenProvider : TokenProvider
+    public class ArcGISOnlineTokenProvider : TokenProvider
     {
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Online

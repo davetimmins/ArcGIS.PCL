@@ -8,8 +8,8 @@ namespace ArcGIS.Portable.iOS
 {
 	public class ArcGISGateway : PortalGateway
 	{
-		public ArcGISGateway(ISerializer serializer)
-			: base(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer)
+		public ArcGISGateway()
+			: base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
 		{ }
 
 		public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry

@@ -18,8 +18,6 @@ namespace ArcGIS.Portable.Android
 	[Activity (Label = "ArcGIS.Portable.Android", MainLauncher = true)]
 	public class MainActivity : Activity
 	{
-		int count = 1;
-
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
@@ -27,22 +25,21 @@ namespace ArcGIS.Portable.Android
 			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Main);
 
-			HttpClientFactory.Get = (() => new HttpClient(new OkHttpNetworkHandler()));
-
 			// Get our button from the layout resource,
 			// and attach an event to it
 			Button button = FindViewById<Button> (Resource.Id.myButton);
 			TextView textview = FindViewById<TextView> (Resource.Id.textView1);
 
-			var serializer = new JsonDotNetSerializer();
-			var locator = new GeocodeGateway(serializer);
+			ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init ();
+
+			var locator = new GeocodeGateway();
 			var geocode = new SingleInputGeocode("/World/GeocodeServer/".AsEndpoint())
 			{
 				Text = "Wellington",
 				SourceCountry = "NZL"
 			};
 
-			var gateway = new ArcGISGateway(serializer);
+			var gateway = new ArcGISGateway();
 						
 			button.Click += async delegate {
 

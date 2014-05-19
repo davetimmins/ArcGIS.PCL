@@ -18,65 +18,29 @@ Now you can go ahead and create your gateway classes
 
 ArcGIS Server with non secure resources
 
-public class ArcGISGateway : PortalGateway
-{
-    public ArcGISGateway()
-        : base(@"http://sampleserver3.arcgisonline.com/ArcGIS/")
-    { }
-}
-
-... new ArcGISGateway();
+var gateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/");
 
 ArcGIS Server with secure resources
 
-public class SecureGISGateway : SecureArcGISServerGateway
-{
-    public SecureGISGateway()
-        : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
-    { }
-}
-
-... new SecureGISGateway();
+var secureGateway = new SecureArcGISServerGateway("http://serverapps10.esri.com/arcgis", "user1", "pass.word1");
 
 ArcGIS Server with secure resources and token service at different location
 
-public class SecureTokenProvider : TokenProvider
-{
-    public SecureTokenProvider()
-        : base("http://serverapps10.esri.com/arcgis", "user1", "pass.word1")
-    { }
-}
- 
-public class SecureGISGateway : PortalGateway
-{
-    public SecureGISGateway(ITokenProvider tokenProvider)
-        : base("http://serverapps10.esri.com/arcgis", tokenProvider)
-    { }
-}
- 
-... new SecureGISGateway(new SecureTokenProvider());
+var otherSecureGateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/", tokenProvider: new TokenProvider("http://serverapps10.esri.com/arcgis", "user1", "pass.word1"));
 
 ArcGIS Online either secure or non secure
 
-... new ArcGISOnlineGateway();
+var arcgisonlineGateway = new ArcGISOnlineGateway();
  
-... new ArcGISOnlineGateway(new ArcGISOnlineTokenProvider("user", "pass"));
+var secureArcGISOnlineGateway = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineTokenProvider("user", "pass"));
 
+var secureArcGISOnlineGatewayOAuth = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineAppLoginOAuthProvider("clientId", "clientSecret"));
 
-Once you have a gateway you can add operations to it, for example to query an endpoint add the following to your gateway
+========================== Calling operations ===========================
 
-public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
-{
-    return Get<QueryResponse<T>, Query>(queryOptions);
-}
+Once you have a gateway you can call operations on it, for example to query an endpoint 
 
-then call it from your code
+var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
 
-var gateway = new ArcGISGateway(_serializer);
-
-var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) 
-{ 
-    ReturnGeometry = false 
-};
 var resultPoint = await gateway.Query<Point>(queryPoint);
 

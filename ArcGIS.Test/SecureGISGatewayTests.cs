@@ -29,11 +29,6 @@ namespace ArcGIS.Test
         public SecureGISGateway2(ISerializer serializer, ITokenProvider tokenProvider)
             : base(@"http://serverapps10.esri.com/arcgis", serializer, tokenProvider)
         { }
-
-        public Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
-        {
-            return Get<QueryResponse<T>, Query>(queryOptions);
-        }
     }
 
     public class NonSecureGISGateway : PortalGateway
