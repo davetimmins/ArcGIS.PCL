@@ -8,11 +8,7 @@ It can also be used for just working with types and as well as some ArcGIS Serve
 Typical use case would be the need to call some ArcGIS REST resource from server .NET code or maybe a console app. Rather than having to fudge a dependency to an existing SDK you can use this. 
 Works with .NET for Windows Store apps, .NET framework 4.5, Silverlight 5, Windows Phone 8 and higher and Xamarin iOS and Android.
 
-<<<<<<< HEAD
 Since the serialization is specific to your implementation you will need to create an ISerializer to use in your gateway. There are NuGet packages created for 2 of these called `ArcGIS.PCL.JsonDotNetSerializer` and `ArcGIS.PCL.ServiceStackV3Serializer`. To use one of these add a reference using NuGet then call the static `Init()` method e.g. `ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init()`. This will create an `ISerializer` instance and override the `SerializerFactory.Get()` method so that it is returned when requested. This also means that you no longer have to pass the `ISerializer` to your gateway or token providers when initialising them, though you can still use this mechanism if you prefer.
-=======
-Since the serialization is specific to your implementation you will need to create an ISerializer to use in your gateway. There are NuGet packages created for 2 of these called `ArcGIS.PCL.JsonDotNetSerializer` and `ArcGIS.PCL.ServiceStackV3Serializer`. To use one of these add a reference using NuGet then call the static `Init()` method e.g. `ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init()`. This will create an `ISerializer` instance and override the `SerializerFactory.Get()` method so that it is returned when requested. This also means that you no longer have to pass the `ISerializer` to your gateway or token providers when initialising them, though you can still use this mechanism if you prefer. 
->>>>>>> 288804ce155974f2d71a38594a64c7c5a3686edc
 
 Supports the following as typed operations:
 
@@ -31,7 +27,7 @@ Supports the following as typed operations:
  - `DescribeSite` - returns a url for every service discovered
  - `Ping` - verify that the server can be accessed
 
-Some example of it in use for server side processing in web sites
+Some examples of it in use for server side processing in web sites
 
  - [Describe site] (https://arcgissitedescriptor.azurewebsites.net/)
  - [Convert between GeoJSON and ArcGIS Features] (http://arcgisgeojson.azurewebsites.net/)
