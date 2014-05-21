@@ -14,7 +14,7 @@ namespace ArcGIS.ServiceModel
     /// ArcGIS Online gateway
     /// </summary>
     public class ArcGISOnlineGateway : PortalGateway
-    {       
+    {
         /// <summary>
         /// Create an ArcGIS Online gateway to access resources
         /// </summary>
@@ -64,8 +64,8 @@ namespace ArcGIS.ServiceModel
             TokenProvider = tokenProvider;
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
-                      
-            _httpClient = HttpClientFactory.Get();         
+
+            _httpClient = HttpClientFactory.Get();
             System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
         }
 
@@ -133,7 +133,7 @@ namespace ArcGIS.ServiceModel
             {
                 folderDescription = await Get<SiteFolderDescription>(endpoint);
             }
-            catch (HttpRequestException ex) 
+            catch (HttpRequestException ex)
             {
                 // don't have access to the folder
                 System.Diagnostics.Debug.WriteLine("HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
@@ -141,7 +141,7 @@ namespace ArcGIS.ServiceModel
                 return result;
             }
 
-            folderDescription.Path = endpoint.RelativeUrl;            
+            folderDescription.Path = endpoint.RelativeUrl;
             result.Add(folderDescription);
 
             if (folderDescription.Folders != null)
@@ -347,19 +347,32 @@ namespace ArcGIS.ServiceModel
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.Value);
                 if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
-            
+
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
 
             _httpClient.CancelPendingRequests();
-
+                     
             System.Diagnostics.Debug.WriteLine(uri);
-            HttpResponseMessage response = await _httpClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
+            String resultString = String.Empty;
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(uri);
+                response.EnsureSuccessStatusCode();
 
-            var resultString = await response.Content.ReadAsStringAsync();
+                resultString = await response.Content.ReadAsStringAsync();
+            }
+            catch (TaskCanceledException cex)
+            {
+                System.Diagnostics.Debug.WriteLine(cex.ToString());
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+
             System.Diagnostics.Debug.WriteLine(resultString);
             var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
@@ -369,7 +382,7 @@ namespace ArcGIS.ServiceModel
 
         protected Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
         {
-            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl));            
+            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl));
         }
 
         protected Task<T> Post<T, TRequest>(TRequest requestObject)
@@ -416,10 +429,23 @@ namespace ArcGIS.ServiceModel
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
 
             System.Diagnostics.Debug.WriteLine(uri);
-            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
-            response.EnsureSuccessStatusCode();
+            String resultString = String.Empty;
+            try
+            {
+                HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+                response.EnsureSuccessStatusCode();
 
-            var resultString = await response.Content.ReadAsStringAsync();
+                resultString = await response.Content.ReadAsStringAsync();
+            }
+            catch (TaskCanceledException cex) 
+            {
+                System.Diagnostics.Debug.WriteLine(cex.ToString());
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+               
             System.Diagnostics.Debug.WriteLine(resultString);
             var result = Serializer.AsPortalResponse<T>(resultString);
 
