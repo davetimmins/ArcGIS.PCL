@@ -1,5 +1,6 @@
-![Icon](https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png)
-# ArcGIS.PCL
+#![Icon](https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png) ArcGIS.PCL
+
+[![NuGet Status](http://img.shields.io/badge/NuGet-3.2.1-blue.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.1-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
 
 Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.com/2013/July/ArcGIS-PCL/).
 
@@ -18,7 +19,7 @@ Supports the following as typed operations:
  - `QueryForIds` - only return the ObjectIds for the results of the query operation
  - `Find` - search across n layers and fields in a service
  - `ApplyEdits<T>` - post adds, updates and deletes to a feature service layer
- - `Geocode` - single line of input to perform a geocode usning a custom locator or the Esri world locator
+ - `Geocode` - single line of input to perform a geocode using a custom locator or the Esri world locator
  - `Suggest` - lightweight geocode operation that only returns text results, commonly used for predictive searching
  - `ReverseGeocode` - find location candidates for a input point location
  - `Simplify<T>` - alter geometries to be topologically consistent
