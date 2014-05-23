@@ -39,17 +39,24 @@ namespace ArcGIS.Test
 
         [Fact]
         public async Task CanBuffer()
-        {
+        {            
             var gateway = new GeometryGateway(new ServiceStackSerializer());
+
             var result = await gateway.Query<Polygon>(new Query("MontgomeryQuarters/MapServer/0/".AsEndpoint()));
 
             var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
             Assert.NotNull(features);
 
+            await Buffer(new ArcGISOnlineGateway(new ServiceStackSerializer()), features, result.SpatialReference);
+            await Buffer(gateway, features, result.SpatialReference);
+        }
+
+        async Task Buffer(PortalGateway gateway, List<Feature<Polygon>> features, SpatialReference spatialReference)
+        {
             int featuresCount = features.Count;
 
             double distance = 10.0;
-            var featuresBuffered = await gateway.Buffer<Polygon>(features, result.SpatialReference, distance);
+            var featuresBuffered = await gateway.Buffer<Polygon>(features, spatialReference, distance);
 
             Assert.NotNull(featuresBuffered);
             Assert.Equal(featuresCount, featuresBuffered.Count);

@@ -20,7 +20,7 @@
 			• QueryForIds - only return the ObjectIds for the results of the query operation
 			• Find - search across n layers and fields in a service
 			• ApplyEdits&lt;T&gt; - post adds, updates and deletes to a feature service layer
-			• Geocode - single line of input to perform a geocode usning a custom locator or the Esri world locator
+			• Geocode - single line of input to perform a geocode using a custom locator or the Esri world locator
 			• Suggest - lightweight geocode operation that only returns text results, commonly used for predictive searching
 			• ReverseGeocode - find location candidates for a input point location
 			• Simplify&lt;T&gt; - alter geometries to be topologically consistent

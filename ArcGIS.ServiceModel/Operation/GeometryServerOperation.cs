@@ -18,7 +18,7 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class SimplifyGeometry<T> : ArcGISServerOperation where T : IGeometry
     {
-        public SimplifyGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features = null, SpatialReference spatialReference = null)
+        public SimplifyGeometry(IEndpoint endpoint, List<Feature<T>> features = null, SpatialReference spatialReference = null)
             : base(endpoint, Operations.Simplify)
         {
             Geometries = new GeometryCollection<T> { Geometries = features == null ? null : features.Select(f => f.Geometry).ToList() };
@@ -35,7 +35,7 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class BufferGeometry<T> : GeometryOperation<T> where T : IGeometry
     {
-        public BufferGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference spatialReference, double distance)
+        public BufferGeometry(IEndpoint endpoint, List<Feature<T>> features, SpatialReference spatialReference, double distance)
             : base(endpoint, features, spatialReference, Operations.Buffer)
         {
             Geometries.Geometries.First().SpatialReference = spatialReference;
@@ -82,7 +82,7 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class ProjectGeometry<T> : GeometryOperation<T> where T : IGeometry
     {
-        public ProjectGeometry(ArcGISServerEndpoint endpoint, List<Feature<T>> features, SpatialReference outputSpatialReference)
+        public ProjectGeometry(IEndpoint endpoint, List<Feature<T>> features, SpatialReference outputSpatialReference)
             : base(endpoint, features, outputSpatialReference, Operations.Project)
         { }
     }
@@ -107,7 +107,7 @@ namespace ArcGIS.ServiceModel.Operation
 
     public abstract class GeometryOperation<T> : ArcGISServerOperation where T : IGeometry
     {
-        public GeometryOperation(ArcGISServerEndpoint endpoint,
+        public GeometryOperation(IEndpoint endpoint,
             List<Feature<T>> features,
             SpatialReference outputSpatialReference,
             String operation)

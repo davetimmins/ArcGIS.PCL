@@ -49,7 +49,9 @@ namespace ArcGIS.ServiceModel
     public class PortalGateway : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
-        protected const String GeometryServerUrl = "/Utilities/Geometry/GeometryServer";
+        protected const String GeometryServerUrlRelative = "/Utilities/Geometry/GeometryServer";
+        protected const String GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
+        IEndpoint _geometryServiceEndpoint;
         HttpClient _httpClient;
 
         /// <summary>
@@ -67,6 +69,10 @@ namespace ArcGIS.ServiceModel
 
             _httpClient = HttpClientFactory.Get();
             System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
+
+            _geometryServiceEndpoint = String.Equals(RootUrl, AGOPortalUrl, StringComparison.OrdinalIgnoreCase)
+                ? (IEndpoint) GeometryServerUrl.AsAbsoluteEndpoint()
+                : (IEndpoint)GeometryServerUrlRelative.AsEndpoint();
         }
 
 #if DEBUG
@@ -245,7 +251,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly projected geometries</returns>
         public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
         {
-            var op = new ProjectGeometry<T>(GeometryServerUrl.AsEndpoint(), features, outputSpatialReference);
+            var op = new ProjectGeometry<T>(_geometryServiceEndpoint, features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
 
             var result = features.UpdateGeometries<T>(projected.Geometries);
@@ -263,7 +269,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly buffered geometries</returns>
         public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
         {
-            var op = new BufferGeometry<T>(GeometryServerUrl.AsEndpoint(), features, spatialReference, distance);
+            var op = new BufferGeometry<T>(_geometryServiceEndpoint, features, spatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
 
             var result = features.UpdateGeometries<T>(buffered.Geometries);
@@ -280,7 +286,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly simplified geometries</returns>
         public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference) where T : IGeometry
         {
-            var op = new SimplifyGeometry<T>(GeometryServerUrl.AsEndpoint(), features, spatialReference);
+            var op = new SimplifyGeometry<T>(_geometryServiceEndpoint, features, spatialReference);
             var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op);
 
             var result = features.UpdateGeometries<T>(simplified.Geometries);
