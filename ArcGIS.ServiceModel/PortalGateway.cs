@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Operation;
 using System.Net.Http.Headers;
+using System.Threading;
 
 namespace ArcGIS.ServiceModel
 {
@@ -71,7 +72,7 @@ namespace ArcGIS.ServiceModel
             System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
 
             _geometryServiceEndpoint = String.Equals(RootUrl, AGOPortalUrl, StringComparison.OrdinalIgnoreCase)
-                ? (IEndpoint) GeometryServerUrl.AsAbsoluteEndpoint()
+                ? (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()
                 : (IEndpoint)GeometryServerUrlRelative.AsEndpoint();
         }
 
@@ -111,15 +112,17 @@ namespace ArcGIS.ServiceModel
         /// <summary>
         /// Recursively parses an ArcGIS Server site and discovers the resources available
         /// </summary>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>An ArcGIS Server site hierarchy</returns>
-        public virtual async Task<SiteDescription> DescribeSite()
+        public virtual async Task<SiteDescription> DescribeSite(CancellationTokenSource cts = null)
         {
             var result = new SiteDescription();
 
-            var folderDescriptions = await DescribeEndpoint("/".AsEndpoint());
+            var folderDescriptions = await DescribeEndpoint("/".AsEndpoint(), cts);
+            if (cts != null && cts.IsCancellationRequested) return result;
 
             foreach (var description in folderDescriptions)
-            {
+            {               
                 if (description.Version > result.Version) result.Version = description.Version;
 
                 foreach (var service in description.Services)
@@ -131,13 +134,13 @@ namespace ArcGIS.ServiceModel
             return result;
         }
 
-        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint)
+        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint, CancellationTokenSource cts = null)
         {
             SiteFolderDescription folderDescription = null;
             var result = new List<SiteFolderDescription>();
             try
             {
-                folderDescription = await Get<SiteFolderDescription>(endpoint);
+                folderDescription = await Get<SiteFolderDescription>(endpoint, cts);
             }
             catch (HttpRequestException ex)
             {
@@ -146,6 +149,7 @@ namespace ArcGIS.ServiceModel
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
                 return result;
             }
+            if (cts != null && cts.IsCancellationRequested) return result;
 
             folderDescription.Path = endpoint.RelativeUrl;
             result.Add(folderDescription);
@@ -153,7 +157,7 @@ namespace ArcGIS.ServiceModel
             if (folderDescription.Folders != null)
                 foreach (var folder in folderDescription.Folders)
                 {
-                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint()));
+                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), cts));
                 }
 
             return result;
@@ -163,11 +167,12 @@ namespace ArcGIS.ServiceModel
         /// Pings the endpoint specified
         /// </summary>
         /// <param name="endpoint"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>HTTP error if there is a problem with the request, otherwise an
         /// empty <see cref="IPortalResponse"/> object if successful otherwise the Error property is populated</returns>
-        public virtual Task<PortalResponse> Ping(IEndpoint endpoint)
+        public virtual Task<PortalResponse> Ping(IEndpoint endpoint, CancellationTokenSource cts = null)
         {
-            return Get<PortalResponse>(endpoint);
+            return Get<PortalResponse>(endpoint, cts);
         }
 
         /// <summary>
@@ -175,30 +180,33 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <typeparam name="T">The geometry type for the result set</typeparam>
         /// <param name="queryOptions">Query filter parameters</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>The matching features for the query</returns>
-        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
+        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions, CancellationTokenSource cts = null) where T : IGeometry
         {
-            return Get<QueryResponse<T>, Query>(queryOptions);
+            return Get<QueryResponse<T>, Query>(queryOptions, cts);
         }
 
         /// <summary>
         /// Call the count operation for the query resource.
         /// </summary>
         /// <param name="queryOptions">Query filter parameters</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>The number of results that match the query</returns>
-        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions)
+        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions, CancellationTokenSource cts = null)
         {
-            return Get<QueryForCountResponse, QueryForCount>(queryOptions);
+            return Get<QueryForCountResponse, QueryForCount>(queryOptions, cts);
         }
 
         /// <summary>
         /// Call the object Ids query for the query resource
         /// </summary>
         /// <param name="queryOptions">Query filter parameters</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>The Object IDs for the features that match the query</returns>
-        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions)
+        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions, CancellationTokenSource cts = null)
         {
-            return Get<QueryForIdsResponse, QueryForIds>(queryOptions);
+            return Get<QueryForIdsResponse, QueryForIds>(queryOptions, cts);
         }
 
         /// <summary>
@@ -206,40 +214,44 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <typeparam name="T">The geometry type for the input set</typeparam>
         /// <param name="edits">The edits to perform</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>A collection of add, update and delete results</returns>
-        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
+        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationTokenSource cts = null) where T : IGeometry
         {
-            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits);
+            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits, cts);
         }
 
         /// <summary>
         /// Call the reverse geocode operation. 
         /// </summary>
         /// <param name="reverseGeocode"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns></returns>
-        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
+        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode, CancellationTokenSource cts = null)
         {
-            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode);
+            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode, cts);
         }
 
         /// <summary>
         /// Call the single line geocode operation.
         /// </summary>
         /// <param name="geocode"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns></returns>
-        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
+        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode, CancellationTokenSource cts = null)
         {
-            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode);
+            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode, cts);
         }
 
         /// <summary>
         /// Call the suggest geocode operation.
         /// </summary>
         /// <param name="suggestGeocode"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns></returns>
-        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode)
+        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode, CancellationTokenSource cts = null)
         {
-            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode);
+            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode, cts);
         }
 
         /// <summary>
@@ -248,11 +260,14 @@ namespace ArcGIS.ServiceModel
         /// <typeparam name="T">The type of the geometries</typeparam>
         /// <param name="features">A collection of features which will have their geometries projected</param>
         /// <param name="outputSpatialReference">The spatial reference you want the result set to be</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly projected geometries</returns>
-        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationTokenSource cts = null) where T : IGeometry
         {
             var op = new ProjectGeometry<T>(_geometryServiceEndpoint, features, outputSpatialReference);
-            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op);
+            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, cts);
+
+            if (cts != null && cts.IsCancellationRequested) return null;
 
             var result = features.UpdateGeometries<T>(projected.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
@@ -266,11 +281,14 @@ namespace ArcGIS.ServiceModel
         /// <param name="features">A collection of features which will have their geometries buffered</param>
         /// <param name="spatialReference">The spatial reference of the geometries</param>
         /// <param name="distance">Distance in meters to buffer the geometries by</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly buffered geometries</returns>
-        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationTokenSource cts = null) where T : IGeometry
         {
             var op = new BufferGeometry<T>(_geometryServiceEndpoint, features, spatialReference, distance);
-            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op);
+            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, cts);
+
+            if (cts != null && cts.IsCancellationRequested) return null;
 
             var result = features.UpdateGeometries<T>(buffered.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
@@ -283,11 +301,14 @@ namespace ArcGIS.ServiceModel
         /// <typeparam name="T">The type of the geometries</typeparam>
         /// <param name="features">A collection of features which will have their geometries buffered</param>
         /// <param name="spatialReference">The spatial reference of the geometries</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly simplified geometries</returns>
-        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationTokenSource cts = null) where T : IGeometry
         {
             var op = new SimplifyGeometry<T>(_geometryServiceEndpoint, features, spatialReference);
-            var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op);
+            var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, cts);
+
+            if (cts != null && cts.IsCancellationRequested) return null;
 
             var result = features.UpdateGeometries<T>(simplified.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
@@ -303,10 +324,11 @@ namespace ArcGIS.ServiceModel
         /// }
         /// </summary>
         /// <param name="findOptions"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns></returns>
-        public virtual Task<FindResponse> Find(Find findOptions)
+        public virtual Task<FindResponse> Find(Find findOptions, CancellationTokenSource cts = null)
         {
-            return Get<FindResponse, Find>(findOptions);
+            return Get<FindResponse, Find>(findOptions, cts);
         }
 
         async Task<Token> CheckGenerateToken()
@@ -330,7 +352,7 @@ namespace ArcGIS.ServiceModel
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
 
-        protected Task<T> Get<T, TRequest>(TRequest requestObject)
+        protected Task<T> Get<T, TRequest>(TRequest requestObject, CancellationTokenSource cts = null)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
@@ -339,10 +361,10 @@ namespace ArcGIS.ServiceModel
             if (url.Length > 2000)
                 return Post<T>(requestObject, url.ParseQueryString());
 
-            return Get<T>(url);
+            return Get<T>(url, cts);
         }
 
-        protected async Task<T> Get<T>(String url) where T : IPortalResponse
+        protected async Task<T> Get<T>(String url, CancellationTokenSource cts = null) where T : IPortalResponse
         {
             var token = await CheckGenerateToken();
 
@@ -360,12 +382,12 @@ namespace ArcGIS.ServiceModel
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
 
             _httpClient.CancelPendingRequests();
-                     
+
             System.Diagnostics.Debug.WriteLine(uri);
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(uri);
+                HttpResponseMessage response = (cts == null) ? await _httpClient.GetAsync(uri) : await _httpClient.GetAsync(uri, cts.Token);
                 response.EnsureSuccessStatusCode();
 
                 resultString = await response.Content.ReadAsStringAsync();
@@ -373,6 +395,7 @@ namespace ArcGIS.ServiceModel
             catch (TaskCanceledException cex)
             {
                 System.Diagnostics.Debug.WriteLine(cex.ToString());
+                return default(T);
             }
             catch (HttpRequestException)
             {
@@ -386,19 +409,19 @@ namespace ArcGIS.ServiceModel
             return result;
         }
 
-        protected Task<T> Get<T>(IEndpoint endpoint) where T : IPortalResponse
+        protected Task<T> Get<T>(IEndpoint endpoint, CancellationTokenSource cts = null) where T : IPortalResponse
         {
-            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl));
+            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), cts);
         }
 
-        protected Task<T> Post<T, TRequest>(TRequest requestObject)
+        protected Task<T> Post<T, TRequest>(TRequest requestObject, CancellationTokenSource cts = null)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            return Post<T>(requestObject, Serializer.AsDictionary(requestObject));
+            return Post<T>(requestObject, Serializer.AsDictionary(requestObject), cts);
         }
 
-        protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters) where T : IPortalResponse
+        protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters, CancellationTokenSource cts = null) where T : IPortalResponse
         {
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
@@ -438,20 +461,21 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+                HttpResponseMessage response = cts == null ? await _httpClient.PostAsync(uri, content) : await _httpClient.PostAsync(uri, content, cts.Token);
                 response.EnsureSuccessStatusCode();
 
                 resultString = await response.Content.ReadAsStringAsync();
             }
-            catch (TaskCanceledException cex) 
+            catch (TaskCanceledException cex)
             {
                 System.Diagnostics.Debug.WriteLine(cex.ToString());
+                return default(T);
             }
             catch (HttpRequestException)
             {
                 throw;
             }
-               
+
             System.Diagnostics.Debug.WriteLine(resultString);
             var result = Serializer.AsPortalResponse<T>(resultString);
 
