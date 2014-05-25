@@ -30,13 +30,11 @@ Supports the following as typed operations:
 
 Some examples of it in use for server side processing in web sites
 
- - [Describe site] (https://arcgissitedescriptor.azurewebsites.net/)
- - [Convert between GeoJSON and ArcGIS Features] (http://arcgisgeojson.azurewebsites.net/)
- - [Server side geometry operations] (http://eqnz.azurewebsites.net/)
- - [Server side geocode] (http://loc8.azurewebsites.net/map?text=wellington, new zealand)
+ - [Describe site] (https://arcgissitedescriptor.azurewebsites.net/) - [code](https://github.com/davetimmins/ArcGIS.PCL-Sample-Projects/tree/master/ArcGIS%20Server%20Site%20Describer)
+ - [Convert between GeoJSON and ArcGIS Features] (http://arcgisgeojson.azurewebsites.net/) - [code](https://github.com/davetimmins/ArcGIS.PCL-Sample-Projects/blob/master/Converter.Web/Interface/ConverterService.cs)
+ - [Server side geometry operations] (http://eqnz.azurewebsites.net/) - [code](https://github.com/davetimmins/ArcGIS.PCL-Sample-Projects/tree/master/Earthquakes/Earthquakes.Web)
+ - [Server side geocode] (http://loc8.azurewebsites.net/map?text=wellington, new zealand) - [code](https://github.com/davetimmins/ArcGIS.PCL-Sample-Projects/tree/master/ArcGISLocationMapper/ArcGISLocationMapper.Web)
  
-The code for these can be seen at [ArcGIS.PCL-Sample-Projects](https://github.com/davetimmins/ArcGIS.PCL-Sample-Projects)
-
 See some of the [tests](https://github.com/davetimmins/ArcGIS.PCL/blob/dev/ArcGIS.Test/ArcGISGatewayTests.cs) for some example calls.
 
 ###Gateway Use Cases
@@ -59,72 +57,8 @@ var secureArcGISOnlineGateway = new ArcGISOnlineGateway(tokenProvider: new ArcGI
 
 var secureArcGISOnlineGatewayOAuth = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineAppLoginOAuthProvider("clientId", "clientSecret"));
 ```
-### Converting between ArcGIS Feature Set from hosted FeatureService and GeoJSON FeatureCollection
-```csharp
-static Dictionary<String, Func<String, FeatureCollection<IGeoJsonGeometry>>> _funcMap = new Dictionary<String, Func<String, FeatureCollection<IGeoJsonGeometry>>>
-{
-    { GeometryTypes.Point, (uri) => new ProxyGateway(uri).GetGeoJson<Point>(uri) },
-    { GeometryTypes.MultiPoint, (uri) => new ProxyGateway(uri).GetGeoJson<MultiPoint>(uri) },
-    { GeometryTypes.Envelope, (uri) => new ProxyGateway(uri).GetGeoJson<Extent>(uri) },
-    { GeometryTypes.Polygon, (uri) => new ProxyGateway(uri).GetGeoJson<Polygon>(uri) },
-    { GeometryTypes.Polyline, (uri) => new ProxyGateway(uri).GetGeoJson<Polyline>(uri) }
-};
 
-...
-
-var layer = new ProxyGateway(uri).GetAnything(uri.AsEndpoint());
-if (layer == null || !layer.ContainsKey("geometryType")) throw new HttpException("You must enter a valid layer url.");
-return _funcMap[layer["geometryType"]](uri);
-
-...
-
-public class AgsObject : JsonObject, IPortalResponse
-{
-    [System.Runtime.Serialization.DataMember(Name = "error")]
-    public ArcGISError Error { get; set; }
-}
-
-public class ProxyGateway : PortalGateway
-{
-    public ProxyGateway(String rootUrl)
-        : base(rootUrl)
-    { }
-
-    public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint)
-    {
-        return Get<AgsObject>(endpoint);
-    }
-
-    public async Task<FeatureCollection<IGeoJsonGeometry>> GetGeoJson<T>(String uri) where T : IGeometry
-    {
-        var result = await Query<T>(new Query(uri.AsEndpoint()));
-        result.Features.First().Geometry.SpatialReference = result.SpatialReference;
-        var features = result.Features.ToList();
-        if (result.SpatialReference.Wkid != SpatialReference.WGS84.Wkid)
-            features = Project<T>(features, SpatialReference.WGS84);
-        return features.ToFeatureCollection();
-    }
-}
-
-```
-### Converting between GeoJSON FeatureCollection and ArcGIS Feature Set
-```csharp
-static Dictionary<String, Func<String, List<Feature<IGeometry>>>> _funcMap = new Dictionary<String, Func<String, List<Feature<IGeometry>>>>
-{
-    { "Point", (data) => JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonPoint>>(data).ToFeatures<GeoJsonPoint>() },
-    { "MultiPoint", (data) => JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonLineString>>(data).ToFeatures<GeoJsonLineString>() },
-    { "LineString", (data) => JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonLineString>>(data).ToFeatures<GeoJsonLineString>() },
-    { "MultiLineString", (data) => JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonLineString>>(data).ToFeatures<GeoJsonLineString>() },
-    { "Polygon", (data) => JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonPolygon>>(data).ToFeatures<GeoJsonPolygon>() },
-    { "MultiPolygon", (data) => JsonSerializer.DeserializeFromString<FeatureCollection<GeoJsonMultiPolygon>>(data).ToFeatures<GeoJsonMultiPolygon>() }
-};
-
-...
-
-return _funcMap["Point"](data);
-```
-
-### Usage
+### Installation
 If you have [NuGet](http://nuget.org) installed, the easiest way to get started is to install via NuGet:
 
     PM> Install-Package ArcGIS.PCL
