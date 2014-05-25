@@ -24,14 +24,14 @@ namespace ArcGIS.ServiceModel
         /// <param name="clientId">The Client Id from your API access section of your application from developers.arcgis.com</param>
         /// <param name="clientSecret">The Client Secret from your API access section of your application from developers.arcgis.com</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public ArcGISOnlineAppLoginOAuthProvider(String clientId, String clientSecret, ISerializer serializer = null)            
+        public ArcGISOnlineAppLoginOAuthProvider(String clientId, String clientSecret, ISerializer serializer = null)
         {
             if (String.IsNullOrWhiteSpace(clientId) || String.IsNullOrWhiteSpace(clientSecret))
             {
                 System.Diagnostics.Debug.WriteLine("ArcGISOnlineAppLoginOAuthProvider not initialized as client Id/secret not supplied.");
                 return;
             }
-            
+
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
@@ -41,7 +41,7 @@ namespace ArcGIS.ServiceModel
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
 
-        #if DEBUG
+#if DEBUG
         ~ArcGISOnlineAppLoginOAuthProvider()
         {
             Dispose(false);
@@ -87,15 +87,30 @@ namespace ArcGIS.ServiceModel
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(OAuthRequest));
 
             _httpClient.CancelPendingRequests();
-            HttpResponseMessage response = await _httpClient.PostAsync(RootUrl, content);
-            response.EnsureSuccessStatusCode();
 
-            var resultString = await response.Content.ReadAsStringAsync();
+            String resultString = String.Empty;
+            try
+            {
+                HttpResponseMessage response = await _httpClient.PostAsync(RootUrl, content);
+                response.EnsureSuccessStatusCode();
+
+                resultString = await response.Content.ReadAsStringAsync();
+            }
+            catch (TaskCanceledException cex)
+            {
+                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                return null;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+
             System.Diagnostics.Debug.WriteLine("Generate OAuth token result: " + resultString);
             var result = Serializer.AsPortalResponse<OAuthToken>(resultString);
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
-            
+
             _token = result.AsToken();
             return _token;
         }
@@ -142,13 +157,13 @@ namespace ArcGIS.ServiceModel
                 System.Diagnostics.Debug.WriteLine("TokenProvider for '" + RootUrl + "' not initialized as username/password not supplied.");
                 return;
             }
-            
+
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             RootUrl = rootUrl.AsRootUrl();
             TokenRequest = new GenerateToken(username, password) { Referer = referer };
-                      
-            _httpClient = HttpClientFactory.Get();                 
+
+            _httpClient = HttpClientFactory.Get();
 
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
@@ -195,7 +210,7 @@ namespace ArcGIS.ServiceModel
                 throw new HttpRequestException(String.Format("Not a valid url for referrer: {0}", TokenRequest.Referer));
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
-        
+
         //Token _token;
         /// <summary>
         /// Generates a token using the username and password set for this provider.
@@ -208,7 +223,7 @@ namespace ArcGIS.ServiceModel
             if (TokenRequest == null) return null;
 
             if (_token != null && !_token.IsExpired) return _token;
-            
+
             _token = null; // reset the Token
 
             CheckRefererHeader();
@@ -222,10 +237,25 @@ namespace ArcGIS.ServiceModel
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
 
             _httpClient.CancelPendingRequests();
-            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
-            response.EnsureSuccessStatusCode();
 
-            var resultString = await response.Content.ReadAsStringAsync();
+            String resultString = String.Empty;
+            try
+            {
+                HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+                response.EnsureSuccessStatusCode();
+
+                resultString = await response.Content.ReadAsStringAsync();
+            }
+            catch (TaskCanceledException cex)
+            {
+                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                return null;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+
             System.Diagnostics.Debug.WriteLine("Generate token result: " + resultString);
             var result = Serializer.AsPortalResponse<Token>(resultString);
 
