@@ -1,6 +1,6 @@
 #![Icon](https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png) ArcGIS.PCL
 
-[![NuGet Status](http://img.shields.io/badge/NuGet-3.2.1-blue.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.1-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
+[![NuGet Status](http://img.shields.io/badge/NuGet-3.2.2-blue.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.1-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
 
 Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.com/2013/July/ArcGIS-PCL/).
 
@@ -58,12 +58,34 @@ var secureArcGISOnlineGateway = new ArcGISOnlineGateway(tokenProvider: new ArcGI
 var secureArcGISOnlineGatewayOAuth = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineAppLoginOAuthProvider("clientId", "clientSecret"));
 ```
 
+### Calling operations 
+
+Once you have a gateway you can call operations on it, for example to query an endpoint 
+
+```csharp
+
+var queryPoint = new Query("Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
+
+var resultPoint = await gateway.Query<Point>(queryPoint);
+```
+
+### Endpoints
+
+You may have noticed the `AsEndpoint()` method in the `Query` constructor above. This is an extension method that creates a new `ArcGISServerEndpoint` and you can use the constructor for that if you prefer.
+
+The available endpoint types are
+
+ - `ArcGISServerEndpoint` - this will create an endpoint at the `rest/services` location for an ArcGIS server gateway. This is the most common use case for your own services so it's likely you will use this one
+ - `ArcGISOnlineEndpoint` - this will create an endpoint at the `sharing/rest` location. This can be used when called services hosted on ArcGIS Online
+ - `ArcGISServerAdminEndpoint` - this will create an endpoint at the `admin` location for an ArcGIS server gateway
+ - `AbsoluteEndpoint` - this will just keep the string that you pass to it. It's used internally to allow the `ArcGISOnlineEndpoint` to call the geometry service at https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer
+
 ### Installation
 If you have [NuGet](http://nuget.org) installed, the easiest way to get started is to install via NuGet:
 
     PM> Install-Package ArcGIS.PCL
 
-On Xamarin you can add the [ArcGIS.PCL component](http://components.xamarin.com/view/ArcGIS.PCL) from the component store or use the [NuGet addin](https://github.com/mrward/monodevelop-nuget-addin) and add it from there.
+On Xamarin you can add the [ArcGIS.PCL component](http://components.xamarin.com/view/ArcGIS.PCL) from the component store or use NuGet since it is now supported in Xamarin Studio.
 
 Of course you can also get the code from this site.
 
