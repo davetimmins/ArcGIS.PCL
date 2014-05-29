@@ -44,8 +44,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ModernHttpClient">
-      <HintPath>..\packages\modernhttpclient.2.0.0\lib\MonoTouch\ModernHttpClient.dll</HintPath>
+    <Reference Include="ModernHttpClient, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\modernhttpclient.2.0.1\lib\MonoTouch\ModernHttpClient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http" />

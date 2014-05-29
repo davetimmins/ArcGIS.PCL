@@ -24,6 +24,11 @@ namespace ArcGIS.ServiceModel
             return new ArcGISOnlineEndpoint(relativeUrl);
         }
 
+        public static AbsoluteEndpoint AsAbsoluteEndpoint(this String url)
+        {
+            return new AbsoluteEndpoint(url);
+        }
+
         public static String AsRootUrl(this String rootUrl)
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");

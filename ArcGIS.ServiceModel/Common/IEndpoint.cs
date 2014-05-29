@@ -108,4 +108,23 @@ namespace ArcGIS.ServiceModel.Common
                        : RelativeUrl;
         }
     }
+
+    public class AbsoluteEndpoint : IEndpoint
+    {
+        /// <summary>
+        /// Create an IEndpoint for the path 
+        /// </summary>
+        /// <param name="path"></param>
+        public AbsoluteEndpoint(String path)
+        {
+            RelativeUrl = path;
+        }
+
+        public String RelativeUrl { get; private set; }
+
+        public String BuildAbsoluteUrl(String rootUrl)
+        {
+            return RelativeUrl;
+        }
+    }
 }
