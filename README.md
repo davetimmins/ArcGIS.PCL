@@ -1,6 +1,6 @@
 #![Icon](https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png) ArcGIS.PCL
 
-[![Build status](https://ci.appveyor.com/api/projects/status/6kquae4fokkeuxg1?retina=true)](https://ci.appveyor.com/project/davetimmins/arcgis-pcl) [![NuGet Status](http://img.shields.io/badge/NuGet-3.2.2-blue.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.1-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
+[![Build status](https://ci.appveyor.com/api/projects/status/6kquae4fokkeuxg1?retina=true)](https://ci.appveyor.com/project/davetimmins/arcgis-pcl) [![NuGet Status](http://img.shields.io/badge/NuGet-3.2.2-blue.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.2-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
 
 Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.com/2013/July/ArcGIS-PCL/).
 
