@@ -47,6 +47,7 @@
     <Compile Include="Extensions\GeometryExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="GeoJson\FeatureCollection.cs" />
+    <Compile Include="ICryptoProvider.cs" />
     <Compile Include="IPortalGateway.cs" />
     <Compile Include="ISerializer.cs" />
     <Compile Include="ITokenProvider.cs" />

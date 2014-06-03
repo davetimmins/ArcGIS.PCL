@@ -140,10 +140,9 @@ namespace ArcGIS.ServiceModel
     public class TokenProvider : ITokenProvider, IDisposable
     {
         HttpClient _httpClient;
-        protected readonly GenerateToken TokenRequest;
+        protected GenerateToken TokenRequest;
         Token _token;
         PublicKeyResponse _publicKey;
-        readonly bool _useEncryption;
 
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Server
@@ -154,7 +153,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation</param>
         /// <param name="useEncryption">If true then the token generation request will be encryted</param>
-        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = "", bool useEncryption = true)
+        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = "", ICryptoProvider cryptoProvider = null)
         {
             if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
             {
@@ -165,7 +164,7 @@ namespace ArcGIS.ServiceModel
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             RootUrl = rootUrl.AsRootUrl();
-            _useEncryption = useEncryption;
+            CryptoProvider = cryptoProvider ?? CryptoProviderFactory.Get();
             TokenRequest = new GenerateToken(username, password) { Referer = referer };
 
             _httpClient = HttpClientFactory.Get();
@@ -200,6 +199,8 @@ namespace ArcGIS.ServiceModel
             GC.SuppressFinalize(this);
 #endif
         }
+
+        public ICryptoProvider CryptoProvider { get; private set; }
 
         public string RootUrl { get; private set; }
 
@@ -239,7 +240,7 @@ namespace ArcGIS.ServiceModel
             if (!validUrl)
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
 
-            if (_useEncryption && _publicKey == null)
+            if (CryptoProvider != null && _publicKey == null)
             {
                 var publicKey = new PublicKey();
                 var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGateway.AsRequestQueryString(Serializer, publicKey);
@@ -251,23 +252,28 @@ namespace ArcGIS.ServiceModel
                 var publicKeyResultString = await response.Content.ReadAsStringAsync();
                 _publicKey = Serializer.AsPortalResponse<PublicKeyResponse>(publicKeyResultString);
                 if (_publicKey.Error != null) throw new InvalidOperationException(_publicKey.Error.ToString());
-                
-                using (var rsa = new System.Security.Cryptography.RSACryptoServiceProvider(512))
-                {
-                    var rsaParms = new System.Security.Cryptography.RSAParameters
-                    {
-                        Exponent = _publicKey.Exponent,
-                        Modulus = _publicKey.Modulus
-                    };
-                    rsa.ImportParameters(rsaParms);
 
-                    var encryptedUsername = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Username), false).BytesToHex();
-                    var encryptedPassword = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Password), false).BytesToHex();
-                    var encryptedClient = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Client), false).BytesToHex();
-                    var encryptedExpiration = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.ExpirationInMinutes.ToString()), false).BytesToHex();
+                CryptoProvider.Exponent = _publicKey.Exponent;
+                CryptoProvider.Modulus = _publicKey.Modulus;
 
-                    TokenRequest.Encrypt(encryptedUsername, encryptedPassword, encryptedExpiration, encryptedClient);
-                }
+                TokenRequest = CryptoProvider.Encrypt(TokenRequest);
+              
+                //using (var rsa = new System.Security.Cryptography.RSACryptoServiceProvider(512))
+                //{
+                //    var rsaParms = new System.Security.Cryptography.RSAParameters
+                //    {
+                //        Exponent = _publicKey.Exponent,
+                //        Modulus = _publicKey.Modulus
+                //    };
+                //    rsa.ImportParameters(rsaParms);
+
+                //    var encryptedUsername = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Username), false).BytesToHex();
+                //    var encryptedPassword = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Password), false).BytesToHex();
+                //    var encryptedClient = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Client), false).BytesToHex();
+                //    var encryptedExpiration = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.ExpirationInMinutes.ToString()), false).BytesToHex();
+
+                   // TokenRequest.Encrypt(encryptedUsername, encryptedPassword, encryptedExpiration, encryptedClient);
+                //}
             }
 
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
