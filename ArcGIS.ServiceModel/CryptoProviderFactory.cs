@@ -17,21 +17,17 @@ namespace ArcGIS.ServiceModel
 
     public class RsaEncrypter : ICryptoProvider
     {
-        public byte[] Exponent { get; set; }
-
-        public byte[] Modulus { get; set; }
-
-        public Operation.GenerateToken Encrypt(Operation.GenerateToken tokenRequest)
+        public Operation.GenerateToken Encrypt(Operation.GenerateToken tokenRequest, byte[] exponent, byte[] modulus)
         {
-            if (Exponent == null || Modulus == null)
+            if (exponent == null || modulus == null)
                 throw new InvalidOperationException("Exponent and modulus must be set");
 
             using (var rsa = new System.Security.Cryptography.RSACryptoServiceProvider(512))
             {
                 var rsaParms = new System.Security.Cryptography.RSAParameters
                 {
-                    Exponent = Exponent,
-                    Modulus = Modulus
+                    Exponent = exponent,
+                    Modulus = modulus
                 };
                 rsa.ImportParameters(rsaParms);
 

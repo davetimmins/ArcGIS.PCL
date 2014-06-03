@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ArcGIS.PCL.JsonDotNetSerializer.nuspec = ArcGIS.PCL.JsonDotNetSerializer.nuspec
 		ArcGIS.PCL.nuspec = ArcGIS.PCL.nuspec
 		ArcGIS.PCL.ServiceStackV3Serializer.nuspec = ArcGIS.PCL.ServiceStackV3Serializer.nuspec
+		ArcGIS.ServiceModel\CryptoProviderFactory.cs = ArcGIS.ServiceModel\CryptoProviderFactory.cs
 		gateway.png = gateway.png
 		gruntfile.js = gruntfile.js
 		package.json = package.json

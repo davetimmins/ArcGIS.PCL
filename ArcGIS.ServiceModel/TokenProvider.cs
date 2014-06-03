@@ -252,11 +252,8 @@ namespace ArcGIS.ServiceModel
                 var publicKeyResultString = await response.Content.ReadAsStringAsync();
                 _publicKey = Serializer.AsPortalResponse<PublicKeyResponse>(publicKeyResultString);
                 if (_publicKey.Error != null) throw new InvalidOperationException(_publicKey.Error.ToString());
-
-                CryptoProvider.Exponent = _publicKey.Exponent;
-                CryptoProvider.Modulus = _publicKey.Modulus;
-
-                TokenRequest = CryptoProvider.Encrypt(TokenRequest);
+                
+                TokenRequest = CryptoProvider.Encrypt(TokenRequest, _publicKey.Exponent, _publicKey.Modulus);
             }
 
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
