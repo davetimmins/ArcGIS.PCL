@@ -257,23 +257,6 @@ namespace ArcGIS.ServiceModel
                 CryptoProvider.Modulus = _publicKey.Modulus;
 
                 TokenRequest = CryptoProvider.Encrypt(TokenRequest);
-              
-                //using (var rsa = new System.Security.Cryptography.RSACryptoServiceProvider(512))
-                //{
-                //    var rsaParms = new System.Security.Cryptography.RSAParameters
-                //    {
-                //        Exponent = _publicKey.Exponent,
-                //        Modulus = _publicKey.Modulus
-                //    };
-                //    rsa.ImportParameters(rsaParms);
-
-                //    var encryptedUsername = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Username), false).BytesToHex();
-                //    var encryptedPassword = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Password), false).BytesToHex();
-                //    var encryptedClient = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.Client), false).BytesToHex();
-                //    var encryptedExpiration = rsa.Encrypt(Encoding.UTF8.GetBytes(TokenRequest.ExpirationInMinutes.ToString()), false).BytesToHex();
-
-                   // TokenRequest.Encrypt(encryptedUsername, encryptedPassword, encryptedExpiration, encryptedClient);
-                //}
             }
 
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
