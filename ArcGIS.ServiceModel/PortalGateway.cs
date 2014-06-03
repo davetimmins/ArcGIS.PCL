@@ -356,7 +356,7 @@ namespace ArcGIS.ServiceModel
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(requestObject);
+            var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
             if (url.Length > 2000)
                 return Post<T>(requestObject, url.ParseQueryString());
@@ -484,9 +484,9 @@ namespace ArcGIS.ServiceModel
             return result;
         }
 
-        String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
+        internal static String AsRequestQueryString<T>(ISerializer serializer, T objectToConvert) where T : CommonParameters
         {
-            var dictionary = Serializer.AsDictionary(objectToConvert);
+            var dictionary = serializer.AsDictionary(objectToConvert);
 
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));
         }

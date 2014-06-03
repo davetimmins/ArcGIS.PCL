@@ -71,5 +71,29 @@ namespace ArcGIS.ServiceModel
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Converts a hex-encoded string to the corresponding byte array.
+        /// </summary>
+        /// <param name="hex">Hex-encoded string</param>
+        /// <returns>Byte representation of the hex-encoded input</returns>
+        public static byte[] HexToBytes(this String hex)
+        {
+            int length = hex.Length;
+
+            if (length % 2 != 0)
+            {
+                length += 1;
+                hex = "0" + hex;
+            }
+
+            byte[] bytes = new byte[length / 2];
+            for (int i = 0; i < length; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+
+            return bytes;
+        }
     }
 }
