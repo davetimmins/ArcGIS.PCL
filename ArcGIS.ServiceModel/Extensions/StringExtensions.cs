@@ -79,6 +79,8 @@ namespace ArcGIS.ServiceModel
         /// <returns>Byte representation of the hex-encoded input</returns>
         public static byte[] HexToBytes(this String hex)
         {
+            if (String.IsNullOrWhiteSpace(hex)) return null;
+
             int length = hex.Length;
 
             if (length % 2 != 0)

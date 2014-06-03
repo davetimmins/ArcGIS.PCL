@@ -69,6 +69,8 @@ namespace ArcGIS.ServiceModel.Operation
 
         public void Encrypt(String username, String password, String expiration = "", String client = "")
         {
+            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username");
+            if (String.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password");
             Username = username;
             Password = password;
             if (!String.IsNullOrWhiteSpace(expiration)) _expiration = expiration;
