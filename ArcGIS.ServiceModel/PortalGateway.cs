@@ -70,10 +70,6 @@ namespace ArcGIS.ServiceModel
 
             _httpClient = HttpClientFactory.Get();
             System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
-
-            _geometryServiceEndpoint = String.Equals(RootUrl, AGOPortalUrl, StringComparison.OrdinalIgnoreCase)
-                ? (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()
-                : (IEndpoint)GeometryServerUrlRelative.AsEndpoint();
         }
 
 #if DEBUG
@@ -108,6 +104,14 @@ namespace ArcGIS.ServiceModel
         public ITokenProvider TokenProvider { get; private set; }
 
         public ISerializer Serializer { get; private set; }
+
+        void CreateGeometryServiceEndpoint()
+        {
+            if (_geometryServiceEndpoint != null) return;
+            _geometryServiceEndpoint = String.Equals(RootUrl, AGOPortalUrl, StringComparison.OrdinalIgnoreCase)
+                ? (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()
+                : (IEndpoint)GeometryServerUrlRelative.AsEndpoint();
+        }
 
         /// <summary>
         /// Recursively parses an ArcGIS Server site and discovers the resources available
@@ -264,6 +268,8 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly projected geometries</returns>
         public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationTokenSource cts = null) where T : IGeometry
         {
+            if (_geometryServiceEndpoint == null) CreateGeometryServiceEndpoint();
+
             var op = new ProjectGeometry<T>(_geometryServiceEndpoint, features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, cts);
 
@@ -285,6 +291,8 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly buffered geometries</returns>
         public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationTokenSource cts = null) where T : IGeometry
         {
+            if (_geometryServiceEndpoint == null) CreateGeometryServiceEndpoint();
+
             var op = new BufferGeometry<T>(_geometryServiceEndpoint, features, spatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, cts);
 
@@ -305,6 +313,8 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly simplified geometries</returns>
         public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationTokenSource cts = null) where T : IGeometry
         {
+            if (_geometryServiceEndpoint == null) CreateGeometryServiceEndpoint();
+
             var op = new SimplifyGeometry<T>(_geometryServiceEndpoint, features, spatialReference);
             var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, cts);
 
@@ -364,6 +374,11 @@ namespace ArcGIS.ServiceModel
             return Get<T>(url, cts);
         }
 
+        protected Task<T> Get<T>(IEndpoint endpoint, CancellationTokenSource cts = null) where T : IPortalResponse
+        {
+            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), cts);
+        }
+
         protected async Task<T> Get<T>(String url, CancellationTokenSource cts = null) where T : IPortalResponse
         {
             var token = await CheckGenerateToken();
@@ -408,12 +423,7 @@ namespace ArcGIS.ServiceModel
 
             return result;
         }
-
-        protected Task<T> Get<T>(IEndpoint endpoint, CancellationTokenSource cts = null) where T : IPortalResponse
-        {
-            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), cts);
-        }
-
+        
         protected Task<T> Post<T, TRequest>(TRequest requestObject, CancellationTokenSource cts = null)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
@@ -435,7 +445,7 @@ namespace ArcGIS.ServiceModel
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.Value);
                 if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
-
+            
             HttpContent content = null;
             try
             {

@@ -143,6 +143,7 @@ namespace ArcGIS.ServiceModel
         protected GenerateToken TokenRequest;
         Token _token;
         PublicKeyResponse _publicKey;
+        bool _canAccessPublicKeyEndpoint = true;
 
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Server
@@ -240,20 +241,32 @@ namespace ArcGIS.ServiceModel
             if (!validUrl)
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
 
-            if (CryptoProvider != null && _publicKey == null)
+            if (CryptoProvider != null && _publicKey == null && _canAccessPublicKeyEndpoint)
             {
                 var publicKey = new PublicKey();
                 var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGateway.AsRequestQueryString(Serializer, publicKey);
 
-                _httpClient.CancelPendingRequests();
-                HttpResponseMessage response = await _httpClient.GetAsync(encryptionInfoEndpoint);
-                response.EnsureSuccessStatusCode();
+                String publicKeyResultString = null;
+                try
+                {
+                    _httpClient.CancelPendingRequests();
+                    HttpResponseMessage response = await _httpClient.GetAsync(encryptionInfoEndpoint);
+                    response.EnsureSuccessStatusCode();
+                    publicKeyResultString = await response.Content.ReadAsStringAsync();
+                }
+                catch (HttpRequestException ex)
+                {
+                    _canAccessPublicKeyEndpoint = false;
+                    System.Diagnostics.Debug.WriteLine("Public Key access failed for " + encryptionInfoEndpoint + ". " + ex.ToString());
+                }
 
-                var publicKeyResultString = await response.Content.ReadAsStringAsync();
-                _publicKey = Serializer.AsPortalResponse<PublicKeyResponse>(publicKeyResultString);
-                if (_publicKey.Error != null) throw new InvalidOperationException(_publicKey.Error.ToString());
-                
-                TokenRequest = CryptoProvider.Encrypt(TokenRequest, _publicKey.Exponent, _publicKey.Modulus);
+                if (_canAccessPublicKeyEndpoint)
+                {                    
+                    _publicKey = Serializer.AsPortalResponse<PublicKeyResponse>(publicKeyResultString);
+                    if (_publicKey.Error != null) throw new InvalidOperationException(_publicKey.Error.ToString());
+
+                    TokenRequest = CryptoProvider.Encrypt(TokenRequest, _publicKey.Exponent, _publicKey.Modulus);
+                }
             }
 
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));

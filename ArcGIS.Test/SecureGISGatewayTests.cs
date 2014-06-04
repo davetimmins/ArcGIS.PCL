@@ -45,7 +45,7 @@ namespace ArcGIS.Test
         public SecureGISGatewayTests()
         {
             _serviceStackSerializer = new ServiceStackSerializer();
-            CryptoProviderFactory.Get = () => { return null; }; // this will disable encryption
+            CryptoProviderFactory.Disabled = true; 
         }
 
         [Fact]

@@ -14,8 +14,10 @@ namespace ArcGIS.ServiceModel.Operation
     public class SingleInputCustomGeocode : ArcGISServerOperation
     {
         public SingleInputCustomGeocode(ArcGISServerEndpoint endpoint)
-            : base(endpoint, Operations.SingleInputCustomGeocode)
-        { }
+        {
+            if (endpoint == null) throw new ArgumentNullException("endpoint");
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputCustomGeocode);         
+        }
 
         /// <summary>
         /// Specifies the location to be searched for.
