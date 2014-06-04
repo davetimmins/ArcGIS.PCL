@@ -232,6 +232,7 @@ namespace ArcGIS.ServiceModel
             if (_token != null && !_token.IsExpired) return _token;
 
             _token = null; // reset the Token
+            _publicKey = null;
 
             CheckRefererHeader();
 
