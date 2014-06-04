@@ -67,14 +67,15 @@ namespace ArcGIS.ServiceModel.Operation
         [IgnoreDataMember]
         public bool DontForceHttps { get; set; }
 
-        public void Encrypt(String username, String password, String expiration = "", String client = "")
+        public void Encrypt(String username, String password, String expiration = "", String client = "", String referer = "")
         {
             if (String.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username");
             if (String.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password");
             Username = username;
             Password = password;
             if (!String.IsNullOrWhiteSpace(expiration)) _expiration = expiration;
-            if (!String.IsNullOrWhiteSpace(client)) Client = client;
+            if (!String.IsNullOrWhiteSpace(client)) _client = client;
+            if (!String.IsNullOrWhiteSpace(referer)) _referer = referer;
             Encrypted = true;
             DontForceHttps = false;
         }
