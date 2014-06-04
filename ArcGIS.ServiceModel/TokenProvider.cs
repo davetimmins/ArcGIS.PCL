@@ -131,7 +131,9 @@ namespace ArcGIS.ServiceModel
         /// <param name="referer">Referer url to use for the token generation</param>
         public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer = null, String referer = "https://www.arcgis.com")
             : base(PortalGateway.AGOPortalUrl, username, password, serializer, referer)
-        { }
+        {
+            CanAccessPublicKeyEndpoint = false;
+        }
     }
 
     /// <summary>
@@ -143,7 +145,7 @@ namespace ArcGIS.ServiceModel
         protected GenerateToken TokenRequest;
         Token _token;
         PublicKeyResponse _publicKey;
-        bool _canAccessPublicKeyEndpoint = true;
+        protected bool CanAccessPublicKeyEndpoint = true;
 
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Server
@@ -242,7 +244,7 @@ namespace ArcGIS.ServiceModel
             if (!validUrl)
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
 
-            if (CryptoProvider != null && _publicKey == null && _canAccessPublicKeyEndpoint)
+            if (CryptoProvider != null && _publicKey == null && CanAccessPublicKeyEndpoint)
             {
                 var publicKey = new PublicKey();
                 var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGateway.AsRequestQueryString(Serializer, publicKey);
@@ -257,11 +259,11 @@ namespace ArcGIS.ServiceModel
                 }
                 catch (HttpRequestException ex)
                 {
-                    _canAccessPublicKeyEndpoint = false;
+                    CanAccessPublicKeyEndpoint = false;
                     System.Diagnostics.Debug.WriteLine("Public Key access failed for " + encryptionInfoEndpoint + ". " + ex.ToString());
                 }
 
-                if (_canAccessPublicKeyEndpoint)
+                if (CanAccessPublicKeyEndpoint)
                 {                    
                     _publicKey = Serializer.AsPortalResponse<PublicKeyResponse>(publicKeyResultString);
                     if (_publicKey.Error != null) throw new InvalidOperationException(_publicKey.Error.ToString());
