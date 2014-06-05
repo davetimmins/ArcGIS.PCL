@@ -51,6 +51,7 @@
     <Compile Include="IPortalGateway.cs" />
     <Compile Include="ISerializer.cs" />
     <Compile Include="ITokenProvider.cs" />
+    <Compile Include="Operation\Admin\ServiceStatus.cs" />
     <Compile Include="Operation\ApplyEdits.cs" />
     <Compile Include="Operation\ArcGISServerOperation.cs" />
     <Compile Include="Operation\CommonParameters.cs" />
@@ -58,7 +59,7 @@
     <Compile Include="Operation\Find.cs" />
     <Compile Include="Operation\GeometryServerOperation.cs" />
     <Compile Include="Operation\PortalResponse.cs" />
-    <Compile Include="Operation\PublicKey.cs" />
+    <Compile Include="Operation\Admin\PublicKey.cs" />
     <Compile Include="Operation\Query.cs" />
     <Compile Include="Operation\ReverseGeocode.cs" />
     <Compile Include="Operation\SingleInputGeocode.cs" />

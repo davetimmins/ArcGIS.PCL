@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace ArcGIS.ServiceModel.Operation
+namespace ArcGIS.ServiceModel.Operation.Admin
 {
     [DataContract]
     public class PublicKey : ArcGISServerOperation

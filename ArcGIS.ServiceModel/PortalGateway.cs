@@ -8,6 +8,7 @@ using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Operation;
 using System.Net.Http.Headers;
 using System.Threading;
+using ArcGIS.ServiceModel.Operation.Admin;
 
 namespace ArcGIS.ServiceModel
 {
@@ -122,18 +123,19 @@ namespace ArcGIS.ServiceModel
         {
             var result = new SiteDescription();
 
-            var folderDescriptions = await DescribeEndpoint("/".AsEndpoint(), cts);
+            result.Resources.AddRange(await DescribeEndpoint("/".AsEndpoint(), cts));
+            //var folderDescriptions = await DescribeEndpoint("/".AsEndpoint(), cts);
             if (cts != null && cts.IsCancellationRequested) return result;
+           
+            //foreach (var description in folderDescriptions)
+            //{               
+            //    if (description.Version > result.Version) result.Version = description.Version;
 
-            foreach (var description in folderDescriptions)
-            {               
-                if (description.Version > result.Version) result.Version = description.Version;
-
-                foreach (var service in description.Services)
-                {
-                    result.Resources.Add(new ArcGISServerEndpoint(String.Format("{0}/{1}", service.Name, service.Type)));
-                }
-            }
+            //    foreach (var service in description.Services)
+            //    {
+            //        result.Resources.Add(new ArcGISServerEndpoint(String.Format("{0}/{1}", service.Name, service.Type)));
+            //    }
+            //}
 
             return result;
         }
@@ -177,6 +179,17 @@ namespace ArcGIS.ServiceModel
         public virtual Task<PortalResponse> Ping(IEndpoint endpoint, CancellationTokenSource cts = null)
         {
             return Get<PortalResponse>(endpoint, cts);
+        }
+
+        /// <summary>
+        /// Returns the expected and actual status of a service
+        /// </summary>
+        /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <returns>The expected and actual status of the service</returns>
+        public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription, CancellationTokenSource cts = null)
+        {
+            return Get<ServiceStatusResponse>(new ServiceStatus(serviceDescription), cts);
         }
 
         /// <summary>

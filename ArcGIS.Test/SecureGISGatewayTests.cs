@@ -87,7 +87,7 @@ namespace ArcGIS.Test
             Assert.NotNull(response);
             Assert.True(response.Version > 0);
 
-            foreach (var resource in response.Resources)
+            foreach (var resource in response.ArcGISServerEndpoints)
             {
                 var ping = await gateway.Ping(resource);
                 Assert.Null(ping.Error);

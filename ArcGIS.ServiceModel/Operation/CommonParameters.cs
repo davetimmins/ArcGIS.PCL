@@ -17,6 +17,7 @@ namespace ArcGIS.ServiceModel.Operation
         public const String Buffer = "buffer";
         public const String Project = "project";
         public const String PublicKey = "publicKey";
+        public const String ServiceStatus = "services/{0}.{1}/status";
     }
 
     /// <summary>
