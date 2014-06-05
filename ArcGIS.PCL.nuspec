@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata minClientVersion="2.8.1">
 		<id>ArcGIS.PCL</id>
-		<version>3.2.2</version>
+		<version>4.0.0-beta</version>
 		<title>ArcGIS Server Gateway</title>
 		<authors>Dave Timmins</authors>
 		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -41,9 +41,13 @@
 			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
 		</summary>
 		<releaseNotes>
-			Fixed issue calling geometry server operations when using an ArcGISOnlineGateway
-			Fixed issue when HTTP calls were cancelled
-			Handle CancellationTokenSource for operations
+			Added automatic encryption of tokens if supported by the server
+			Added service status admin operation
+			Added public key admin operation
+			
+			Breaking changes
+			 - removed Silverlight specific project
+			 - changed ArcGISServerOperation signature
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
