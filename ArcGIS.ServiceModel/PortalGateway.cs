@@ -139,6 +139,22 @@ namespace ArcGIS.ServiceModel
         {
             return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode, cts);
         }
+
+        /// <summary>
+        /// Call the find operation, note that since this can return more than one geometry type you will need to deserialize
+        /// the geometry string on the result set e.g.
+        /// foreach (var result in response.Results.Where(r => r.Geometry != null))
+        /// {
+        ///     result.Geometry = ServiceStack.Text.JsonSerializer.DeserializeFromString(result.Geometry.SerializeToString(), TypeMap[result.GeometryType]());
+        /// }
+        /// </summary>
+        /// <param name="findOptions"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <returns></returns>
+        public virtual Task<FindResponse> Find(Find findOptions, CancellationTokenSource cts = null)
+        {
+            return Get<FindResponse, Find>(findOptions, cts);
+        }
     }
 
     /// <summary>
@@ -334,28 +350,12 @@ namespace ArcGIS.ServiceModel
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
             return result;
         }
-
-        /// <summary>
-        /// Call the find operation, note that since this can return more than one geometry type you will need to deserialize
-        /// the geometry string on the result set e.g.
-        /// foreach (var result in response.Results.Where(r => r.Geometry != null))
-        /// {
-        ///     result.Geometry = ServiceStack.Text.JsonSerializer.DeserializeFromString(result.Geometry.SerializeToString(), TypeMap[result.GeometryType]());
-        /// }
-        /// </summary>
-        /// <param name="findOptions"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns></returns>
-        public virtual Task<FindResponse> Find(Find findOptions, CancellationTokenSource cts = null)
-        {
-            return Get<FindResponse, Find>(findOptions, cts);
-        }
-
-        async Task<Token> CheckGenerateToken()
+                
+        async Task<Token> CheckGenerateToken(CancellationTokenSource cts = null)
         {
             if (TokenProvider == null) return null;
 
-            var token = await TokenProvider.CheckGenerateToken();
+            var token = await TokenProvider.CheckGenerateToken(cts);
 
             if (token != null) CheckRefererHeader(token.Referer);
             return token;
@@ -391,7 +391,8 @@ namespace ArcGIS.ServiceModel
 
         protected async Task<T> Get<T>(String url, CancellationTokenSource cts = null) where T : IPortalResponse
         {
-            var token = await CheckGenerateToken();
+            var token = await CheckGenerateToken(cts);
+            if (cts != null && cts.IsCancellationRequested) return default(T);
 
             if (!url.Contains("f=")) url += (url.Contains("?") ? "&" : "?") + "f=json";
             if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !url.Contains("token="))
@@ -445,7 +446,8 @@ namespace ArcGIS.ServiceModel
         {
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
-            var token = await CheckGenerateToken();
+            var token = await CheckGenerateToken(cts);
+            if (cts != null && cts.IsCancellationRequested) return default(T);
 
             // these should have already been added
             if (!parameters.ContainsKey("f")) parameters.Add("f", "json");

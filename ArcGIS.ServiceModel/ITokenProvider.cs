@@ -23,6 +23,6 @@ namespace ArcGIS.ServiceModel
         /// Returns a valid token for the corresponding request
         /// </summary>
         /// <returns>A token that can be used for subsequent requests to secure resources</returns>
-        Task<Token> CheckGenerateToken();
+        Task<Token> CheckGenerateToken(System.Threading.CancellationTokenSource cts = null);
     }
 }

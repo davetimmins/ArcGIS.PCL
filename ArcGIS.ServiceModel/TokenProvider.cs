@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArcGIS.ServiceModel
@@ -78,7 +79,7 @@ namespace ArcGIS.ServiceModel
 
         public ISerializer Serializer { get; private set; }
 
-        public async Task<Token> CheckGenerateToken()
+        public async Task<Token> CheckGenerateToken(CancellationTokenSource cts = null)
         {
             if (OAuthRequest == null) return null;
 
@@ -93,7 +94,7 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(RootUrl, content);
+                HttpResponseMessage response = (cts == null) ? await _httpClient.PostAsync(RootUrl, content) : await _httpClient.PostAsync(RootUrl, content, cts.Token);
                 response.EnsureSuccessStatusCode();
 
                 resultString = await response.Content.ReadAsStringAsync();
@@ -228,7 +229,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>The generated token or null if not applicable</returns>
         /// <remarks>This sets the Token property for the provider. It will be auto appended to 
         /// any requests sent through the gateway used by this provider.</remarks>
-        public async Task<Token> CheckGenerateToken()
+        public async Task<Token> CheckGenerateToken(CancellationTokenSource cts = null)
         {
             if (TokenRequest == null) return null;
 
@@ -254,9 +255,14 @@ namespace ArcGIS.ServiceModel
                 try
                 {
                     _httpClient.CancelPendingRequests();
-                    HttpResponseMessage response = await _httpClient.GetAsync(encryptionInfoEndpoint);
+                    HttpResponseMessage response = cts == null ? await _httpClient.GetAsync(encryptionInfoEndpoint) : await _httpClient.GetAsync(encryptionInfoEndpoint, cts.Token);
                     response.EnsureSuccessStatusCode();
                     publicKeyResultString = await response.Content.ReadAsStringAsync();
+                }
+                catch (TaskCanceledException cex)
+                {
+                    System.Diagnostics.Debug.WriteLine(cex.ToString());
+                    return null;
                 }
                 catch (HttpRequestException ex)
                 {
@@ -280,7 +286,7 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+                HttpResponseMessage response = cts == null ? await _httpClient.PostAsync(uri, content) : await _httpClient.PostAsync(uri, content, cts.Token);
                 response.EnsureSuccessStatusCode();
 
                 resultString = await response.Content.ReadAsStringAsync();
