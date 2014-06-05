@@ -15,7 +15,7 @@ namespace ArcGIS.ServiceModel
     /// <summary>
     /// ArcGIS Online gateway
     /// </summary>
-    public class ArcGISOnlineGateway : PortalGateway
+    public class ArcGISOnlineGateway : PortalGatewayBase
     {
         /// <summary>
         /// Create an ArcGIS Online gateway to access resources
@@ -23,7 +23,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
         public ArcGISOnlineGateway(ISerializer serializer = null, ITokenProvider tokenProvider = null)
-            : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
+            : base(PortalGatewayBase.AGOPortalUrl, serializer, tokenProvider)
         { }
     }
 
@@ -44,11 +44,107 @@ namespace ArcGIS.ServiceModel
         { }
     }
 
-
     /// <summary>
     /// ArcGIS Server gateway
     /// </summary>
-    public class PortalGateway : IPortalGateway, IDisposable
+    public class PortalGateway : PortalGatewayBase
+    {
+        public PortalGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+            : base(rootUrl, serializer, tokenProvider)
+        { }
+
+        /// <summary>
+        /// Recursively parses an ArcGIS Server site and discovers the resources available
+        /// </summary>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <returns>An ArcGIS Server site hierarchy</returns>
+        public virtual async Task<SiteDescription> DescribeSite(CancellationTokenSource cts = null)
+        {
+            var result = new SiteDescription();
+
+            result.Resources.AddRange(await DescribeEndpoint("/".AsEndpoint(), cts));
+                      
+            return result;
+        }
+
+        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint, CancellationTokenSource cts = null)
+        {
+            SiteFolderDescription folderDescription = null;
+            var result = new List<SiteFolderDescription>();
+            try
+            {
+                folderDescription = await Get<SiteFolderDescription>(endpoint, cts);
+            }
+            catch (HttpRequestException ex)
+            {
+                // don't have access to the folder
+                System.Diagnostics.Debug.WriteLine("HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                return result;
+            }
+            if (cts != null && cts.IsCancellationRequested) return result;
+
+            folderDescription.Path = endpoint.RelativeUrl;
+            result.Add(folderDescription);
+
+            if (folderDescription.Folders != null)
+                foreach (var folder in folderDescription.Folders)
+                {
+                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), cts));
+                }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the expected and actual status of a service
+        /// </summary>
+        /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <returns>The expected and actual status of the service</returns>
+        public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription, CancellationTokenSource cts = null)
+        {
+            return Get<ServiceStatusResponse>(new ServiceStatus(serviceDescription), cts);
+        }
+
+        /// <summary>
+        /// Call the reverse geocode operation. 
+        /// </summary>
+        /// <param name="reverseGeocode"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <returns></returns>
+        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode, CancellationTokenSource cts = null)
+        {
+            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode, cts);
+        }
+
+        /// <summary>
+        /// Call the single line geocode operation.
+        /// </summary>
+        /// <param name="geocode"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <returns></returns>
+        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode, CancellationTokenSource cts = null)
+        {
+            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode, cts);
+        }
+
+        /// <summary>
+        /// Call the suggest geocode operation.
+        /// </summary>
+        /// <param name="suggestGeocode"></param>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <returns></returns>
+        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode, CancellationTokenSource cts = null)
+        {
+            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode, cts);
+        }
+    }
+
+    /// <summary>
+    /// ArcGIS Server gateway base. Contains code to make HTTP(S) calls and operations available to all gateway types
+    /// </summary>
+    public class PortalGatewayBase : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         protected const String GeometryServerUrlRelative = "/Utilities/Geometry/GeometryServer";
@@ -62,7 +158,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="rootUrl">Made up of scheme://host:port/site</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        public PortalGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+        public PortalGatewayBase(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
         {
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
@@ -74,7 +170,7 @@ namespace ArcGIS.ServiceModel
         }
 
 #if DEBUG
-        ~PortalGateway()
+        ~PortalGatewayBase()
         {
             Dispose(false);
         }
@@ -115,61 +211,6 @@ namespace ArcGIS.ServiceModel
         }
 
         /// <summary>
-        /// Recursively parses an ArcGIS Server site and discovers the resources available
-        /// </summary>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns>An ArcGIS Server site hierarchy</returns>
-        public virtual async Task<SiteDescription> DescribeSite(CancellationTokenSource cts = null)
-        {
-            var result = new SiteDescription();
-
-            result.Resources.AddRange(await DescribeEndpoint("/".AsEndpoint(), cts));
-            //var folderDescriptions = await DescribeEndpoint("/".AsEndpoint(), cts);
-            if (cts != null && cts.IsCancellationRequested) return result;
-           
-            //foreach (var description in folderDescriptions)
-            //{               
-            //    if (description.Version > result.Version) result.Version = description.Version;
-
-            //    foreach (var service in description.Services)
-            //    {
-            //        result.Resources.Add(new ArcGISServerEndpoint(String.Format("{0}/{1}", service.Name, service.Type)));
-            //    }
-            //}
-
-            return result;
-        }
-
-        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint, CancellationTokenSource cts = null)
-        {
-            SiteFolderDescription folderDescription = null;
-            var result = new List<SiteFolderDescription>();
-            try
-            {
-                folderDescription = await Get<SiteFolderDescription>(endpoint, cts);
-            }
-            catch (HttpRequestException ex)
-            {
-                // don't have access to the folder
-                System.Diagnostics.Debug.WriteLine("HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-                return result;
-            }
-            if (cts != null && cts.IsCancellationRequested) return result;
-
-            folderDescription.Path = endpoint.RelativeUrl;
-            result.Add(folderDescription);
-
-            if (folderDescription.Folders != null)
-                foreach (var folder in folderDescription.Folders)
-                {
-                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), cts));
-                }
-
-            return result;
-        }
-
-        /// <summary>
         /// Pings the endpoint specified
         /// </summary>
         /// <param name="endpoint"></param>
@@ -180,18 +221,7 @@ namespace ArcGIS.ServiceModel
         {
             return Get<PortalResponse>(endpoint, cts);
         }
-
-        /// <summary>
-        /// Returns the expected and actual status of a service
-        /// </summary>
-        /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns>The expected and actual status of the service</returns>
-        public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription, CancellationTokenSource cts = null)
-        {
-            return Get<ServiceStatusResponse>(new ServiceStatus(serviceDescription), cts);
-        }
-
+        
         /// <summary>
         /// Call the query operation
         /// </summary>
@@ -237,40 +267,7 @@ namespace ArcGIS.ServiceModel
         {
             return Post<ApplyEditsResponse, ApplyEdits<T>>(edits, cts);
         }
-
-        /// <summary>
-        /// Call the reverse geocode operation. 
-        /// </summary>
-        /// <param name="reverseGeocode"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns></returns>
-        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode, CancellationTokenSource cts = null)
-        {
-            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode, cts);
-        }
-
-        /// <summary>
-        /// Call the single line geocode operation.
-        /// </summary>
-        /// <param name="geocode"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns></returns>
-        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode, CancellationTokenSource cts = null)
-        {
-            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode, cts);
-        }
-
-        /// <summary>
-        /// Call the suggest geocode operation.
-        /// </summary>
-        /// <param name="suggestGeocode"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns></returns>
-        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode, CancellationTokenSource cts = null)
-        {
-            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode, cts);
-        }
-
+                
         /// <summary>
         /// Projects the list of geometries passed in using the GeometryServer
         /// </summary>

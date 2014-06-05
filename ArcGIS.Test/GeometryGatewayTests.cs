@@ -51,7 +51,7 @@ namespace ArcGIS.Test
             await Buffer(gateway, features, result.SpatialReference);
         }
 
-        async Task Buffer(PortalGateway gateway, List<Feature<Polygon>> features, SpatialReference spatialReference)
+        async Task Buffer(PortalGatewayBase gateway, List<Feature<Polygon>> features, SpatialReference spatialReference)
         {
             int featuresCount = features.Count;
 

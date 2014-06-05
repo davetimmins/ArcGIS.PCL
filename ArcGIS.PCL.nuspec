@@ -28,35 +28,34 @@
 			• Buffer&lt;T&gt; - buffers geometries by the distance requested
 			• DescribeSite - returns a url for every service discovered
 			• Ping - verify that the server can be accessed
-			
+			• PublicKey - admin operation to get public key used for encryption of token requests
+			• ServiceStatus - admin operation to get the configured and actual status of a service
+
 			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
+			Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
 		</description>
 		<summary>
 			ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
 			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
+			Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
 		</summary>
 		<releaseNotes>
 			Added automatic encryption of tokens if supported by the server
 			Added service status admin operation
-			Added public key admin operation
+			Added public key admin operation      
 			
 			Breaking changes
 			 - removed Silverlight specific project
 			 - changed ArcGISServerOperation signature
+			 - DescribeSite returns different response, has more data
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
 		<dependencies>
 			<group targetFramework="net40">
-				<dependency id="Microsoft.Bcl.Async" version="1.0.168" />
-				<dependency id="Microsoft.Net.Http" version="2.2.22" />
-			</group>
-			<group targetFramework="sl5">
 				<dependency id="Microsoft.Bcl.Async" version="1.0.168" />
 				<dependency id="Microsoft.Net.Http" version="2.2.22" />
 			</group>
