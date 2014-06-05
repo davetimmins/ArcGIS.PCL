@@ -17,8 +17,10 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <param name="endpoint">Resource to apply the query against</param>
         public Find(ArcGISServerEndpoint endpoint)
-            : base(endpoint, Operations.Find)
         {
+            if (endpoint == null) throw new ArgumentNullException("endpoint");
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Find); 
+
             FuzzySearch = true;
             ReturnGeometry = true;
             ReturnZ = true;

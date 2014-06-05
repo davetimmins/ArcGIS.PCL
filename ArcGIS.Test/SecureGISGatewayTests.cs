@@ -41,10 +41,11 @@ namespace ArcGIS.Test
     public class SecureGISGatewayTests
     {
         ServiceStackSerializer _serviceStackSerializer;
-        
+
         public SecureGISGatewayTests()
         {
             _serviceStackSerializer = new ServiceStackSerializer();
+            CryptoProviderFactory.Disabled = true; 
         }
 
         [Fact]
@@ -137,11 +138,11 @@ namespace ArcGIS.Test
             Assert.Null(response.Error);
 
             token.Value += "chuff";
-            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) 
+            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
             {
                 Token = token.Value
             };
-            
+
             var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Query<Point>(query));
             Assert.NotNull(exception);
             Assert.Contains("Invalid token", exception.Message);

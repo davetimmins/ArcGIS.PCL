@@ -41,11 +41,13 @@
     <Compile Include="Common\Feature.cs" />
     <Compile Include="Common\IEndpoint.cs" />
     <Compile Include="Common\IGeometry.cs" />
+    <Compile Include="Extensions\ByteExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\FeatureCollectionExtensions.cs" />
     <Compile Include="Extensions\GeometryExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="GeoJson\FeatureCollection.cs" />
+    <Compile Include="ICryptoProvider.cs" />
     <Compile Include="IPortalGateway.cs" />
     <Compile Include="ISerializer.cs" />
     <Compile Include="ITokenProvider.cs" />
@@ -56,6 +58,7 @@
     <Compile Include="Operation\Find.cs" />
     <Compile Include="Operation\GeometryServerOperation.cs" />
     <Compile Include="Operation\PortalResponse.cs" />
+    <Compile Include="Operation\PublicKey.cs" />
     <Compile Include="Operation\Query.cs" />
     <Compile Include="Operation\ReverseGeocode.cs" />
     <Compile Include="Operation\SingleInputGeocode.cs" />
