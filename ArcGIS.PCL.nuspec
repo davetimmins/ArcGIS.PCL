@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata minClientVersion="2.8.1">
 		<id>ArcGIS.PCL</id>
-		<version>4.0.0-beta</version>
+		<version>4.0.0-beta2</version>
 		<title>ArcGIS Server Gateway</title>
 		<authors>Dave Timmins</authors>
 		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -46,11 +46,13 @@
 			Added automatic encryption of tokens if supported by the server
 			Added service status admin operation
 			Added public key admin operation      
+			Added DescribeSite for ArcGISOnline gateway - returns the hosted feature services for the user
 			
 			Breaking changes
 			 - removed Silverlight specific project
 			 - changed ArcGISServerOperation signature
 			 - DescribeSite returns different response, has more data
+			 - ITokenProvider now has a cryptoprovider and username
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
