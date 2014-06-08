@@ -148,20 +148,6 @@ namespace ArcGIS.Test
             Assert.Contains("Invalid token", exception.Message);
         }
 
-        //[Fact]
-        //public async Task OAuthTokenCanBeGenerated()
-        //{
-        //    // Set your client Id and secret here
-        //    var tokenProvider = new ArcGISOnlineAppLoginOAuthProvider("", "", _serviceStackSerializer);
-
-        //    var token = await tokenProvider.CheckGenerateToken();
-
-        //    Assert.NotNull(token);
-        //    Assert.NotNull(token.Value);
-        //    Assert.False(token.IsExpired);
-        //    Assert.Null(token.Error);
-        //}
-
         public static async Task<TException> ThrowsAsync<TException>(Func<Task> func) where TException : Exception
         {
             var expected = typeof(TException);

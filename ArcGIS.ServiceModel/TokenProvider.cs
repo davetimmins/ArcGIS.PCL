@@ -72,12 +72,16 @@ namespace ArcGIS.ServiceModel
 #endif
         }
 
-        public string RootUrl
+        public String RootUrl
         {
             get { return "https://www.arcgis.com/sharing/oauth2/token"; }
         }
 
+        public String UserName { get { return null; } }
+        
         public ISerializer Serializer { get; private set; }
+
+        public ICryptoProvider CryptoProvider { get { return null; } }
 
         public async Task<Token> CheckGenerateToken(CancellationTokenSource cts = null)
         {
@@ -171,6 +175,7 @@ namespace ArcGIS.ServiceModel
             RootUrl = rootUrl.AsRootUrl();
             CryptoProvider = cryptoProvider ?? CryptoProviderFactory.Get();
             TokenRequest = new GenerateToken(username, password) { Referer = referer };
+            UserName = username;
 
             _httpClient = HttpClientFactory.Get();
 
@@ -207,7 +212,9 @@ namespace ArcGIS.ServiceModel
 
         public ICryptoProvider CryptoProvider { get; private set; }
 
-        public string RootUrl { get; private set; }
+        public String RootUrl { get; private set; }
+
+        public String UserName { get; private set; }
 
         public ISerializer Serializer { get; private set; }
 

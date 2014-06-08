@@ -47,7 +47,6 @@ namespace ArcGIS.Test
             var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
             Assert.NotNull(features);
 
-            await Buffer(new ArcGISOnlineGateway(new ServiceStackSerializer()), features, result.SpatialReference);
             await Buffer(gateway, features, result.SpatialReference);
         }
 

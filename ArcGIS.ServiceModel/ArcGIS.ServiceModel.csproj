@@ -62,6 +62,7 @@
     <Compile Include="Operation\Admin\PublicKey.cs" />
     <Compile Include="Operation\Query.cs" />
     <Compile Include="Operation\ReverseGeocode.cs" />
+    <Compile Include="Operation\SearchHostedFeatureServices.cs" />
     <Compile Include="Operation\SingleInputGeocode.cs" />
     <Compile Include="Operation\SiteDescription.cs" />
     <Compile Include="Operation\Token.cs" />

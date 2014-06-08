@@ -24,5 +24,15 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <returns>A token that can be used for subsequent requests to secure resources</returns>
         Task<Token> CheckGenerateToken(System.Threading.CancellationTokenSource cts = null);
+
+        /// <summary>
+        /// Used for automatic encryption of token requests if the admin operations are accessible for the server. 
+        /// </summary>
+        ICryptoProvider CryptoProvider { get; }
+
+        /// <summary>
+        /// The username that this token provider is for
+        /// </summary>
+        String UserName { get; }
     }
 }

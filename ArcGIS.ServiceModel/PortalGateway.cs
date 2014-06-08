@@ -30,6 +30,21 @@ namespace ArcGIS.ServiceModel
         {
             get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()); }
         }
+
+        /// <summary>
+        /// Search for feature services on ArcGIS Online for the user specified
+        /// </summary>
+        /// <param name="username">User whose content to search for, if not specified then the user 
+        /// from the <see cref="ITokenProvider" />  for this gateway will be used.</param>
+        /// <returns>The discovered feature services</returns>
+        public Task<SearchHostedFeatureServicesResponse> DescribeSite(String username = "")
+        {
+            if (String.IsNullOrWhiteSpace(username) && TokenProvider != null)
+                username = TokenProvider.UserName;
+
+            var search = new SearchHostedFeatureServices(username);
+            return Get<SearchHostedFeatureServicesResponse, SearchHostedFeatureServices>(search);
+        }
     }
 
     /// <summary>
