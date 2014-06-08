@@ -25,6 +25,11 @@ namespace ArcGIS.ServiceModel
         public ArcGISOnlineGateway(ISerializer serializer = null, ITokenProvider tokenProvider = null)
             : base(PortalGatewayBase.AGOPortalUrl, serializer, tokenProvider)
         { }
+
+        protected override IEndpoint GeometryServiceEndpoint
+        {
+            get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()); }
+        }
     }
 
     /// <summary>
@@ -165,8 +170,8 @@ namespace ArcGIS.ServiceModel
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         protected const String GeometryServerUrlRelative = "/Utilities/Geometry/GeometryServer";
         protected const String GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
-        IEndpoint _geometryServiceEndpoint;
         HttpClient _httpClient;
+        protected IEndpoint _geometryServiceEndpoint;
 
         /// <summary>
         /// Create an ArcGIS Server gateway to access secure resources
@@ -217,13 +222,10 @@ namespace ArcGIS.ServiceModel
         public ITokenProvider TokenProvider { get; private set; }
 
         public ISerializer Serializer { get; private set; }
-
-        void CreateGeometryServiceEndpoint()
+        
+        protected virtual IEndpoint GeometryServiceEndpoint
         {
-            if (_geometryServiceEndpoint != null) return;
-            _geometryServiceEndpoint = String.Equals(RootUrl, AGOPortalUrl, StringComparison.OrdinalIgnoreCase)
-                ? (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()
-                : (IEndpoint)GeometryServerUrlRelative.AsEndpoint();
+            get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrlRelative.AsEndpoint()); }
         }
 
         /// <summary>
@@ -294,9 +296,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly projected geometries</returns>
         public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationTokenSource cts = null) where T : IGeometry
         {
-            if (_geometryServiceEndpoint == null) CreateGeometryServiceEndpoint();
-
-            var op = new ProjectGeometry<T>(_geometryServiceEndpoint, features, outputSpatialReference);
+            var op = new ProjectGeometry<T>(GeometryServiceEndpoint, features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, cts);
 
             if (cts != null && cts.IsCancellationRequested) return null;
@@ -317,9 +317,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly buffered geometries</returns>
         public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationTokenSource cts = null) where T : IGeometry
         {
-            if (_geometryServiceEndpoint == null) CreateGeometryServiceEndpoint();
-
-            var op = new BufferGeometry<T>(_geometryServiceEndpoint, features, spatialReference, distance);
+            var op = new BufferGeometry<T>(GeometryServiceEndpoint, features, spatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, cts);
 
             if (cts != null && cts.IsCancellationRequested) return null;
@@ -339,9 +337,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>The corresponding features with the newly simplified geometries</returns>
         public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationTokenSource cts = null) where T : IGeometry
         {
-            if (_geometryServiceEndpoint == null) CreateGeometryServiceEndpoint();
-
-            var op = new SimplifyGeometry<T>(_geometryServiceEndpoint, features, spatialReference);
+            var op = new SimplifyGeometry<T>(GeometryServiceEndpoint, features, spatialReference);
             var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, cts);
 
             if (cts != null && cts.IsCancellationRequested) return null;
