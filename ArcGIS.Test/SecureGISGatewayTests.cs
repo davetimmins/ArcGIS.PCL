@@ -58,7 +58,7 @@ namespace ArcGIS.Test
 
             var response = await gateway.Ping(endpoint);
 
-            var token = await tokenProvider.CheckGenerateToken();
+            var token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);
@@ -69,7 +69,7 @@ namespace ArcGIS.Test
 
             response = await gateway.Ping(endpoint);
 
-            token = await tokenProvider.CheckGenerateToken();
+            token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);
@@ -129,7 +129,7 @@ namespace ArcGIS.Test
 
             var response = await gateway.Ping(endpoint);
 
-            var token = await tokenProvider.CheckGenerateToken();
+            var token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);

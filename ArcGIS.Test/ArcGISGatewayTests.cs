@@ -10,6 +10,7 @@ using ArcGIS.ServiceModel.Operation;
 using Xunit;
 using ServiceStack.Text;
 using ArcGIS.ServiceModel.Serializers;
+using System.Threading;
 
 namespace ArcGIS.Test
 {
@@ -26,12 +27,12 @@ namespace ArcGIS.Test
 
         public Task<QueryResponse<T>> QueryAsPost<T>(Query queryOptions) where T : IGeometry
         {
-            return Post<QueryResponse<T>, Query>(queryOptions);
+            return Post<QueryResponse<T>, Query>(queryOptions, CancellationToken.None);
         }
 
         public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint)
         {
-            return Get<AgsObject>(endpoint);
+            return Get<AgsObject>(endpoint, CancellationToken.None);
         }
 
         internal readonly static Dictionary<String, Func<Type>> TypeMap = new Dictionary<String, Func<Type>>
@@ -111,7 +112,6 @@ namespace ArcGIS.Test
         public async Task CanDescribeSite()
         {
             var gateway = new ArcGISGateway(_serviceStackSerializer);
-           
             var response = await gateway.DescribeSite();
 
             Assert.NotNull(response);

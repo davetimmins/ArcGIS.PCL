@@ -47,12 +47,13 @@
 			Added service status admin operation
 			Added public key admin operation      
 			Added DescribeSite for ArcGISOnline gateway - returns the hosted feature services for the user
+			Added operation overloads for accepting a CancellationToken
 			
 			Breaking changes
 			 - removed Silverlight specific project
 			 - changed ArcGISServerOperation signature
 			 - DescribeSite returns different response, has more data
-			 - ITokenProvider now has a cryptoprovider and username
+			 - ITokenProvider now has a cryptoprovider and username, CheckGenerateToken now takes a CancellationToken as an input parameter
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>

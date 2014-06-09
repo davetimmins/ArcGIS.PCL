@@ -20,7 +20,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// <summary>
         /// Current version of ArcGIS Server
         /// </summary>
-        public double Version { get { return Resources.Max(r => r.Version); } }
+        public double Version { get { return (Resources == null || !Resources.Any()) ? 0 : Resources.Max(r => r.Version); } }
 
         /// <summary>
         /// Collection of discovered REST resources

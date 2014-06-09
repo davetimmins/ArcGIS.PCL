@@ -83,7 +83,7 @@ namespace ArcGIS.ServiceModel
 
         public ICryptoProvider CryptoProvider { get { return null; } }
 
-        public async Task<Token> CheckGenerateToken(CancellationTokenSource cts = null)
+        public async Task<Token> CheckGenerateToken(CancellationToken ct)
         {
             if (OAuthRequest == null) return null;
 
@@ -98,7 +98,7 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = (cts == null) ? await _httpClient.PostAsync(RootUrl, content) : await _httpClient.PostAsync(RootUrl, content, cts.Token);
+                HttpResponseMessage response = await _httpClient.PostAsync(RootUrl, content, ct);
                 response.EnsureSuccessStatusCode();
 
                 resultString = await response.Content.ReadAsStringAsync();
@@ -236,7 +236,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>The generated token or null if not applicable</returns>
         /// <remarks>This sets the Token property for the provider. It will be auto appended to 
         /// any requests sent through the gateway used by this provider.</remarks>
-        public async Task<Token> CheckGenerateToken(CancellationTokenSource cts = null)
+        public async Task<Token> CheckGenerateToken(CancellationToken ct)
         {
             if (TokenRequest == null) return null;
 
@@ -262,7 +262,7 @@ namespace ArcGIS.ServiceModel
                 try
                 {
                     _httpClient.CancelPendingRequests();
-                    HttpResponseMessage response = cts == null ? await _httpClient.GetAsync(encryptionInfoEndpoint) : await _httpClient.GetAsync(encryptionInfoEndpoint, cts.Token);
+                    HttpResponseMessage response = await _httpClient.GetAsync(encryptionInfoEndpoint, ct);
                     response.EnsureSuccessStatusCode();
                     publicKeyResultString = await response.Content.ReadAsStringAsync();
                 }
@@ -277,6 +277,8 @@ namespace ArcGIS.ServiceModel
                     System.Diagnostics.Debug.WriteLine("Public Key access failed for " + encryptionInfoEndpoint + ". " + ex.ToString());
                 }
 
+                if (ct.IsCancellationRequested) return null;
+
                 if (CanAccessPublicKeyEndpoint)
                 {                    
                     _publicKey = Serializer.AsPortalResponse<PublicKeyResponse>(publicKeyResultString);
@@ -286,6 +288,7 @@ namespace ArcGIS.ServiceModel
                 }
             }
 
+            if (ct.IsCancellationRequested) return null;
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
 
             _httpClient.CancelPendingRequests();
@@ -293,7 +296,7 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = cts == null ? await _httpClient.PostAsync(uri, content) : await _httpClient.PostAsync(uri, content, cts.Token);
+                HttpResponseMessage response = await _httpClient.PostAsync(uri, content, ct);
                 response.EnsureSuccessStatusCode();
 
                 resultString = await response.Content.ReadAsStringAsync();
