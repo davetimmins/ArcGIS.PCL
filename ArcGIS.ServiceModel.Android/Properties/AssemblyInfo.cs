@@ -27,8 +27,8 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("4.0.0")]
-[assembly: AssemblyFileVersion("4.0.0-beta2")]
-[assembly: AssemblyInformationalVersion("4.0.0-beta2")]
+[assembly: AssemblyFileVersion("4.0.0-beta3")]
+[assembly: AssemblyInformationalVersion("4.0.0-beta3")]
 
 // Add some common permissions, these can be removed if not needed
 [assembly: UsesPermission(Android.Manifest.Permission.Internet)]
