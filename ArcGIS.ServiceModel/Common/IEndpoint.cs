@@ -85,9 +85,9 @@ namespace ArcGIS.ServiceModel.Common
     public class ArcGISOnlineEndpoint : IEndpoint
     {
         /// <summary>
-        /// Creates a new ArcGIS Online REST endpoint representation
+        /// Creates a new ArcGIS Online or Portal REST endpoint representation
         /// </summary>
-        /// <param name="relativePath">Path of the endpoint relative to the root url of ArcGIS Online</param>
+        /// <param name="relativePath">Path of the endpoint relative to the root url of ArcGIS Online / Portal</param>
         public ArcGISOnlineEndpoint(String relativePath)
         {
             if (String.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");

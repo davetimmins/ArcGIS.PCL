@@ -31,17 +31,12 @@ namespace ArcGIS.ServiceModel
             get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()); }
         }
 
-        public Task<SearchHostedFeatureServicesResponse> DescribeSite(String username = "")
-        {
-            return DescribeSite(CancellationToken.None, username);
-        }
-
         /// <summary>
-        /// Search for feature services on ArcGIS Online for the user specified
+        /// Search for feature services on ArcGIS Online / Portal for the user specified
         /// </summary>
         /// <param name="username">User whose content to search for, if not specified then the user 
         /// from the <see cref="ITokenProvider" />  for this gateway will be used.</param>
-        /// <returns>The discovered feature services</returns>
+        /// <returns>The discovered hosted feature services</returns>
         public Task<SearchHostedFeatureServicesResponse> DescribeSite(CancellationToken ct, String username = "")
         {
             if (String.IsNullOrWhiteSpace(username) && TokenProvider != null)
@@ -49,6 +44,11 @@ namespace ArcGIS.ServiceModel
 
             var search = new SearchHostedFeatureServices(username);
             return Get<SearchHostedFeatureServicesResponse, SearchHostedFeatureServices>(search, ct);
+        }
+
+        public Task<SearchHostedFeatureServicesResponse> DescribeSite(String username = "")
+        {
+            return DescribeSite(CancellationToken.None, username);
         }
     }
 
@@ -436,7 +436,6 @@ namespace ArcGIS.ServiceModel
         {
             return Simplify<T>(features, spatialReference, CancellationToken.None);
         }
-
                 
         async Task<Token> CheckGenerateToken(CancellationToken ct)
         {
