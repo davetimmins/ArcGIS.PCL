@@ -1,6 +1,6 @@
 #![Icon](https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png) ArcGIS.PCL
 
-[![Build status](https://ci.appveyor.com/api/projects/status/6kquae4fokkeuxg1?retina=true)](https://ci.appveyor.com/project/davetimmins/arcgis-pcl) [![NuGet Status](http://img.shields.io/badge/NuGet-3.2.2-blue.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.2-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
+[![Build status](https://ci.appveyor.com/api/projects/status/6kquae4fokkeuxg1?retina=true)](https://ci.appveyor.com/project/davetimmins/arcgis-pcl) [![NuGet Status](http://img.shields.io/badge/NuGet-4.0.0-blue.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.2-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
 
 Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.com/2013/July/ArcGIS-PCL/).
 
@@ -27,6 +27,8 @@ Supports the following as typed operations:
  - `Buffer<T>` - buffers geometries by the distance requested
  - `DescribeSite` - returns a url for every service discovered
  - `Ping` - verify that the server can be accessed
+ - `PublicKey` - admin operation to get public key used for encryption of token requests
+ - `ServiceStatus` - admin operation to get the configured and actual status of a service
 
 Some examples of it in use for server side processing in web sites
 
@@ -76,7 +78,7 @@ You may have noticed the `AsEndpoint()` method in the `Query` constructor above.
 The available endpoint types are
 
  - `ArcGISServerEndpoint` - this will create an endpoint at the `rest/services` location for an ArcGIS server gateway. This is the most common use case for your own services so it's likely you will use this one
- - `ArcGISOnlineEndpoint` - this will create an endpoint at the `sharing/rest` location. This can be used when called services hosted on ArcGIS Online
+ - `ArcGISOnlineEndpoint` - this will create an endpoint at the `sharing/rest` location. This can be used when called services hosted on ArcGIS Online or Portal for ArcGIS
  - `ArcGISServerAdminEndpoint` - this will create an endpoint at the `admin` location for an ArcGIS server gateway
  - `AbsoluteEndpoint` - this will just keep the string that you pass to it. It's used internally to allow the `ArcGISOnlineEndpoint` to call the geometry service at https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer
 
