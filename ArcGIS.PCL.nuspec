@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata minClientVersion="2.8.1">
 		<id>ArcGIS.PCL</id>
-		<version>3.2.2</version>
+		<version>4.0.0</version>
 		<title>ArcGIS Server Gateway</title>
 		<authors>Dave Timmins</authors>
 		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -26,33 +26,40 @@
 			• Simplify&lt;T&gt; - alter geometries to be topologically consistent
 			• Project&lt;T&gt; - convert geometries to a different spatial reference
 			• Buffer&lt;T&gt; - buffers geometries by the distance requested
-			• DescribeSite - returns a url for every service discovered
+			• DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hsted feature services for a user
 			• Ping - verify that the server can be accessed
-			
+			• PublicKey - admin operation to get public key used for encryption of token requests
+			• ServiceStatus - admin operation to get the configured and actual status of a service
+
 			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
+			Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
 		</description>
 		<summary>
 			ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
 			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-			Works with .NET for Windows Store apps, .NET framework 4 and higher, Silverlight 5, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
+			Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
 		</summary>
 		<releaseNotes>
-			Fixed issue calling geometry server operations when using an ArcGISOnlineGateway
-			Fixed issue when HTTP calls were cancelled
-			Handle CancellationTokenSource for operations
+			Added automatic encryption of tokens if supported by the server
+			Added service status admin operation
+			Added public key admin operation      
+			Added DescribeSite for ArcGISOnline gateway - returns the hosted feature services for the user
+			Added operation overloads for accepting a CancellationToken
+			
+			Breaking changes
+			 - removed Silverlight specific project
+			 - changed ArcGISServerOperation signature
+			 - DescribeSite returns different response, has more data
+			 - ITokenProvider now has a cryptoprovider and username, CheckGenerateToken now takes a CancellationToken as an input parameter
+			 - Use cancellation token rather than cancellation token source for default operations
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
 		<dependencies>
 			<group targetFramework="net40">
-				<dependency id="Microsoft.Bcl.Async" version="1.0.168" />
-				<dependency id="Microsoft.Net.Http" version="2.2.22" />
-			</group>
-			<group targetFramework="sl5">
 				<dependency id="Microsoft.Bcl.Async" version="1.0.168" />
 				<dependency id="Microsoft.Net.Http" version="2.2.22" />
 			</group>

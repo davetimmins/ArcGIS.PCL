@@ -34,6 +34,7 @@ namespace ArcGIS.ServiceModel
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             rootUrl = rootUrl.TrimEnd('/');
             if (rootUrl.IndexOf("/rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services"));
+            if (rootUrl.IndexOf("/admin") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/admin"));
             return rootUrl.Replace("/rest/services", "") + "/";            
         }
 
@@ -70,6 +71,32 @@ namespace ArcGIS.ServiceModel
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Converts a hex-encoded string to the corresponding byte array.
+        /// </summary>
+        /// <param name="hex">Hex-encoded string</param>
+        /// <returns>Byte representation of the hex-encoded input</returns>
+        public static byte[] HexToBytes(this String hex)
+        {
+            if (String.IsNullOrWhiteSpace(hex)) return null;
+
+            int length = hex.Length;
+
+            if (length % 2 != 0)
+            {
+                length += 1;
+                hex = "0" + hex;
+            }
+
+            byte[] bytes = new byte[length / 2];
+            for (int i = 0; i < length; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+
+            return bytes;
         }
     }
 }

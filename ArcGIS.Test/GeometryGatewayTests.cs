@@ -47,11 +47,10 @@ namespace ArcGIS.Test
             var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
             Assert.NotNull(features);
 
-            await Buffer(new ArcGISOnlineGateway(new ServiceStackSerializer()), features, result.SpatialReference);
             await Buffer(gateway, features, result.SpatialReference);
         }
 
-        async Task Buffer(PortalGateway gateway, List<Feature<Polygon>> features, SpatialReference spatialReference)
+        async Task Buffer(PortalGatewayBase gateway, List<Feature<Polygon>> features, SpatialReference spatialReference)
         {
             int featuresCount = features.Count;
 

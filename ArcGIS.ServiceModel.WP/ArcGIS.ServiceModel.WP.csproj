@@ -83,6 +83,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\ArcGIS.ServiceModel\CryptoProviderFactory.cs">
+      <Link>CryptoProviderFactory.cs</Link>
+    </Compile>
     <Compile Include="..\ArcGIS.ServiceModel\PortalGateway.cs">
       <Link>PortalGateway.cs</Link>
     </Compile>

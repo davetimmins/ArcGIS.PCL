@@ -41,10 +41,11 @@ namespace ArcGIS.Test
     public class SecureGISGatewayTests
     {
         ServiceStackSerializer _serviceStackSerializer;
-        
+
         public SecureGISGatewayTests()
         {
             _serviceStackSerializer = new ServiceStackSerializer();
+            CryptoProviderFactory.Disabled = true; 
         }
 
         [Fact]
@@ -57,7 +58,7 @@ namespace ArcGIS.Test
 
             var response = await gateway.Ping(endpoint);
 
-            var token = await tokenProvider.CheckGenerateToken();
+            var token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);
@@ -68,7 +69,7 @@ namespace ArcGIS.Test
 
             response = await gateway.Ping(endpoint);
 
-            token = await tokenProvider.CheckGenerateToken();
+            token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);
@@ -86,7 +87,7 @@ namespace ArcGIS.Test
             Assert.NotNull(response);
             Assert.True(response.Version > 0);
 
-            foreach (var resource in response.Resources)
+            foreach (var resource in response.ArcGISServerEndpoints)
             {
                 var ping = await gateway.Ping(resource);
                 Assert.Null(ping.Error);
@@ -128,7 +129,7 @@ namespace ArcGIS.Test
 
             var response = await gateway.Ping(endpoint);
 
-            var token = await tokenProvider.CheckGenerateToken();
+            var token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);
@@ -137,29 +138,15 @@ namespace ArcGIS.Test
             Assert.Null(response.Error);
 
             token.Value += "chuff";
-            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) 
+            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
             {
                 Token = token.Value
             };
-            
+
             var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Query<Point>(query));
             Assert.NotNull(exception);
             Assert.Contains("Invalid token", exception.Message);
         }
-
-        //[Fact]
-        //public async Task OAuthTokenCanBeGenerated()
-        //{
-        //    // Set your client Id and secret here
-        //    var tokenProvider = new ArcGISOnlineAppLoginOAuthProvider("", "", _serviceStackSerializer);
-
-        //    var token = await tokenProvider.CheckGenerateToken();
-
-        //    Assert.NotNull(token);
-        //    Assert.NotNull(token.Value);
-        //    Assert.False(token.IsExpired);
-        //    Assert.Null(token.Error);
-        //}
 
         public static async Task<TException> ThrowsAsync<TException>(Func<Task> func) where TException : Exception
         {

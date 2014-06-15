@@ -14,18 +14,50 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public SiteDescription()
         {
-            Resources = new List<ArcGISServerEndpoint>();
+            Resources = new List<SiteFolderDescription>();
         }
 
         /// <summary>
         /// Current version of ArcGIS Server
         /// </summary>
-        public double Version { get; set; }
+        public double Version { get { return (Resources == null || !Resources.Any()) ? 0 : Resources.Max(r => r.Version); } }
 
         /// <summary>
         /// Collection of discovered REST resources
         /// </summary>
-        public List<ArcGISServerEndpoint> Resources { get; set; }
+        public List<SiteFolderDescription> Resources { get; set; }
+
+        /// <summary>
+        /// Collection of discovered REST resources as ArcGIS Server endpoints
+        /// </summary>
+        public IEnumerable<ServiceDescription> Services
+        {
+            get
+            {
+                foreach (var description in Resources)
+                {
+                    foreach (var service in description.Services)
+                    {
+                        yield return service;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Collection of discovered REST resources as ArcGIS Server endpoints
+        /// </summary>
+        public IEnumerable<ArcGISServerEndpoint> ArcGISServerEndpoints
+        {
+            get
+            {
+                foreach (var service in Services)
+                {
+                    yield return new ArcGISServerEndpoint(String.Format("{0}/{1}", service.Name, service.Type));
+                }
+                
+            }
+        }
     }
 
     [DataContract]
@@ -52,5 +84,11 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "type")]
         public String Type { get; set; }
+
+        [IgnoreDataMember]
+        public ArcGISServerEndpoint ArcGISServerEndpoint
+        {
+            get { return new ArcGISServerEndpoint(String.Format("{0}/{1}", Name, Type)); }
+        }
     }
 }

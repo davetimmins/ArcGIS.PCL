@@ -16,6 +16,9 @@ namespace ArcGIS.ServiceModel.Operation
         public const String Simplify = "simplify";
         public const String Buffer = "buffer";
         public const String Project = "project";
+        public const String PublicKey = "publicKey";
+        public const String ServiceStatus = "services/{0}.{1}/status";
+        public const String ArcGISOnlineSearch = "search";
     }
 
     /// <summary>
@@ -24,15 +27,7 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public abstract class CommonParameters
     {
-        protected CommonParameters()
-            : this("json", null)
-        { }
-
-        protected CommonParameters(Token token)
-            : this("json", token)
-        { }
-
-        protected CommonParameters(String format, Token token)
+        protected CommonParameters(String format = "json", Token token = null)
         {
             Format = format;
             if (token != null) Token = token.Value;

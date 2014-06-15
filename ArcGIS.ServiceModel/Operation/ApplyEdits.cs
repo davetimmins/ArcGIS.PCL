@@ -13,8 +13,10 @@ namespace ArcGIS.ServiceModel.Operation
     public class ApplyEdits<T> : ArcGISServerOperation where T : IGeometry
     {
         public ApplyEdits(ArcGISServerEndpoint endpoint)
-            : base(endpoint, Operations.ApplyEdits)
-        { }
+        {
+            if (endpoint == null) throw new ArgumentNullException("endpoint");
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ApplyEdits);           
+        }
 
         /// <summary>
         /// The array of features to be added.

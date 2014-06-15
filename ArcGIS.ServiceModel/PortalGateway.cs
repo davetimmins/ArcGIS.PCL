@@ -8,13 +8,14 @@ using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Operation;
 using System.Net.Http.Headers;
 using System.Threading;
+using ArcGIS.ServiceModel.Operation.Admin;
 
 namespace ArcGIS.ServiceModel
 {
     /// <summary>
     /// ArcGIS Online gateway
     /// </summary>
-    public class ArcGISOnlineGateway : PortalGateway
+    public class ArcGISOnlineGateway : PortalGatewayBase
     {
         /// <summary>
         /// Create an ArcGIS Online gateway to access resources
@@ -22,8 +23,33 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
         public ArcGISOnlineGateway(ISerializer serializer = null, ITokenProvider tokenProvider = null)
-            : base(PortalGateway.AGOPortalUrl, serializer, tokenProvider)
+            : base(PortalGatewayBase.AGOPortalUrl, serializer, tokenProvider)
         { }
+
+        protected override IEndpoint GeometryServiceEndpoint
+        {
+            get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()); }
+        }
+
+        /// <summary>
+        /// Search for feature services on ArcGIS Online / Portal for the user specified
+        /// </summary>
+        /// <param name="username">User whose content to search for, if not specified then the user 
+        /// from the <see cref="ITokenProvider" />  for this gateway will be used.</param>
+        /// <returns>The discovered hosted feature services</returns>
+        public Task<SearchHostedFeatureServicesResponse> DescribeSite(CancellationToken ct, String username = "")
+        {
+            if (String.IsNullOrWhiteSpace(username) && TokenProvider != null)
+                username = TokenProvider.UserName;
+
+            var search = new SearchHostedFeatureServices(username);
+            return Get<SearchHostedFeatureServicesResponse, SearchHostedFeatureServices>(search, ct);
+        }
+
+        public Task<SearchHostedFeatureServicesResponse> DescribeSite(String username = "")
+        {
+            return DescribeSite(CancellationToken.None, username);
+        }
     }
 
     /// <summary>
@@ -43,17 +69,159 @@ namespace ArcGIS.ServiceModel
         { }
     }
 
-
     /// <summary>
     /// ArcGIS Server gateway
     /// </summary>
-    public class PortalGateway : IPortalGateway, IDisposable
+    public class PortalGateway : PortalGatewayBase
+    {
+        public PortalGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+            : base(rootUrl, serializer, tokenProvider)
+        { }        
+
+        /// <summary>
+        /// Recursively parses an ArcGIS Server site and discovers the resources available
+        /// </summary>
+        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <returns>An ArcGIS Server site hierarchy</returns>
+        public virtual async Task<SiteDescription> DescribeSite(CancellationToken ct)
+        {
+            var result = new SiteDescription();
+
+            result.Resources.AddRange(await DescribeEndpoint("/".AsEndpoint(), ct));
+                      
+            return result;
+        }
+
+        public virtual Task<SiteDescription> DescribeSite()
+        {
+            return DescribeSite(CancellationToken.None);
+        }
+
+        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint, CancellationToken ct)
+        {
+            SiteFolderDescription folderDescription = null;
+            var result = new List<SiteFolderDescription>();
+            try
+            {
+                folderDescription = await Get<SiteFolderDescription>(endpoint, ct);
+            }
+            catch (HttpRequestException ex)
+            {
+                // don't have access to the folder
+                System.Diagnostics.Debug.WriteLine("HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                return result;
+            }
+            if (ct.IsCancellationRequested) return result;
+
+            folderDescription.Path = endpoint.RelativeUrl;
+            result.Add(folderDescription);
+
+            if (folderDescription.Folders != null)
+                foreach (var folder in folderDescription.Folders)
+                {
+                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), ct));
+                }
+
+            return result;
+        }               
+
+        /// <summary>
+        /// Returns the expected and actual status of a service
+        /// </summary>
+        /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns>The expected and actual status of the service</returns>
+        public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription, CancellationToken ct)
+        {
+            return Get<ServiceStatusResponse>(new ServiceStatus(serviceDescription), ct);
+        }
+
+        public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription)
+        {
+            return ServiceStatus(serviceDescription, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Call the reverse geocode operation. 
+        /// </summary>
+        /// <param name="reverseGeocode"></param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns></returns>
+        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode, CancellationToken ct)
+        {
+            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode, ct);
+        }
+
+        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
+        {
+            return ReverseGeocode(reverseGeocode, CancellationToken.None);
+        }
+           
+        /// <summary>
+        /// Call the single line geocode operation.
+        /// </summary>
+        /// <param name="geocode"></param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns></returns>
+        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode, CancellationToken ct)
+        {
+            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode, ct);
+        }
+
+        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
+        {
+            return Geocode(geocode, CancellationToken.None);
+        }
+                
+        /// <summary>
+        /// Call the suggest geocode operation.
+        /// </summary>
+        /// <param name="suggestGeocode"></param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns></returns>
+        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode, CancellationToken ct)
+        {
+            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode, ct);
+        }
+
+        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode)
+        {
+            return Suggest(suggestGeocode, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Call the find operation, note that since this can return more than one geometry type you will need to deserialize
+        /// the geometry string on the result set e.g.
+        /// foreach (var result in response.Results.Where(r => r.Geometry != null))
+        /// {
+        ///     result.Geometry = ServiceStack.Text.JsonSerializer.DeserializeFromString(result.Geometry.SerializeToString(), TypeMap[result.GeometryType]());
+        /// }
+        /// </summary>
+        /// <param name="findOptions"></param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns></returns>
+        public virtual Task<FindResponse> Find(Find findOptions, CancellationToken ct)
+        {
+            return Get<FindResponse, Find>(findOptions, ct);
+        }
+
+        public virtual Task<FindResponse> Find(Find findOptions)
+        {
+            return Find(findOptions, CancellationToken.None);
+        }
+    }
+
+    /// <summary>
+    /// ArcGIS Server gateway base. Contains code to make HTTP(S) calls and operations available to all gateway types
+    /// </summary>
+    public class PortalGatewayBase : IPortalGateway, IDisposable
     {
         internal const String AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
         protected const String GeometryServerUrlRelative = "/Utilities/Geometry/GeometryServer";
         protected const String GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
-        IEndpoint _geometryServiceEndpoint;
         HttpClient _httpClient;
+        protected IEndpoint _geometryServiceEndpoint;
 
         /// <summary>
         /// Create an ArcGIS Server gateway to access secure resources
@@ -61,7 +229,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="rootUrl">Made up of scheme://host:port/site</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        public PortalGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+        public PortalGatewayBase(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
         {
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
@@ -70,14 +238,10 @@ namespace ArcGIS.ServiceModel
 
             _httpClient = HttpClientFactory.Get();
             System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
-
-            _geometryServiceEndpoint = String.Equals(RootUrl, AGOPortalUrl, StringComparison.OrdinalIgnoreCase)
-                ? (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()
-                : (IEndpoint)GeometryServerUrlRelative.AsEndpoint();
         }
 
 #if DEBUG
-        ~PortalGateway()
+        ~PortalGatewayBase()
         {
             Dispose(false);
         }
@@ -108,105 +272,76 @@ namespace ArcGIS.ServiceModel
         public ITokenProvider TokenProvider { get; private set; }
 
         public ISerializer Serializer { get; private set; }
-
-        /// <summary>
-        /// Recursively parses an ArcGIS Server site and discovers the resources available
-        /// </summary>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns>An ArcGIS Server site hierarchy</returns>
-        public virtual async Task<SiteDescription> DescribeSite(CancellationTokenSource cts = null)
+        
+        protected virtual IEndpoint GeometryServiceEndpoint
         {
-            var result = new SiteDescription();
-
-            var folderDescriptions = await DescribeEndpoint("/".AsEndpoint(), cts);
-            if (cts != null && cts.IsCancellationRequested) return result;
-
-            foreach (var description in folderDescriptions)
-            {               
-                if (description.Version > result.Version) result.Version = description.Version;
-
-                foreach (var service in description.Services)
-                {
-                    result.Resources.Add(new ArcGISServerEndpoint(String.Format("{0}/{1}", service.Name, service.Type)));
-                }
-            }
-
-            return result;
-        }
-
-        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint, CancellationTokenSource cts = null)
-        {
-            SiteFolderDescription folderDescription = null;
-            var result = new List<SiteFolderDescription>();
-            try
-            {
-                folderDescription = await Get<SiteFolderDescription>(endpoint, cts);
-            }
-            catch (HttpRequestException ex)
-            {
-                // don't have access to the folder
-                System.Diagnostics.Debug.WriteLine("HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-                return result;
-            }
-            if (cts != null && cts.IsCancellationRequested) return result;
-
-            folderDescription.Path = endpoint.RelativeUrl;
-            result.Add(folderDescription);
-
-            if (folderDescription.Folders != null)
-                foreach (var folder in folderDescription.Folders)
-                {
-                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), cts));
-                }
-
-            return result;
+            get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrlRelative.AsEndpoint()); }
         }
 
         /// <summary>
         /// Pings the endpoint specified
         /// </summary>
         /// <param name="endpoint"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>HTTP error if there is a problem with the request, otherwise an
         /// empty <see cref="IPortalResponse"/> object if successful otherwise the Error property is populated</returns>
-        public virtual Task<PortalResponse> Ping(IEndpoint endpoint, CancellationTokenSource cts = null)
+        public virtual Task<PortalResponse> Ping(IEndpoint endpoint, CancellationToken ct)
         {
-            return Get<PortalResponse>(endpoint, cts);
+            return Get<PortalResponse>(endpoint, ct);
         }
 
+        public virtual Task<PortalResponse> Ping(IEndpoint endpoint)
+        {
+            return Ping(endpoint, CancellationToken.None);
+        }
+        
         /// <summary>
         /// Call the query operation
         /// </summary>
         /// <typeparam name="T">The geometry type for the result set</typeparam>
         /// <param name="queryOptions">Query filter parameters</param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The matching features for the query</returns>
-        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions, CancellationTokenSource cts = null) where T : IGeometry
+        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions, CancellationToken ct) where T : IGeometry
         {
-            return Get<QueryResponse<T>, Query>(queryOptions, cts);
+            return Get<QueryResponse<T>, Query>(queryOptions, ct);
+        }
+
+        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
+        {
+            return Query<T>(queryOptions, CancellationToken.None);
         }
 
         /// <summary>
         /// Call the count operation for the query resource.
         /// </summary>
         /// <param name="queryOptions">Query filter parameters</param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The number of results that match the query</returns>
-        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions, CancellationTokenSource cts = null)
+        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions, CancellationToken ct)
         {
-            return Get<QueryForCountResponse, QueryForCount>(queryOptions, cts);
+            return Get<QueryForCountResponse, QueryForCount>(queryOptions, ct);
+        }
+
+        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions)
+        {
+            return QueryForCount(queryOptions, CancellationToken.None);
         }
 
         /// <summary>
         /// Call the object Ids query for the query resource
         /// </summary>
         /// <param name="queryOptions">Query filter parameters</param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The Object IDs for the features that match the query</returns>
-        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions, CancellationTokenSource cts = null)
+        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions, CancellationToken ct)
         {
-            return Get<QueryForIdsResponse, QueryForIds>(queryOptions, cts);
+            return Get<QueryForIdsResponse, QueryForIds>(queryOptions, ct);
+        }
+
+        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions)
+        {
+            return QueryForIds(queryOptions, CancellationToken.None);
         }
 
         /// <summary>
@@ -214,64 +349,41 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <typeparam name="T">The geometry type for the input set</typeparam>
         /// <param name="edits">The edits to perform</param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>A collection of add, update and delete results</returns>
-        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationTokenSource cts = null) where T : IGeometry
+        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationToken ct) where T : IGeometry
         {
-            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits, cts);
+            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits, ct);
         }
 
-        /// <summary>
-        /// Call the reverse geocode operation. 
-        /// </summary>
-        /// <param name="reverseGeocode"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns></returns>
-        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode, CancellationTokenSource cts = null)
+        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
         {
-            return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode, cts);
+            return ApplyEdits<T>(edits, CancellationToken.None);
         }
-
-        /// <summary>
-        /// Call the single line geocode operation.
-        /// </summary>
-        /// <param name="geocode"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns></returns>
-        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode, CancellationTokenSource cts = null)
-        {
-            return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode, cts);
-        }
-
-        /// <summary>
-        /// Call the suggest geocode operation.
-        /// </summary>
-        /// <param name="suggestGeocode"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns></returns>
-        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode, CancellationTokenSource cts = null)
-        {
-            return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode, cts);
-        }
-
+                
         /// <summary>
         /// Projects the list of geometries passed in using the GeometryServer
         /// </summary>
         /// <typeparam name="T">The type of the geometries</typeparam>
         /// <param name="features">A collection of features which will have their geometries projected</param>
         /// <param name="outputSpatialReference">The spatial reference you want the result set to be</param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly projected geometries</returns>
-        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationTokenSource cts = null) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationToken ct) where T : IGeometry
         {
-            var op = new ProjectGeometry<T>(_geometryServiceEndpoint, features, outputSpatialReference);
-            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, cts);
+            var op = new ProjectGeometry<T>(GeometryServiceEndpoint, features, outputSpatialReference);
+            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, ct);
 
-            if (cts != null && cts.IsCancellationRequested) return null;
+            if (ct.IsCancellationRequested) return null;
 
             var result = features.UpdateGeometries<T>(projected.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
             return result;
+        }
+
+        public virtual Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
+        {
+            return Project<T>(features, outputSpatialReference, CancellationToken.None);
         }
 
         /// <summary>
@@ -281,61 +393,55 @@ namespace ArcGIS.ServiceModel
         /// <param name="features">A collection of features which will have their geometries buffered</param>
         /// <param name="spatialReference">The spatial reference of the geometries</param>
         /// <param name="distance">Distance in meters to buffer the geometries by</param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly buffered geometries</returns>
-        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationTokenSource cts = null) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationToken ct) where T : IGeometry
         {
-            var op = new BufferGeometry<T>(_geometryServiceEndpoint, features, spatialReference, distance);
-            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, cts);
+            var op = new BufferGeometry<T>(GeometryServiceEndpoint, features, spatialReference, distance);
+            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, ct);
 
-            if (cts != null && cts.IsCancellationRequested) return null;
+            if (ct.IsCancellationRequested) return null;
 
             var result = features.UpdateGeometries<T>(buffered.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
             return result;
         }
 
+        public virtual Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
+        {
+            return Buffer<T>(features, spatialReference, distance, CancellationToken.None);
+        }
+                
         /// <summary>
         /// Simplify the list of geometries passed in using the GeometryServer. Simplify permanently alters the input geometry so that it becomes topologically consistent.
         /// </summary>
         /// <typeparam name="T">The type of the geometries</typeparam>
         /// <param name="features">A collection of features which will have their geometries buffered</param>
         /// <param name="spatialReference">The spatial reference of the geometries</param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly simplified geometries</returns>
-        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationTokenSource cts = null) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationToken ct) where T : IGeometry
         {
-            var op = new SimplifyGeometry<T>(_geometryServiceEndpoint, features, spatialReference);
-            var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, cts);
+            var op = new SimplifyGeometry<T>(GeometryServiceEndpoint, features, spatialReference);
+            var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, ct);
 
-            if (cts != null && cts.IsCancellationRequested) return null;
+            if (ct.IsCancellationRequested) return null;
 
             var result = features.UpdateGeometries<T>(simplified.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
             return result;
         }
 
-        /// <summary>
-        /// Call the find operation, note that since this can return more than one geometry type you will need to deserialize
-        /// the geometry string on the result set e.g.
-        /// foreach (var result in response.Results.Where(r => r.Geometry != null))
-        /// {
-        ///     result.Geometry = ServiceStack.Text.JsonSerializer.DeserializeFromString(result.Geometry.SerializeToString(), TypeMap[result.GeometryType]());
-        /// }
-        /// </summary>
-        /// <param name="findOptions"></param>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
-        /// <returns></returns>
-        public virtual Task<FindResponse> Find(Find findOptions, CancellationTokenSource cts = null)
+        public virtual Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference) where T : IGeometry
         {
-            return Get<FindResponse, Find>(findOptions, cts);
+            return Simplify<T>(features, spatialReference, CancellationToken.None);
         }
-
-        async Task<Token> CheckGenerateToken()
+                
+        async Task<Token> CheckGenerateToken(CancellationToken ct)
         {
             if (TokenProvider == null) return null;
 
-            var token = await TokenProvider.CheckGenerateToken();
+            var token = await TokenProvider.CheckGenerateToken(ct);
 
             if (token != null) CheckRefererHeader(token.Referer);
             return token;
@@ -352,21 +458,27 @@ namespace ArcGIS.ServiceModel
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
 
-        protected Task<T> Get<T, TRequest>(TRequest requestObject, CancellationTokenSource cts = null)
+        protected Task<T> Get<T, TRequest>(TRequest requestObject, CancellationToken ct)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(requestObject);
+            var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
             if (url.Length > 2000)
-                return Post<T>(requestObject, url.ParseQueryString());
+                return Post<T>(requestObject, url.ParseQueryString(), ct);
 
-            return Get<T>(url, cts);
+            return Get<T>(url, ct);
         }
 
-        protected async Task<T> Get<T>(String url, CancellationTokenSource cts = null) where T : IPortalResponse
+        protected Task<T> Get<T>(IEndpoint endpoint, CancellationToken ct) where T : IPortalResponse
         {
-            var token = await CheckGenerateToken();
+            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), ct);
+        }
+
+        protected async Task<T> Get<T>(String url, CancellationToken ct) where T : IPortalResponse
+        {
+            var token = await CheckGenerateToken(ct);
+            if (ct.IsCancellationRequested) return default(T);
 
             if (!url.Contains("f=")) url += (url.Contains("?") ? "&" : "?") + "f=json";
             if (token != null && !String.IsNullOrWhiteSpace(token.Value) && !url.Contains("token="))
@@ -387,7 +499,7 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = (cts == null) ? await _httpClient.GetAsync(uri) : await _httpClient.GetAsync(uri, cts.Token);
+                HttpResponseMessage response = await _httpClient.GetAsync(uri, ct);
                 response.EnsureSuccessStatusCode();
 
                 resultString = await response.Content.ReadAsStringAsync();
@@ -408,24 +520,20 @@ namespace ArcGIS.ServiceModel
 
             return result;
         }
-
-        protected Task<T> Get<T>(IEndpoint endpoint, CancellationTokenSource cts = null) where T : IPortalResponse
-        {
-            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), cts);
-        }
-
-        protected Task<T> Post<T, TRequest>(TRequest requestObject, CancellationTokenSource cts = null)
+        
+        protected Task<T> Post<T, TRequest>(TRequest requestObject, CancellationToken ct)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            return Post<T>(requestObject, Serializer.AsDictionary(requestObject), cts);
+            return Post<T>(requestObject, Serializer.AsDictionary(requestObject), ct);
         }
 
-        protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters, CancellationTokenSource cts = null) where T : IPortalResponse
+        protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters, CancellationToken ct) where T : IPortalResponse
         {
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
-            var token = await CheckGenerateToken();
+            var token = await CheckGenerateToken(ct);
+            if (ct.IsCancellationRequested) return default(T);
 
             // these should have already been added
             if (!parameters.ContainsKey("f")) parameters.Add("f", "json");
@@ -435,7 +543,7 @@ namespace ArcGIS.ServiceModel
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.Value);
                 if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
-
+            
             HttpContent content = null;
             try
             {
@@ -461,7 +569,7 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = cts == null ? await _httpClient.PostAsync(uri, content) : await _httpClient.PostAsync(uri, content, cts.Token);
+                HttpResponseMessage response = await _httpClient.PostAsync(uri, content, ct);
                 response.EnsureSuccessStatusCode();
 
                 resultString = await response.Content.ReadAsStringAsync();
@@ -484,9 +592,9 @@ namespace ArcGIS.ServiceModel
             return result;
         }
 
-        String AsRequestQueryString<T>(T objectToConvert) where T : CommonParameters
+        internal static String AsRequestQueryString<T>(ISerializer serializer, T objectToConvert) where T : CommonParameters
         {
-            var dictionary = Serializer.AsDictionary(objectToConvert);
+            var dictionary = serializer.AsDictionary(objectToConvert);
 
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));
         }

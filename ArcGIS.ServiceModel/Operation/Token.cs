@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using ArcGIS.ServiceModel.Common;
+using System.Text;
 
 namespace ArcGIS.ServiceModel.Operation
 {
@@ -46,18 +47,38 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "password")]
         public String Password { get; private set; }
 
+        [DataMember(Name = "encrypted")]
+        public bool Encrypted { get; private set; }
+
         /// <summary>
         /// The token expiration time in minutes.
         /// </summary>
         /// <remarks> The default is 60 minutes.</remarks>
-        [DataMember(Name = "expiration")]
+        [IgnoreDataMember]
         public int ExpirationInMinutes { get; set; }
+
+        String _expiration;
+        [DataMember(Name = "expiration")]
+        public String Expiration { get { return String.IsNullOrWhiteSpace(_expiration) ? ExpirationInMinutes.ToString() : _expiration; } }
 
         /// <summary>
         /// Set this to true to prevent the BuildAbsoluteUrl returning https as the default scheme
         /// </summary>
         [IgnoreDataMember]
         public bool DontForceHttps { get; set; }
+
+        public void Encrypt(String username, String password, String expiration = "", String client = "", String referer = "")
+        {
+            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username");
+            if (String.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password");
+            Username = username;
+            Password = password;
+            if (!String.IsNullOrWhiteSpace(expiration)) _expiration = expiration;
+            if (!String.IsNullOrWhiteSpace(client)) _client = client;
+            if (!String.IsNullOrWhiteSpace(referer)) _referer = referer;
+            Encrypted = true;
+            DontForceHttps = false;
+        }
 
         public String RelativeUrl
         {

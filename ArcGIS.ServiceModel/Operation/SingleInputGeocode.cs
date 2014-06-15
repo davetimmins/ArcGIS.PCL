@@ -12,8 +12,10 @@ namespace ArcGIS.ServiceModel.Operation
     public class SingleInputGeocode : GeocodeOperation
     {
         public SingleInputGeocode(ArcGISServerEndpoint endpoint)
-            : base(endpoint, Operations.SingleInputGeocode)
         {
+            if (endpoint == null) throw new ArgumentNullException("endpoint");
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputGeocode);  
+
             MaxResults = 1;
             Distance = null;
         }
@@ -99,8 +101,10 @@ namespace ArcGIS.ServiceModel.Operation
     public class SuggestGeocode : GeocodeOperation
     {
         public SuggestGeocode(ArcGISServerEndpoint endpoint)
-            : base(endpoint, Operations.SuggestGeocode)
         {
+            if (endpoint == null) throw new ArgumentNullException("endpoint");
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SuggestGeocode);  
+
             Distance = null;
         }
 
