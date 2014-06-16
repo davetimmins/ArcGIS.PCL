@@ -26,7 +26,7 @@
 			• Simplify&lt;T&gt; - alter geometries to be topologically consistent
 			• Project&lt;T&gt; - convert geometries to a different spatial reference
 			• Buffer&lt;T&gt; - buffers geometries by the distance requested
-			• DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hsted feature services for a user
+			• DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hosted feature services for a user
 			• Ping - verify that the server can be accessed
 			• PublicKey - admin operation to get public key used for encryption of token requests
 			• ServiceStatus - admin operation to get the configured and actual status of a service
