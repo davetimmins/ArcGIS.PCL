@@ -82,6 +82,27 @@ The available endpoint types are
  - `ArcGISServerAdminEndpoint` - this will create an endpoint at the `admin` location for an ArcGIS server gateway
  - `AbsoluteEndpoint` - this will just keep the string that you pass to it. It's used internally to allow the `ArcGISOnlineEndpoint` to call the geometry service at https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer
 
+### Other Stuff
+
+There are a couple of platform specific classes used by the `PortalGateway` that can be overridden if you want to (I use a poor mans DI). The first is the `HttpClient`. This gets resolved by calling the `Get` function of the `HttpClientFactory`. So you can alter this by setting that function to return whatever you want instead.
+
+```csharp
+HttpClientFactory.Get = (() => new SomeHttpClient());
+```
+
+The other place you can do something similar if the `CryptoProviderFactory`. This is used for automatically encrypting token requests but you may want to change the behaviour or more likely only use encryption for some of the token requests. The easiest way to do this is to disable the automatic encryption and then pass the `ICryptoProvider` to your `TokenProvider` when needed.
+
+```csharp
+// Disable auto encryption
+CryptoProviderFactory.Disabled = true; 
+
+// No encryption for this token provider
+var tokenProvider = new TokenProvider("serverUrl", "username", "password");
+
+// This one will still have encryption
+var tokenProviderEncrypted = new TokenProvider("serverUrl", "username", "password", cryptoProvider: new RsaEncrypter());
+```
+
 ### Installation
 If you have [NuGet](http://nuget.org) installed, the easiest way to get started is to install via NuGet:
 
