@@ -18,6 +18,10 @@ namespace ArcGIS.ServiceModel.Operation
         public SearchHostedFeatureServices(String username)
             : base(String.Format("owner:{0} AND (type:\"Feature Service\")", username))            
         { }
+
+        public SearchHostedFeatureServices()
+            : base("type:\"Feature Service\"")
+        { }
     }
 
     /// <summary>

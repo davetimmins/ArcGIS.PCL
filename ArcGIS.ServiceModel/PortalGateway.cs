@@ -23,7 +23,11 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
         public ArcGISOnlineGateway(ISerializer serializer = null, ITokenProvider tokenProvider = null)
-            : base(PortalGatewayBase.AGOPortalUrl, serializer, tokenProvider)
+            : this(PortalGatewayBase.AGOPortalUrl, serializer, tokenProvider)
+        { }
+
+        public ArcGISOnlineGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+            : base(rootUrl, serializer, tokenProvider)
         { }
 
         protected override IEndpoint GeometryServiceEndpoint
@@ -42,7 +46,9 @@ namespace ArcGIS.ServiceModel
             if (String.IsNullOrWhiteSpace(username) && TokenProvider != null)
                 username = TokenProvider.UserName;
 
-            var search = new SearchHostedFeatureServices(username);
+            var search = String.IsNullOrWhiteSpace(username)
+                ? new SearchHostedFeatureServices()
+                : new SearchHostedFeatureServices(username);
             return Get<SearchHostedFeatureServicesResponse, SearchHostedFeatureServices>(search, ct);
         }
 

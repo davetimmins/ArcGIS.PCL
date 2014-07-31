@@ -106,8 +106,8 @@ namespace ArcGIS.ServiceModel.Common
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return (String.IsNullOrWhiteSpace(Wkt))
-                ? (Wkid == other.Wkid && LatestWkid == other.LatestWkid && VCSWkid == other.VCSWkid && LatestVCSWkid == other.LatestVCSWkid)
-                : String.Equals(Wkt, other.Wkt);
+                ? (Wkid == other.Wkid || LatestWkid == other.LatestWkid) && (VCSWkid == other.VCSWkid || LatestVCSWkid == other.LatestVCSWkid)
+                : String.Equals(Wkt, other.Wkt, StringComparison.OrdinalIgnoreCase);
         }
 
         public override int GetHashCode()
