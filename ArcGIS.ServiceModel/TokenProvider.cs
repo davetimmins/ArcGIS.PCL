@@ -44,12 +44,10 @@ namespace ArcGIS.ServiceModel
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
 
-#if DEBUG
         ~ArcGISOnlineAppLoginOAuthProvider()
         {
             Dispose(false);
         }
-#endif
 
         protected virtual void Dispose(bool disposing)
         {
@@ -67,9 +65,7 @@ namespace ArcGIS.ServiceModel
         public void Dispose()
         {
             Dispose(true);
-#if DEBUG
             GC.SuppressFinalize(this);
-#endif
         }
 
         public String RootUrl
@@ -178,12 +174,10 @@ namespace ArcGIS.ServiceModel
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
 
-#if DEBUG
         ~TokenProvider()
         {
             Dispose(false);
         }
-#endif
 
         protected virtual void Dispose(bool disposing)
         {
@@ -201,9 +195,7 @@ namespace ArcGIS.ServiceModel
         public void Dispose()
         {
             Dispose(true);
-#if DEBUG
             GC.SuppressFinalize(this);
-#endif
         }
 
         public ICryptoProvider CryptoProvider { get; private set; }
