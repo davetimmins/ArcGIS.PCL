@@ -1,89 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-	<metadata minClientVersion="2.8.1">
-		<id>ArcGIS.PCL</id>
-		<version>4.0.0</version>
-		<title>ArcGIS Server Gateway</title>
-		<authors>Dave Timmins</authors>
-		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
-		<licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
-		<iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>
-			ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
+  <metadata minClientVersion="2.8.1">
+    <id>ArcGIS.PCL</id>
+    <version>4.1.1</version>
+    <title>ArcGIS Server Gateway</title>
+    <authors>Dave Timmins</authors>
+    <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
+    <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
+    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
-			Supports the following as typed operations:
+      Supports the following as typed operations:
 
-			• CheckGenerateToken - create a token automatically via an ITokenProvider
-			• Query&lt;T&gt; - query a layer by attribute and / or spatial filters
-			• QueryForCount - only return the number of results for the query operation
-			• QueryForIds - only return the ObjectIds for the results of the query operation
-			• Find - search across n layers and fields in a service
-			• ApplyEdits&lt;T&gt; - post adds, updates and deletes to a feature service layer
-			• Geocode - single line of input to perform a geocode using a custom locator or the Esri world locator
-			• Suggest - lightweight geocode operation that only returns text results, commonly used for predictive searching
-			• ReverseGeocode - find location candidates for an input point location
-			• Simplify&lt;T&gt; - alter geometries to be topologically consistent
-			• Project&lt;T&gt; - convert geometries to a different spatial reference
-			• Buffer&lt;T&gt; - buffers geometries by the distance requested
-			• DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hosted feature services for a user
-			• Ping - verify that the server can be accessed
-			• PublicKey - admin operation to get public key used for encryption of token requests
-			• ServiceStatus - admin operation to get the configured and actual status of a service
+      • CheckGenerateToken - create a token automatically via an ITokenProvider
+      • Query&lt;T&gt; - query a layer by attribute and / or spatial filters
+      • QueryForCount - only return the number of results for the query operation
+      • QueryForIds - only return the ObjectIds for the results of the query operation
+      • Find - search across n layers and fields in a service
+      • ApplyEdits&lt;T&gt; - post adds, updates and deletes to a feature service layer
+      • Geocode - single line of input to perform a geocode using a custom locator or the Esri world locator
+      • Suggest - lightweight geocode operation that only returns text results, commonly used for predictive searching
+      • ReverseGeocode - find location candidates for an input point location
+      • Simplify&lt;T&gt; - alter geometries to be topologically consistent
+      • Project&lt;T&gt; - convert geometries to a different spatial reference
+      • Buffer&lt;T&gt; - buffers geometries by the distance requested
+      • DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hosted feature services for a user
+      • Ping - verify that the server can be accessed
+      • PublicKey - admin operation to get public key used for encryption of token requests
+      • ServiceStatus - admin operation to get the configured and actual status of a service
 
-			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
+      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-			Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
-		</description>
-		<summary>
-			ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
+      Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
+    </description>
+    <summary>
+      ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
-			Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
+      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-			Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
-		</summary>
-		<releaseNotes>
-			Added automatic encryption of tokens if supported by the server
-			Added service status admin operation
-			Added public key admin operation      
-			Added DescribeSite for ArcGISOnline gateway - returns the hosted feature services for the user
-			Added operation overloads for accepting a CancellationToken
-			
-			Breaking changes
-			 - removed Silverlight specific project
-			 - changed ArcGISServerOperation signature
-			 - DescribeSite returns different response, has more data
-			 - ITokenProvider now has a cryptoprovider and username, CheckGenerateToken now takes a CancellationToken as an input parameter
-			 - Use cancellation token rather than cancellation token source for default operations
-		</releaseNotes>
-		<language />
-		<tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
-		<dependencies>
-			<group targetFramework="net40">
-				<dependency id="Microsoft.Bcl.Async" version="1.0.168" />
-				<dependency id="Microsoft.Net.Http" version="2.2.22" />
-			</group>
-			<group targetFramework="wp8">
-				<dependency id="Microsoft.Net.Http" version="2.2.22" />
-			</group>
-			<group targetFramework="net45">
-				<dependency id="Microsoft.Net.Http" version="2.2.22" />
-			</group>
-			<group targetFramework="win8">
-				<dependency id="Microsoft.Net.Http" version="2.2.22" />
-			</group>
-			<group targetFramework="MonoAndroid1">
-				<dependency id="modernhttpclient" version="2.0.1" />
-			</group>
-			<group targetFramework="MonoTouch1">
-				<dependency id="modernhttpclient" version="2.0.1" />
-			</group>
-			<group targetFramework="portable-net4+sl5+win8+wp8+MonoAndroid1+MonoTouch1">
-			</group>
-		</dependencies>
-	</metadata>
-	<files>
-		<file src="readme.txt" target="readme.txt" />
-		<file src="lib\**\ArcGIS.Service*.dll" target="lib" />
-	</files>
+      Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
+    </summary>
+    <releaseNotes>
+      Added ExpiresAt property for Token
+      Modified DescribeSite for ArcGIS Online gateway when no username is used
+      Fixed issue with DescribeSite for secured folder
+
+      v4.0.0
+      Added automatic encryption of tokens if supported by the server
+      Added service status admin operation
+      Added public key admin operation
+      Added DescribeSite for ArcGISOnline gateway - returns the hosted feature services for the user
+      Added operation overloads for accepting a CancellationToken
+
+      Breaking changes
+      - removed Silverlight specific project
+      - changed ArcGISServerOperation signature
+      - DescribeSite returns different response, has more data
+      - ITokenProvider now has a cryptoprovider and username, CheckGenerateToken now takes a CancellationToken as an input parameter
+      - Use cancellation token rather than cancellation token source for default operations
+    </releaseNotes>
+    <language />
+    <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
+    <dependencies>
+      <group targetFramework="net40">
+        <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
+        <dependency id="Microsoft.Net.Http" version="2.2.22" />
+      </group>
+      <group targetFramework="wp8">
+        <dependency id="Microsoft.Net.Http" version="2.2.22" />
+      </group>
+      <group targetFramework="net45">
+        <dependency id="Microsoft.Net.Http" version="2.2.22" />
+      </group>
+      <group targetFramework="win8">
+        <dependency id="Microsoft.Net.Http" version="2.2.22" />
+      </group>
+      <group targetFramework="MonoAndroid1">
+        <dependency id="modernhttpclient" version="2.0.1" />
+      </group>
+      <group targetFramework="MonoTouch1">
+        <dependency id="modernhttpclient" version="2.0.1" />
+      </group>
+      <group targetFramework="portable-net4+sl5+win8+wp8+MonoAndroid1+MonoTouch1">
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="readme.txt" target="readme.txt" />
+    <file src="lib\**\ArcGIS.Service*.dll" target="lib" />
+  </files>
 </package>
