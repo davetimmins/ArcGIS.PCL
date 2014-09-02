@@ -118,6 +118,13 @@ namespace ArcGIS.ServiceModel
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
                 return result;
             }
+            catch (System.Runtime.Serialization.SerializationException ex)
+            {
+                // don't have access to the folder
+                System.Diagnostics.Debug.WriteLine("SerializationException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                return result;
+            }
             if (ct.IsCancellationRequested) return result;
 
             folderDescription.Path = endpoint.RelativeUrl;
