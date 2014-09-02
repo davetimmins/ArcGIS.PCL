@@ -44,12 +44,10 @@ namespace ArcGIS.ServiceModel
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
 
-#if DEBUG
         ~ArcGISOnlineAppLoginOAuthProvider()
         {
             Dispose(false);
         }
-#endif
 
         protected virtual void Dispose(bool disposing)
         {
@@ -67,9 +65,7 @@ namespace ArcGIS.ServiceModel
         public void Dispose()
         {
             Dispose(true);
-#if DEBUG
             GC.SuppressFinalize(this);
-#endif
         }
 
         public String RootUrl
@@ -78,7 +74,7 @@ namespace ArcGIS.ServiceModel
         }
 
         public String UserName { get { return null; } }
-        
+
         public ISerializer Serializer { get; private set; }
 
         public ICryptoProvider CryptoProvider { get { return null; } }
@@ -107,10 +103,6 @@ namespace ArcGIS.ServiceModel
             {
                 System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return null;
-            }
-            catch (HttpRequestException)
-            {
-                throw;
             }
 
             System.Diagnostics.Debug.WriteLine("Generate OAuth token result: " + resultString);
@@ -182,12 +174,10 @@ namespace ArcGIS.ServiceModel
             System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
 
-#if DEBUG
         ~TokenProvider()
         {
             Dispose(false);
         }
-#endif
 
         protected virtual void Dispose(bool disposing)
         {
@@ -205,9 +195,7 @@ namespace ArcGIS.ServiceModel
         public void Dispose()
         {
             Dispose(true);
-#if DEBUG
             GC.SuppressFinalize(this);
-#endif
         }
 
         public ICryptoProvider CryptoProvider { get; private set; }
@@ -280,7 +268,7 @@ namespace ArcGIS.ServiceModel
                 if (ct.IsCancellationRequested) return null;
 
                 if (CanAccessPublicKeyEndpoint)
-                {                    
+                {
                     _publicKey = Serializer.AsPortalResponse<PublicKeyResponse>(publicKeyResultString);
                     if (_publicKey.Error != null) throw new InvalidOperationException(_publicKey.Error.ToString());
 
@@ -305,10 +293,6 @@ namespace ArcGIS.ServiceModel
             {
                 System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return null;
-            }
-            catch (HttpRequestException)
-            {
-                throw;
             }
 
             System.Diagnostics.Debug.WriteLine("Generate token result: " + resultString);

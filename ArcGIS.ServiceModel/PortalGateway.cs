@@ -23,7 +23,11 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
         public ArcGISOnlineGateway(ISerializer serializer = null, ITokenProvider tokenProvider = null)
-            : base(PortalGatewayBase.AGOPortalUrl, serializer, tokenProvider)
+            : this(PortalGatewayBase.AGOPortalUrl, serializer, tokenProvider)
+        { }
+
+        public ArcGISOnlineGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+            : base(rootUrl, serializer, tokenProvider)
         { }
 
         protected override IEndpoint GeometryServiceEndpoint
@@ -42,7 +46,9 @@ namespace ArcGIS.ServiceModel
             if (String.IsNullOrWhiteSpace(username) && TokenProvider != null)
                 username = TokenProvider.UserName;
 
-            var search = new SearchHostedFeatureServices(username);
+            var search = String.IsNullOrWhiteSpace(username)
+                ? new SearchHostedFeatureServices()
+                : new SearchHostedFeatureServices(username);
             return Get<SearchHostedFeatureServicesResponse, SearchHostedFeatureServices>(search, ct);
         }
 
@@ -76,7 +82,7 @@ namespace ArcGIS.ServiceModel
     {
         public PortalGateway(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
             : base(rootUrl, serializer, tokenProvider)
-        { }        
+        { }
 
         /// <summary>
         /// Recursively parses an ArcGIS Server site and discovers the resources available
@@ -88,7 +94,7 @@ namespace ArcGIS.ServiceModel
             var result = new SiteDescription();
 
             result.Resources.AddRange(await DescribeEndpoint("/".AsEndpoint(), ct));
-                      
+
             return result;
         }
 
@@ -112,6 +118,13 @@ namespace ArcGIS.ServiceModel
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
                 return result;
             }
+            catch (System.Runtime.Serialization.SerializationException ex)
+            {
+                // don't have access to the folder
+                System.Diagnostics.Debug.WriteLine("SerializationException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                return result;
+            }
             if (ct.IsCancellationRequested) return result;
 
             folderDescription.Path = endpoint.RelativeUrl;
@@ -124,7 +137,7 @@ namespace ArcGIS.ServiceModel
                 }
 
             return result;
-        }               
+        }
 
         /// <summary>
         /// Returns the expected and actual status of a service
@@ -143,7 +156,7 @@ namespace ArcGIS.ServiceModel
         }
 
         /// <summary>
-        /// Call the reverse geocode operation. 
+        /// Call the reverse geocode operation.
         /// </summary>
         /// <param name="reverseGeocode"></param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
@@ -157,7 +170,7 @@ namespace ArcGIS.ServiceModel
         {
             return ReverseGeocode(reverseGeocode, CancellationToken.None);
         }
-           
+
         /// <summary>
         /// Call the single line geocode operation.
         /// </summary>
@@ -173,7 +186,7 @@ namespace ArcGIS.ServiceModel
         {
             return Geocode(geocode, CancellationToken.None);
         }
-                
+
         /// <summary>
         /// Call the suggest geocode operation.
         /// </summary>
@@ -240,12 +253,10 @@ namespace ArcGIS.ServiceModel
             System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
         }
 
-#if DEBUG
         ~PortalGatewayBase()
         {
             Dispose(false);
         }
-#endif
 
         protected virtual void Dispose(bool disposing)
         {
@@ -262,9 +273,7 @@ namespace ArcGIS.ServiceModel
         public void Dispose()
         {
             Dispose(true);
-#if DEBUG
             GC.SuppressFinalize(this);
-#endif
         }
 
         public string RootUrl { get; private set; }
@@ -272,7 +281,7 @@ namespace ArcGIS.ServiceModel
         public ITokenProvider TokenProvider { get; private set; }
 
         public ISerializer Serializer { get; private set; }
-        
+
         protected virtual IEndpoint GeometryServiceEndpoint
         {
             get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrlRelative.AsEndpoint()); }
@@ -294,7 +303,7 @@ namespace ArcGIS.ServiceModel
         {
             return Ping(endpoint, CancellationToken.None);
         }
-        
+
         /// <summary>
         /// Call the query operation
         /// </summary>
@@ -360,7 +369,7 @@ namespace ArcGIS.ServiceModel
         {
             return ApplyEdits<T>(edits, CancellationToken.None);
         }
-                
+
         /// <summary>
         /// Projects the list of geometries passed in using the GeometryServer
         /// </summary>
@@ -411,7 +420,7 @@ namespace ArcGIS.ServiceModel
         {
             return Buffer<T>(features, spatialReference, distance, CancellationToken.None);
         }
-                
+
         /// <summary>
         /// Simplify the list of geometries passed in using the GeometryServer. Simplify permanently alters the input geometry so that it becomes topologically consistent.
         /// </summary>
@@ -436,7 +445,7 @@ namespace ArcGIS.ServiceModel
         {
             return Simplify<T>(features, spatialReference, CancellationToken.None);
         }
-                
+
         async Task<Token> CheckGenerateToken(CancellationToken ct)
         {
             if (TokenProvider == null) return null;
@@ -520,7 +529,7 @@ namespace ArcGIS.ServiceModel
 
             return result;
         }
-        
+
         protected Task<T> Post<T, TRequest>(TRequest requestObject, CancellationToken ct)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
@@ -543,7 +552,7 @@ namespace ArcGIS.ServiceModel
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.Value);
                 if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
-            
+
             HttpContent content = null;
             try
             {

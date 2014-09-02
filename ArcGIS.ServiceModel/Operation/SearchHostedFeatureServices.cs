@@ -18,6 +18,10 @@ namespace ArcGIS.ServiceModel.Operation
         public SearchHostedFeatureServices(String username)
             : base(String.Format("owner:{0} AND (type:\"Feature Service\")", username))            
         { }
+
+        public SearchHostedFeatureServices()
+            : base("type:\"Feature Service\"")
+        { }
     }
 
     /// <summary>
@@ -42,13 +46,14 @@ namespace ArcGIS.ServiceModel.Operation
         }
 
         /// <summary>
-        /// Search query to execute
+        /// Search query to execute. See http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#//02r3000000mn000000 for more information
         /// </summary>
         [DataMember(Name = "q")]
         public String Query { get; protected set; }
 
         /// <summary>
-        /// Field to sort results by
+        /// Field to sort results by.
+        /// Valid fields are: title, created, type, owner, avgRating, numRatings, numComments and numViews
         /// </summary>
         /// <remarks>Default is created</remarks>
         [DataMember(Name = "sortField")]
@@ -62,13 +67,19 @@ namespace ArcGIS.ServiceModel.Operation
         public String SortOrder { get; set; }
 
         /// <summary>
-        /// Maximum number of results to return
+        /// The maximum number of results to be included in the result set response. 
+        /// The default value is 10 and the maximum allowed value is 100. 
+        /// The start parameter combined with the NumberToReturn parameter can be used to paginate the search results. 
+        /// Note that the actual number of returned results may be less than NumberToReturn if the number of 
+        /// results remaining after start is less than NumberToReturn
         /// </summary>
         [DataMember(Name = "num")]
         public int NumberToReturn { get; set; }
 
         /// <summary>
-        /// Start index of results
+        /// The number of the first entry in the result set response. 
+        /// The index number is 1-based. The StartIndex parameter, along with the NumberToReturn parameter 
+        /// can be used to paginate the search results.
         /// </summary>
         [DataMember(Name = "start")]
         public int StartIndex { get; set; }

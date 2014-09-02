@@ -168,7 +168,7 @@ namespace ArcGIS.Test
         {
             var gateway = new ArcGISGateway(_serviceStackSerializer);
 
-            var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
+            var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { Where = "magnitude > 4.5" };
             var resultPoint = await gateway.QueryAsPost<Point>(queryPoint);
 
             Assert.True(resultPoint.Features.Any());

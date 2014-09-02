@@ -17,12 +17,9 @@ module.exports = function (grunt) {
                 stdout: true
             }
         },
-        cs_xunit: {
-            options: {
-                xUnit: "xunit\\xunit.console.exe"
-            },
-            data: {
-                dll: "ArcGIS.Test\\bin\\Release\\ArcGIS.Test.dll"
+        xunit: {
+            tests: {
+                src: "ArcGIS.Test/bin/Release/ArcGIS.Test.dll"
             }
         },
         nugetpack: {
@@ -36,10 +33,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-msbuild');
-    grunt.loadNpmTasks('grunt-cs-xunit');
+    grunt.loadNpmTasks('grunt-xunit');
     grunt.loadNpmTasks('grunt-nuget');
     
-    grunt.registerTask('default', ['clean', 'shell', 'msbuild', 'cs_xunit', 'nugetpack']);
+    grunt.registerTask('default', ['clean', 'shell', 'msbuild', 'xunit', 'nugetpack']);
 
     grunt.registerTask('dirty', ['clean', 'shell', 'msbuild', 'nugetpack']);
 };
