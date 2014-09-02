@@ -180,6 +180,15 @@ namespace ArcGIS.ServiceModel.Operation
             get { return !String.IsNullOrWhiteSpace(Value) && Expiry > 0 && DateTime.Compare(Expiry.FromUnixTime(), DateTime.UtcNow) < 1; }
         }
 
+        /// <summary>
+        /// Local date and time when the token will expire
+        /// </summary>
+        [IgnoreDataMember]
+        public DateTime ExpiresAt
+        {
+            get { return (String.IsNullOrWhiteSpace(Value) || Expiry == 0) ? DateTime.Now : Expiry.FromUnixTime().ToLocalTime(); }
+        }
+
         [IgnoreDataMember]
         public String Referer { get; set; }
 
