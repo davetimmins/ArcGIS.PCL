@@ -2,7 +2,7 @@
 
 ### ArcGIS.PCL
 
-[![Build status](https://ci.appveyor.com/api/projects/status/6kquae4fokkeuxg1)](https://ci.appveyor.com/project/davetimmins/arcgis-pcl) [![NuGet Status](http://img.shields.io/nuget/v/ArcGIS.PCL.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.2-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
+[![Build status](https://ci.appveyor.com/api/projects/status/6kquae4fokkeuxg1?svg=true)](https://ci.appveyor.com/project/davetimmins/arcgis-pcl) [![NuGet Status](http://img.shields.io/nuget/v/ArcGIS.PCL.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![NuGet Status](http://img.shields.io/badge/Xamarin-3.2.2-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl)
 
 Use ArcGIS Server REST resources without an official SDK [more information](http://davetimmins.com/2013/July/ArcGIS-PCL/).
 
