@@ -8,6 +8,9 @@ namespace ArcGIS.ServiceModel.Operation
     {
         [DataMember(Name = "error")]
         ArcGISError Error { get; set; }
+
+        [DataMember(Name = "links")]
+        List<Link> Links { get; set; }
     }
 
     /// <summary>
@@ -19,10 +22,18 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class PortalResponse : IPortalResponse
     {
+        public PortalResponse()
+        {
+            Links = new List<Link>();
+        }
+
         [DataMember(Name = "error")]
         public ArcGISError Error { get; set; }
+
+        [DataMember(Name = "links")]
+        public List<Link> Links { get; set; }
     }
-    
+
     [DataContract]
     public class ArcGISError
     {
@@ -39,5 +50,24 @@ namespace ArcGIS.ServiceModel.Operation
         {
             return String.Format("Code {0}: {1}. {2}", Code, Message, String.Join(" ", Details));
         }
-    }   
+    }
+
+    public class Link
+    {
+        public Link(String href, String relation = "self", String title = "")
+        {
+            Href = href;
+            Relation = relation;
+            Title = title;
+        }
+
+        [DataMember(Name = "rel")]
+        public String Relation { get; private set; }
+
+        [DataMember(Name = "href")]
+        public String Href { get; private set; }
+
+        [DataMember(Name = "title")]
+        public String Title { get; private set; }
+    }
 }

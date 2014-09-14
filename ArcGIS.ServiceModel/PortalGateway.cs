@@ -527,6 +527,7 @@ namespace ArcGIS.ServiceModel
             var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
+            result.Links.Add(new Link(uri.AbsoluteUri));
             return result;
         }
 
@@ -595,9 +596,9 @@ namespace ArcGIS.ServiceModel
 
             System.Diagnostics.Debug.WriteLine(resultString);
             var result = Serializer.AsPortalResponse<T>(resultString);
-
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
+            result.Links.Add(new Link(uri.AbsoluteUri));
             return result;
         }
 

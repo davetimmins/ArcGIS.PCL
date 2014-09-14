@@ -60,6 +60,9 @@ namespace ArcGIS.Test
     {
         [System.Runtime.Serialization.DataMember(Name = "error")]
         public ArcGISError Error { get; set; }
+
+        [System.Runtime.Serialization.DataMember(Name = "links")]
+        public List<Link> Links { get; set; }
     }
 
     public class QueryGateway : PortalGateway
