@@ -474,7 +474,7 @@ namespace ArcGIS.ServiceModel
             var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
             if (url.Length > 2000)
-                return Post<T>(requestObject, url.ParseQueryString(), ct);
+                return Post<T, TRequest>(requestObject, ct);
 
             return Get<T>(url, ct);
         }
@@ -527,19 +527,17 @@ namespace ArcGIS.ServiceModel
             var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
-            result.Links.Add(new Link(uri.AbsoluteUri));
+            result.Links = new List<Link> { new Link(uri.AbsoluteUri) };
             return result;
         }
 
-        protected Task<T> Post<T, TRequest>(TRequest requestObject, CancellationToken ct)
+        protected async Task<T> Post<T, TRequest>(TRequest requestObject, CancellationToken ct)
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            return Post<T>(requestObject, Serializer.AsDictionary(requestObject), ct);
-        }
+            var endpoint = requestObject;
+            var parameters = Serializer.AsDictionary(requestObject);
 
-        protected async Task<T> Post<T>(IEndpoint endpoint, Dictionary<String, String> parameters, CancellationToken ct) where T : IPortalResponse
-        {
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
             var token = await CheckGenerateToken(ct);
@@ -598,7 +596,7 @@ namespace ArcGIS.ServiceModel
             var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
-            result.Links.Add(new Link(uri.AbsoluteUri));
+            result.Links = new List<Link> { new Link(uri.AbsoluteUri, requestObject) };
             return result;
         }
 

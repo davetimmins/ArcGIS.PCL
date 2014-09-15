@@ -9,7 +9,7 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "error")]
         ArcGISError Error { get; set; }
 
-        [DataMember(Name = "links")]
+        [DataMember(Name = "_links")]
         List<Link> Links { get; set; }
     }
 
@@ -22,15 +22,10 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class PortalResponse : IPortalResponse
     {
-        public PortalResponse()
-        {
-            Links = new List<Link>();
-        }
-
         [DataMember(Name = "error")]
         public ArcGISError Error { get; set; }
 
-        [DataMember(Name = "links")]
+        [DataMember(Name = "_links")]
         public List<Link> Links { get; set; }
     }
 
@@ -54,11 +49,19 @@ namespace ArcGIS.ServiceModel.Operation
 
     public class Link
     {
-        public Link(String href, String relation = "self", String title = "")
+        public Link(String href, String relation = "self")
         {
             Href = href;
             Relation = relation;
-            Title = title;
+            Method = "GET";
+        }
+
+        public Link(String href, CommonParameters data, String relation = "self")
+        {
+            Href = href;
+            Relation = relation;
+            Method = "POST";
+            Data = data;
         }
 
         [DataMember(Name = "rel")]
@@ -67,7 +70,10 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "href")]
         public String Href { get; private set; }
 
-        [DataMember(Name = "title")]
-        public String Title { get; private set; }
+        [DataMember(Name = "method")]
+        public String Method { get; private set; }
+
+        [DataMember(Name = "data")]
+        public CommonParameters Data { get; private set; }
     }
 }
