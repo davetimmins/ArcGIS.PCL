@@ -580,10 +580,6 @@ namespace ArcGIS.ServiceModel
                 System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return default(T);
             }
-            catch (HttpRequestException)
-            {
-                throw;
-            }
 
             System.Diagnostics.Debug.WriteLine(resultString);
             var result = Serializer.AsPortalResponse<T>(resultString);
@@ -648,10 +644,6 @@ namespace ArcGIS.ServiceModel
             {
                 System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return default(T);
-            }
-            catch (HttpRequestException)
-            {
-                throw;
             }
 
             System.Diagnostics.Debug.WriteLine(resultString);
