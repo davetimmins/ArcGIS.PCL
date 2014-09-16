@@ -147,10 +147,16 @@ namespace ArcGIS.ServiceModel
         /// <returns></returns>
         public virtual async Task<SiteReportResponse> SiteReport(CancellationToken ct, String path = "")
         {
-            var folderDescription = await Get<SiteFolderDescription>("/".AsEndpoint(), ct);
+            var folders = new List<String>();
 
-            var folders = new List<String> { "/" };
-            folders.AddRange(folderDescription.Folders);
+            if (String.IsNullOrWhiteSpace(path))
+            {
+                var folderDescription = await Get<SiteFolderDescription>("/".AsEndpoint(), ct);
+                folders.Add("/");
+                folders.AddRange(folderDescription.Folders);
+            }
+            else
+                folders.Add(path);
 
             var result = new SiteReportResponse();
             foreach (var folder in folders)

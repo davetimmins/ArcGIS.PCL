@@ -153,10 +153,10 @@ namespace ArcGIS.Test
         public async Task CanStopAndStartService()
         {
             var gateway = new SecureArcGISServerGateway("", "", "", _serviceStackSerializer);
-
-            var site = await gateway.SiteReport();
+            var folder = ""; // set this to only get a specific folder
+            var site = await gateway.SiteReport(folder);
             Assert.NotNull(site);
-            var services = site.ServiceReports.Where(s => s.FolderName == "");
+            var services = site.ServiceReports.Where(s => s.Type == "MapServer");
             Assert.NotNull(services);
             Assert.True(services.Any());
             foreach (var service in services)
