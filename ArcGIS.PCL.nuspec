@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL</id>
-    <version>4.1.1</version>
+    <version>5.0.0-beta1</version>
     <title>ArcGIS Server Gateway</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -30,6 +30,9 @@
       • Ping - verify that the server can be accessed
       • PublicKey - admin operation to get public key used for encryption of token requests
       • ServiceStatus - admin operation to get the configured and actual status of a service
+      • ServiceReport - admin operation to get the service report
+      • StartService - admin operation to start a service
+      • StopService - admin operation to stop a service
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
@@ -43,45 +46,37 @@
       Works with .NET for Windows Store apps, .NET framework 4 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS.
     </summary>
     <releaseNotes>
-      Added ExpiresAt property for Token
-      Modified DescribeSite for ArcGIS Online gateway when no username is used
-      Fixed issue with DescribeSite for secured folder
-
-      v4.0.0
-      Added automatic encryption of tokens if supported by the server
-      Added service status admin operation
-      Added public key admin operation
-      Added DescribeSite for ArcGISOnline gateway - returns the hosted feature services for the user
-      Added operation overloads for accepting a CancellationToken
+      Added SiteReport admin operation
+      Added StartService admin operation
+      Added StopService admin operation
+      Added hypermedia self links to responses
+      
+      Updated NuGet package references
 
       Breaking changes
-      - removed Silverlight specific project
-      - changed ArcGISServerOperation signature
-      - DescribeSite returns different response, has more data
-      - ITokenProvider now has a cryptoprovider and username, CheckGenerateToken now takes a CancellationToken as an input parameter
-      - Use cancellation token rather than cancellation token source for default operations
+      - added Links property to IPortalResponse interface
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
     <dependencies>
       <group targetFramework="net40">
         <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
-        <dependency id="Microsoft.Net.Http" version="2.2.22" />
+        <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
       <group targetFramework="wp8">
-        <dependency id="Microsoft.Net.Http" version="2.2.22" />
+        <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
       <group targetFramework="net45">
-        <dependency id="Microsoft.Net.Http" version="2.2.22" />
+        <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
       <group targetFramework="win8">
-        <dependency id="Microsoft.Net.Http" version="2.2.22" />
+        <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
       <group targetFramework="MonoAndroid1">
-        <dependency id="modernhttpclient" version="2.0.1" />
+        <dependency id="modernhttpclient" version="2.1.1" />
       </group>
       <group targetFramework="MonoTouch1">
-        <dependency id="modernhttpclient" version="2.0.1" />
+        <dependency id="modernhttpclient" version="2.1.1" />
       </group>
       <group targetFramework="portable-net4+sl5+win8+wp8+MonoAndroid1+MonoTouch1">
       </group>

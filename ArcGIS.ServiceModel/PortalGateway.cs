@@ -140,11 +140,11 @@ namespace ArcGIS.ServiceModel
         }
 
         /// <summary>
-        /// 
+        /// Admin operation used to get all services for the ArcGIS Server and their reports
         /// </summary>
-        /// <param name="ct"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <param name="path">The starting path (folder). If omitted then this will start at the root and get all sub folders too</param>
+        /// <returns>All discovered services for the site</returns>
         public virtual async Task<SiteReportResponse> SiteReport(CancellationToken ct, String path = "")
         {
             var folders = new List<String>();

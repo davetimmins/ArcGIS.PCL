@@ -149,7 +149,7 @@ namespace ArcGIS.Test
             Assert.Contains("Invalid token", exception.Message);
         }
 
-        [Fact]
+        // [Fact]
         public async Task CanStopAndStartService()
         {
             var gateway = new SecureArcGISServerGateway("", "", "", _serviceStackSerializer);
