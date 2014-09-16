@@ -140,6 +140,36 @@ namespace ArcGIS.ServiceModel
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public virtual async Task<SiteReportResponse> SiteReport(CancellationToken ct, String path = "")
+        {
+            var folderDescription = await Get<SiteFolderDescription>("/".AsEndpoint(), ct);
+
+            var folders = new List<String> { "/" };
+            folders.AddRange(folderDescription.Folders);
+
+            var result = new SiteReportResponse();
+            foreach (var folder in folders)
+            {
+                var folderReport = await Get<FolderReportResponse>(new ServiceReport(folder), ct);
+
+                result.Resources.Add(folderReport);
+
+                if (ct.IsCancellationRequested) return result;
+            }
+            return result;
+        }
+
+        public virtual Task<SiteReportResponse> SiteReport(String path = "")
+        {
+            return SiteReport(CancellationToken.None, path);
+        }
+
+        /// <summary>
         /// Returns the expected and actual status of a service
         /// </summary>
         /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
@@ -153,6 +183,38 @@ namespace ArcGIS.ServiceModel
         public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription)
         {
             return ServiceStatus(serviceDescription, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Start the service
+        /// </summary>
+        /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns>Standard response object</returns>
+        public virtual Task<StartStopServiceResponse> StartService(ServiceDescription serviceDescription, CancellationToken ct)
+        {
+            return Post<StartStopServiceResponse, StartService>(new StartService(serviceDescription), ct);
+        }
+
+        public virtual Task<StartStopServiceResponse> StartService(ServiceDescription serviceDescription)
+        {
+            return StartService(serviceDescription, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Stop the service
+        /// </summary>
+        /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns>Standard response object</returns>
+        public virtual Task<StartStopServiceResponse> StopService(ServiceDescription serviceDescription, CancellationToken ct)
+        {
+            return Post<StartStopServiceResponse, StopService>(new StopService(serviceDescription), ct);
+        }
+
+        public virtual Task<StartStopServiceResponse> StopService(ServiceDescription serviceDescription)
+        {
+            return StopService(serviceDescription, CancellationToken.None);
         }
 
         /// <summary>

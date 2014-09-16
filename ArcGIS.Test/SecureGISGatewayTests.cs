@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
@@ -146,6 +147,46 @@ namespace ArcGIS.Test
             var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Query<Point>(query));
             Assert.NotNull(exception);
             Assert.Contains("Invalid token", exception.Message);
+        }
+
+        [Fact]
+        public async Task CanStopAndStartService()
+        {
+            var gateway = new SecureArcGISServerGateway("", "", "", _serviceStackSerializer);
+
+            var site = await gateway.SiteReport();
+            Assert.NotNull(site);
+            var services = site.ServiceReports.Where(s => s.FolderName == "");
+            Assert.NotNull(services);
+            Assert.True(services.Any());
+            foreach (var service in services)
+            {
+                var sd = service.AsServiceDescription();
+                if (String.Equals("STARTED", service.Status.Actual, StringComparison.OrdinalIgnoreCase))
+                {
+                    var stoppedResult = await gateway.StopService(sd);
+                    Assert.NotNull(stoppedResult);
+                    Assert.Null(stoppedResult.Error);
+                    Assert.Equal("success", stoppedResult.Status);
+
+                    var startedResult = await gateway.StartService(sd);
+                    Assert.NotNull(startedResult);
+                    Assert.Null(startedResult.Error);
+                    Assert.Equal("success", startedResult.Status);
+                }
+                else
+                {
+                    var startedResult = await gateway.StartService(sd);
+                    Assert.NotNull(startedResult);
+                    Assert.Null(startedResult.Error);
+                    Assert.Equal("success", startedResult.Status);
+
+                    var stoppedResult = await gateway.StopService(sd);
+                    Assert.NotNull(stoppedResult);
+                    Assert.Null(stoppedResult.Error);
+                    Assert.Equal("success", stoppedResult.Status);
+                }
+            }
         }
 
         public static async Task<TException> ThrowsAsync<TException>(Func<Task> func) where TException : Exception

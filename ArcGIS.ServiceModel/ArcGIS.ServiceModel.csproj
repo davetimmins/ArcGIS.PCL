@@ -51,7 +51,9 @@
     <Compile Include="IPortalGateway.cs" />
     <Compile Include="ISerializer.cs" />
     <Compile Include="ITokenProvider.cs" />
+    <Compile Include="Operation\Admin\ServiceReport.cs" />
     <Compile Include="Operation\Admin\ServiceStatus.cs" />
+    <Compile Include="Operation\Admin\StartStop.cs" />
     <Compile Include="Operation\ApplyEdits.cs" />
     <Compile Include="Operation\ArcGISServerOperation.cs" />
     <Compile Include="Operation\CommonParameters.cs" />

@@ -18,6 +18,9 @@ namespace ArcGIS.ServiceModel.Operation
         public const String Project = "project";
         public const String PublicKey = "publicKey";
         public const String ServiceStatus = "services/{0}.{1}/status";
+        public const String StartService = "services/{0}.{1}/start";
+        public const String StopService = "services/{0}.{1}/stop";
+        public const String ServiceReport = "services/{0}/report";
         public const String ArcGISOnlineSearch = "search";
     }
 
