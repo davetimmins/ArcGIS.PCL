@@ -71,7 +71,7 @@ namespace ArcGIS.ServiceModel.Operation
         {
             get
             {
-                return BoundingBox == null || BoundingBox.SpatialReference == null || BoundingBox.SpatialReference.Wkid != SpatialReference.WGS84.Wkid ?
+                return BoundingBox == null || BoundingBox.SpatialReference == null || BoundingBox.SpatialReference != SpatialReference.WGS84 ?
                     String.Empty :
                     String.Format("{0},{1},{2},{3}", BoundingBox.XMin, BoundingBox.YMin, BoundingBox.XMax, BoundingBox.YMax);
             }
