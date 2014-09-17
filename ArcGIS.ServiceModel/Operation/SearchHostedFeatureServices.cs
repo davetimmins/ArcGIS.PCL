@@ -39,7 +39,7 @@ namespace ArcGIS.ServiceModel.Operation
         {
             Query = query;
             SortOrder = "asc";
-            NumberToReturn = 100;
+            NumberToReturn = 10;
             StartIndex = 1;
             SortFields = new List<String>();
             Endpoint = new ArcGISOnlineEndpoint(Operations.ArcGISOnlineSearch);
@@ -50,6 +50,32 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         [DataMember(Name = "q")]
         public String Query { get; protected set; }
+
+        /// <summary>
+        /// The bounding box for a spatial search defined as minx, miny, maxx, or maxy. Search requires q, bbox, or both.
+        /// Spatial search is an overlaps/intersects function of the query bbox and the extent of the document.
+        /// Documents that have no extent (e.g., mxds, 3dds, lyr) will not be found when doing a bbox search.
+        /// Document extent is assumed to be in the WGS84 geographic coordinate system.
+        /// </summary>
+        [IgnoreDataMember]
+        public Extent BoundingBox { get; set; }
+
+        /// <summary>
+        /// The bounding box for a spatial search defined as minx, miny, maxx, or maxy. Search requires q, bbox, or both.
+        /// Spatial search is an overlaps/intersects function of the query bbox and the extent of the document.
+        /// Documents that have no extent (e.g., mxds, 3dds, lyr) will not be found when doing a bbox search.
+        /// Document extent is assumed to be in the WGS84 geographic coordinate system.
+        /// </summary>
+        [DataMember(Name = "bbox")]
+        public String BBox
+        {
+            get
+            {
+                return BoundingBox == null || BoundingBox.SpatialReference == null || BoundingBox.SpatialReference.Wkid != SpatialReference.WGS84.Wkid ?
+                    String.Empty :
+                    String.Format("{0},{1},{2},{3}", BoundingBox.XMin, BoundingBox.YMin, BoundingBox.XMax, BoundingBox.YMax);
+            }
+        }
 
         /// <summary>
         /// Fields to sort results by.
@@ -81,6 +107,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// Note that the actual number of returned results may be less than NumberToReturn if the number of
         /// results remaining after start is less than NumberToReturn
         /// </summary>
+        /// <remarks>Default is 10</remarks>
         [DataMember(Name = "num")]
         public int NumberToReturn { get; set; }
 
