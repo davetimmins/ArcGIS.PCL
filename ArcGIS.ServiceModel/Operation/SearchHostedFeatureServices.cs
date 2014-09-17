@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Linq;
 
 namespace ArcGIS.ServiceModel.Operation
 {
@@ -37,11 +38,10 @@ namespace ArcGIS.ServiceModel.Operation
         public SearchArcGISOnline(String query)
         {
             Query = query;
-            SortField = "created";
             SortOrder = "asc";
             NumberToReturn = 100;
             StartIndex = 1;
-
+            SortFields = new List<String>();
             Endpoint = new ArcGISOnlineEndpoint(Operations.ArcGISOnlineSearch);
         }
 
@@ -52,12 +52,20 @@ namespace ArcGIS.ServiceModel.Operation
         public String Query { get; protected set; }
 
         /// <summary>
+        /// Fields to sort results by.
+        /// Valid fields are: title, created, type, owner, avgRating, numRatings, numComments and numViews
+        /// </summary>
+        [IgnoreDataMember]
+        public List<String> SortFields { get; set; }
+
+        /// <summary>
+        /// The list of fields to sort results by. This list is a comma delimited list of field names.
         /// Field to sort results by.
         /// Valid fields are: title, created, type, owner, avgRating, numRatings, numComments and numViews
         /// </summary>
-        /// <remarks>Default is created</remarks>
+        /// <remarks>Default is 'created'</remarks>
         [DataMember(Name = "sortField")]
-        public String SortField { get; set; }
+        public String SortFieldsValue { get { return SortFields == null || !SortFields.Any() ? "created" : String.Join(",", SortFields); } }
 
         /// <summary>
         /// Order results by desc or asc
