@@ -1,8 +1,11 @@
+'use strict';
+
 module.exports = function (grunt) {
-    "use strict";
+
+    require('load-grunt-tasks')(grunt);
+    require('time-grunt')(grunt);
 
     grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
         clean: ["dist"],
         shell: {
             makeDir: {
@@ -29,14 +32,8 @@ module.exports = function (grunt) {
             }
         }
     });
-   
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-shell');
-    grunt.loadNpmTasks('grunt-msbuild');
-    grunt.loadNpmTasks('grunt-xunit');
-    grunt.loadNpmTasks('grunt-nuget');
-    
-    grunt.registerTask('default', ['clean', 'shell', 'msbuild', 'xunit', 'nugetpack']);
 
-    grunt.registerTask('dirty', ['clean', 'shell', 'msbuild', 'nugetpack']);
+    grunt.registerTask('build', ['clean', 'shell', 'msbuild']);
+    grunt.registerTask('default', ['build', 'xunit', 'nugetpack']);
+    grunt.registerTask('dirty', ['build', 'nugetpack']);
 };

@@ -93,16 +93,6 @@ namespace ArcGIS.ServiceModel.Common
             }
         }
 
-        public static bool operator ==(SpatialReference left, SpatialReference right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(SpatialReference left, SpatialReference right)
-        {
-            return !left.Equals(right);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
