@@ -98,6 +98,7 @@ namespace ArcGIS.Test
             Assert.True(SpatialReference.WGS84 != null);
             Assert.True(null != SpatialReference.WGS84);
             Assert.True(new SpatialReference { Wkid = 2193 } != SpatialReference.WGS84);
+            Assert.False(SpatialReference.WGS84 != new SpatialReference { Wkid = SpatialReference.WGS84.Wkid });
         }
     }
 }
