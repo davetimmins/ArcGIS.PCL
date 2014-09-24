@@ -75,6 +75,9 @@ namespace ArcGIS.Test
             Assert.True(sr == sr2);
             Assert.True(sr == sr3);
             Assert.True(sr3 == sr2);
+            Assert.False(SpatialReference.WGS84 == null);
+            Assert.False(null == SpatialReference.WGS84);
+            Assert.False(new SpatialReference { Wkid = 2193 } == SpatialReference.WGS84);
         }
 
         [Fact]
@@ -91,6 +94,10 @@ namespace ArcGIS.Test
 
             Assert.True(sr != SpatialReference.WGS84);
             Assert.True(SpatialReference.WebMercator != SpatialReference.WGS84);
+
+            Assert.True(SpatialReference.WGS84 != null);
+            Assert.True(null != SpatialReference.WGS84);
+            Assert.True(new SpatialReference { Wkid = 2193 } != SpatialReference.WGS84);
         }
     }
 }
