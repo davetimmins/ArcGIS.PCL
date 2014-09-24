@@ -6,7 +6,7 @@ namespace ArcGIS.Test
     public class GeometryTests
     {
         [Fact]
-        public void FeaturesAreSame()
+        public void FeaturesAreTheSame()
         {
             var feature1 = new Feature<Point>
             {
@@ -26,7 +26,7 @@ namespace ArcGIS.Test
         }
 
         [Fact]
-        public void FeaturesAreNotSame()
+        public void FeaturesAreNotTheSame()
         {
             var feature1 = new Feature<Point>
             {
@@ -58,6 +58,39 @@ namespace ArcGIS.Test
             Assert.NotEqual(feature1, feature4);
             Assert.NotEqual(feature2, feature3);
             Assert.NotEqual(feature2, feature4);
+        }
+
+        [Fact]
+        public void SpatialReferencesAreTheSame()
+        {
+            var sr = new SpatialReference { Wkid = SpatialReference.WGS84.Wkid };
+            Assert.Equal(sr, SpatialReference.WGS84);
+
+            var sr2 = new SpatialReference { Wkid = SpatialReference.WGS84.LatestWkid };
+            Assert.Equal(sr2, SpatialReference.WGS84);
+
+            var sr3 = SpatialReference.WGS84;
+            Assert.Equal(sr3, SpatialReference.WGS84);
+
+            Assert.True(sr == sr2);
+            Assert.True(sr == sr3);
+            Assert.True(sr3 == sr2);
+        }
+
+        [Fact]
+        public void SpatialReferencesAreNotTheSame()
+        {
+            var sr = new SpatialReference { Wkid = SpatialReference.WebMercator.Wkid };
+            Assert.NotEqual(sr, SpatialReference.WGS84);
+
+            var sr2 = SpatialReference.WebMercator;
+            Assert.NotEqual(sr2, SpatialReference.WGS84);
+
+            Assert.True(SpatialReference.WGS84 != SpatialReference.WebMercator);
+            Assert.False(SpatialReference.WGS84 == SpatialReference.WebMercator);
+
+            Assert.True(sr != SpatialReference.WGS84);
+            Assert.True(SpatialReference.WebMercator != SpatialReference.WGS84);
         }
     }
 }
