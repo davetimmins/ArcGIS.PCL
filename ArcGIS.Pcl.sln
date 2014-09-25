@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.travis.yml = .travis.yml
 		ArcGIS.PCL.JsonDotNetSerializer.nuspec = ArcGIS.PCL.JsonDotNetSerializer.nuspec
 		ArcGIS.PCL.nuspec = ArcGIS.PCL.nuspec
+		ArcGIS.PCL.ServiceStackPCLSerializer.nuspec = ArcGIS.PCL.ServiceStackPCLSerializer.nuspec
+		ArcGIS.PCL.ServiceStackSerializer.nuspec = ArcGIS.PCL.ServiceStackSerializer.nuspec
 		ArcGIS.PCL.ServiceStackV3Serializer.nuspec = ArcGIS.PCL.ServiceStackV3Serializer.nuspec
 		ArcGIS.ServiceModel\CryptoProviderFactory.cs = ArcGIS.ServiceModel\CryptoProviderFactory.cs
 		gateway.png = gateway.png
@@ -48,6 +50,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.Serializers.JsonDotNet", "ArcGIS.ServiceModel.Serializers.JsonDotNet\ArcGIS.ServiceModel.Serializers.JsonDotNet.csproj", "{9EEC199F-9D98-48D0-A8E7-54609A686F07}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.Serializers.ServiceStackV3", "ArcGIS.ServiceModel.Serializers.ServiceStackV3\ArcGIS.ServiceModel.Serializers.ServiceStackV3.csproj", "{5895202C-46D9-4372-9C8D-0B591FC3D7D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.Serializers.ServiceStack", "ArcGIS.ServiceModel.Serializers.ServiceStack\ArcGIS.ServiceModel.Serializers.ServiceStack.csproj", "{8D8F755B-91FA-4858-A484-1C6D5E330265}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.Serializers.ServiceStack.PCL", "ArcGIS.ServiceModel.Serializers.ServiceStack.PCL\ArcGIS.ServiceModel.Serializers.ServiceStack.PCL.csproj", "{9D4EAB31-6D57-4244-831F-108B2E4D2560}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -385,6 +391,62 @@ Global
 		{5895202C-46D9-4372-9C8D-0B591FC3D7D8}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{5895202C-46D9-4372-9C8D-0B591FC3D7D8}.Release|x64.ActiveCfg = Release|Any CPU
 		{5895202C-46D9-4372-9C8D-0B591FC3D7D8}.Release|x86.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Ad-Hoc|ARM.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Ad-Hoc|x64.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Ad-Hoc|x86.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.AppStore|ARM.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.AppStore|x64.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.AppStore|x86.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Release|x64.ActiveCfg = Release|Any CPU
+		{8D8F755B-91FA-4858-A484-1C6D5E330265}.Release|x86.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Ad-Hoc|ARM.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Ad-Hoc|x64.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Ad-Hoc|x86.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.AppStore|ARM.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.AppStore|x64.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.AppStore|x86.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Release|ARM.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Release|x64.ActiveCfg = Release|Any CPU
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -393,6 +455,8 @@ Global
 		{04B9D1A5-9905-47F6-B8C4-45A07430AC09} = {13B709EB-D87F-4E10-9285-4FE62EFBBE65}
 		{9EEC199F-9D98-48D0-A8E7-54609A686F07} = {735A217A-67F5-4798-A7DE-423C5C38C9A5}
 		{5895202C-46D9-4372-9C8D-0B591FC3D7D8} = {735A217A-67F5-4798-A7DE-423C5C38C9A5}
+		{8D8F755B-91FA-4858-A484-1C6D5E330265} = {735A217A-67F5-4798-A7DE-423C5C38C9A5}
+		{9D4EAB31-6D57-4244-831F-108B2E4D2560} = {735A217A-67F5-4798-A7DE-423C5C38C9A5}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = ArcGIS.ServiceModel\ArcGIS.ServiceModel.csproj
