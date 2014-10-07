@@ -52,12 +52,37 @@ namespace ArcGIS.Test
             feature4.Attributes.Add("random", "rtcxbvbx");
             feature4.Attributes.Add("something", 4);
 
+            var feature5 = new Feature<Point>
+            {
+                Geometry = new Point { X = 50.342, Y = -30.331, SpatialReference = SpatialReference.WGS84 }
+            };
+            feature5.Attributes.Add("random", "rtcxbvbx");
+            feature5.Attributes.Add("something", 4);
+            feature5.Attributes.Add("somethingelse", 4);
+
+            var feature6 = new Feature<Point>
+            {
+                Geometry = new Point { X = 50.342, Y = -30.331, SpatialReference = SpatialReference.WGS84 }
+            };
+            feature6.Attributes.Add("random", "rtcxbvbx");
+            feature6.Attributes.Add("something", 4);
+            feature6.Attributes.Add("somethingelseagain", 4);
+
             Assert.NotEqual(feature1, feature2);
             Assert.NotEqual(feature3, feature4);
             Assert.NotEqual(feature1, feature3);
             Assert.NotEqual(feature1, feature4);
             Assert.NotEqual(feature2, feature3);
             Assert.NotEqual(feature2, feature4);
+            Assert.NotEqual(feature1, feature5);
+            Assert.NotEqual(feature2, feature5);
+            Assert.NotEqual(feature3, feature5);
+            Assert.NotEqual(feature4, feature5);
+            Assert.NotEqual(feature1, feature6);
+            Assert.NotEqual(feature2, feature6);
+            Assert.NotEqual(feature3, feature6);
+            Assert.NotEqual(feature4, feature6);
+            Assert.NotEqual(feature5, feature6);
         }
 
         [Fact]
