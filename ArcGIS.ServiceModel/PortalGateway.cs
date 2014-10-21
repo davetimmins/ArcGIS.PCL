@@ -344,6 +344,8 @@ namespace ArcGIS.ServiceModel
             GC.SuppressFinalize(this);
         }
 
+        public bool IncludeHypermediaWithResponse { get; set; }
+
         public string RootUrl { get; private set; }
 
         public ITokenProvider TokenProvider { get; private set; }
@@ -591,7 +593,7 @@ namespace ArcGIS.ServiceModel
             var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
-            result.Links = new List<Link> { new Link(uri.AbsoluteUri) };
+            if (IncludeHypermediaWithResponse) result.Links = new List<Link> { new Link(uri.AbsoluteUri) };
             return result;
         }
 
@@ -656,7 +658,7 @@ namespace ArcGIS.ServiceModel
             var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
-            result.Links = new List<Link> { new Link(uri.AbsoluteUri, requestObject) };
+            if (IncludeHypermediaWithResponse) result.Links = new List<Link> { new Link(uri.AbsoluteUri, requestObject) };
             return result;
         }
 

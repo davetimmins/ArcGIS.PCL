@@ -139,7 +139,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task GatewayDoesAutoPost()
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new ArcGISGateway(_serviceStackSerializer) { IncludeHypermediaWithResponse = true };
 
             var longWhere = new StringBuilder("region = '");
             for (var i = 0; i < 3000; i++)
@@ -168,6 +168,7 @@ namespace ArcGIS.Test
             Assert.Null(result.Error);
             Assert.NotNull(result.SpatialReference);
             Assert.True(result.Features.Any());
+            Assert.Null(result.Links);
         }
 
         [Fact]
