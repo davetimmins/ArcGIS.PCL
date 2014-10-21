@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using Xunit;
 
 namespace ArcGIS.Test
@@ -124,6 +125,74 @@ namespace ArcGIS.Test
             Assert.True(null != SpatialReference.WGS84);
             Assert.True(new SpatialReference { Wkid = 2193 } != SpatialReference.WGS84);
             Assert.False(SpatialReference.WGS84 != new SpatialReference { Wkid = SpatialReference.WGS84.Wkid });
+        }
+
+        [Fact]
+        public void CanGetObjectID()
+        {
+            long oid = 34223;
+
+            var feature = new Feature<Point>();
+            feature.Attributes.Add("ObjectId", oid);
+            Assert.True(feature.ObjectID > 0);
+            Assert.Equal(feature.ObjectID, oid);
+
+            var feature2 = new Feature<Point>();
+            feature2.Attributes.Add("ObjectID", oid);
+            Assert.True(feature2.ObjectID > 0);
+            Assert.Equal(feature2.ObjectID, oid);
+
+            var feature3 = new Feature<Point>();
+            feature3.Attributes.Add("Objectid", oid);
+            Assert.True(feature3.ObjectID > 0);
+            Assert.Equal(feature3.ObjectID, oid);
+
+            var feature4 = new Feature<Point>();
+            feature4.Attributes.Add("objectid", oid);
+            Assert.True(feature4.ObjectID > 0);
+            Assert.Equal(feature4.ObjectID, oid);
+
+            var feature5 = new Feature<Point>();
+            feature5.Attributes.Add("objevxvcvxcctid", oid);
+            Assert.Equal(feature5.ObjectID, 0);
+
+            var feature6 = new Feature<Point>();
+            Assert.Equal(feature6.ObjectID, 0);
+        }
+
+        [Fact]
+        public void CanGetGlobalID()
+        {
+            var guid = Guid.NewGuid();
+
+            var feature = new Feature<Point>();
+            feature.Attributes.Add("GlobalId", guid);
+            Assert.False(String.IsNullOrWhiteSpace(feature.GlobalID));
+            Assert.Equal(feature.GlobalID, guid.ToString());
+
+            var feature2 = new Feature<Point>();
+            feature2.Attributes.Add("GlobalID", guid);
+            Assert.False(String.IsNullOrWhiteSpace(feature2.GlobalID));
+            Assert.Equal(feature2.GlobalID, guid.ToString());
+
+            var feature3 = new Feature<Point>();
+            feature3.Attributes.Add("Globalid", guid);
+            Assert.False(String.IsNullOrWhiteSpace(feature3.GlobalID));
+            Assert.Equal(feature3.GlobalID, guid.ToString());
+
+            var feature4 = new Feature<Point>();
+            feature4.Attributes.Add("globalid", guid);
+            Assert.False(String.IsNullOrWhiteSpace(feature4.GlobalID));
+            Assert.Equal(feature4.GlobalID, guid.ToString());
+
+            var feature5 = new Feature<Point>();
+            feature5.Attributes.Add("globavcbbcblid", guid);
+            Assert.True(String.IsNullOrWhiteSpace(feature5.GlobalID));
+            Assert.Equal(feature5.GlobalID, "");
+
+            var feature6 = new Feature<Point>();
+            Assert.True(String.IsNullOrWhiteSpace(feature6.GlobalID));
+            Assert.Equal(feature6.GlobalID, "");
         }
     }
 }

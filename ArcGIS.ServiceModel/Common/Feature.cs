@@ -13,6 +13,9 @@ namespace ArcGIS.ServiceModel.Common
     [DataContract]
     public class Feature<T> : IEquatable<Feature<T>> where T : IGeometry
     {
+        const String ObjectIDName = "objectid";
+        const String GlobalIDName = "globalid";
+
         public Feature()
         {
             Attributes = new Dictionary<String, object>();
@@ -29,6 +32,42 @@ namespace ArcGIS.ServiceModel.Common
         /// <remarks>Date values are encoded as numbers. The number represents the number of milliseconds since epoch (January 1, 1970) in UTC.</remarks>
         [DataMember(Name = "attributes")]
         public Dictionary<String, object> Attributes { get; set; }
+
+        long _oid = 0;
+        /// <summary>
+        /// Get the ObjectID for the feature. Will return 0 if not found
+        /// </summary>
+        public long ObjectID
+        {
+            get
+            {
+                if (Attributes != null && Attributes.Any() && _oid == 0)
+                {
+                    var copy = new Dictionary<String, object>(Attributes, StringComparer.OrdinalIgnoreCase);
+                    if (copy.ContainsKey(ObjectIDName)) _oid = long.Parse(copy[ObjectIDName].ToString());
+                }
+
+                return _oid;
+            }
+        }
+
+        String _globalID = "";
+        /// <summary>
+        /// Get the GlobalID for the feature. Will return an empty string if not found
+        /// </summary>
+        public String GlobalID
+        {
+            get
+            {
+                if (Attributes != null && Attributes.Any() && String.IsNullOrWhiteSpace(_globalID))
+                {
+                    var copy = new Dictionary<String, object>(Attributes, StringComparer.OrdinalIgnoreCase);
+                    if (copy.ContainsKey(GlobalIDName)) _globalID = copy[GlobalIDName].ToString();
+                }
+
+                return _globalID;
+            }
+        }
 
         public bool AttributesAreTheSame(Feature<T> other)
         {
