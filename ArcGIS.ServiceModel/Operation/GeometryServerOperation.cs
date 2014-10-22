@@ -79,8 +79,20 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "unit")]
         public string Unit { get; set; }
 
+        /// <summary>
+        /// If true, all geometries buffered at a given distance are unioned into a single (possibly multipart) polygon, 
+        /// and the unioned geometry is placed in the output array. 
+        /// The default is false.
+        /// </summary>
         [DataMember(Name = "unionResults")]
         public bool UnionResults { get; set; }
+
+        /// <summary>
+        /// Set geodesic to true to buffer the input geometries using geodesic distance. Geodesic distance is the shortest path between two points along the ellipsoid of the earth. 
+        /// If geodesic is set to false, the 2D Euclidean distance is used to buffer the input geometries.
+        /// </summary>
+        [DataMember(Name = "geodesic")]
+        public bool? Geodesic { get; set; }
     }
 
     [DataContract]
