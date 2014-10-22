@@ -16,8 +16,8 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanProject()
         {
-            var gateway = new GeometryGateway(new ServiceStackSerializer(), @"http://services.arcgisonline.co.nz/arcgis");
-            var result = await gateway.Query<Polygon>(new Query("STATS/territorialauthorities/MapServer/0".AsEndpoint()) { Where = "NAME = 'Hamilton City'" });
+            var gateway = new GeometryGateway(new ServiceStackSerializer());
+            var result = await gateway.Query<Polygon>(new Query("Demographics/ESRI_Census_USA/MapServer/5".AsEndpoint()) { Where = "STATE_NAME = 'Oregon'" });
 
             var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
 
@@ -26,7 +26,7 @@ namespace ArcGIS.Test
             Assert.True(features[0].Geometry.Rings.Count > 0);
             features[0].Geometry.SpatialReference = result.SpatialReference;
 
-            var projectedFeatures = await gateway.Project<Polygon>(features, SpatialReference.WGS84);
+            var projectedFeatures = await new ArcGISOnlineGateway(new ServiceStackSerializer()).Project<Polygon>(features, SpatialReference.WGS84);
 
             Assert.NotNull(projectedFeatures);
             Assert.Equal(features.Count, projectedFeatures.Count);
@@ -39,10 +39,10 @@ namespace ArcGIS.Test
 
         [Fact]
         public async Task CanBuffer()
-        {            
+        {
             var gateway = new GeometryGateway(new ServiceStackSerializer());
 
-            var result = await gateway.Query<Polygon>(new Query("MontgomeryQuarters/MapServer/0/".AsEndpoint()));
+            var result = await gateway.Query<Polygon>(new Query("Demographics/ESRI_Census_USA/MapServer/5".AsEndpoint()) { Where = "STATE_NAME = 'Texas'" });
 
             var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
             Assert.NotNull(features);
@@ -55,22 +55,17 @@ namespace ArcGIS.Test
             int featuresCount = features.Count;
 
             double distance = 10.0;
-            var featuresBuffered = await gateway.Buffer<Polygon>(features, spatialReference, distance);
+            var featuresBuffered = await new ArcGISOnlineGateway(new ServiceStackSerializer()).Buffer<Polygon>(features, spatialReference, distance);
 
             Assert.NotNull(featuresBuffered);
             Assert.Equal(featuresCount, featuresBuffered.Count);
-            for (int indexFeature = 0; indexFeature < featuresCount; ++indexFeature)
-            {
-                // Should be more complex shape, so expect greater number of points.
-                Assert.True(featuresBuffered[indexFeature].Geometry.Rings[0].Points.Count > features[indexFeature].Geometry.Rings[0].Points.Count, "Expecting buffered polygon to contain more points than original");
-            }
         }
 
         [Fact]
         public async Task CanSimplify()
         {
-            var gateway = new GeometryGateway(new ServiceStackSerializer(), @"http://services.arcgisonline.co.nz/arcgis");
-            var result = await gateway.Query<Polygon>(new Query("STATS/territorialauthorities/MapServer/0".AsEndpoint()) { Where = "NAME = 'Hamilton City'" });
+            var gateway = new GeometryGateway(new ServiceStackSerializer());
+            var result = await gateway.Query<Polygon>(new Query("Demographics/ESRI_Census_USA/MapServer/5".AsEndpoint()) { Where = "STATE_NAME = 'Oregon'" });
 
             var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
 
@@ -79,7 +74,7 @@ namespace ArcGIS.Test
             Assert.True(features[0].Geometry.Rings.Count > 0);
             features[0].Geometry.SpatialReference = result.SpatialReference;
 
-            var simplifiedFeatures = await gateway.Simplify<Polygon>(features, result.SpatialReference);
+            var simplifiedFeatures = await new ArcGISOnlineGateway(new ServiceStackSerializer()).Simplify<Polygon>(features, result.SpatialReference);
 
             Assert.NotNull(simplifiedFeatures);
             Assert.Equal(features.Count, simplifiedFeatures.Count);
@@ -93,7 +88,7 @@ namespace ArcGIS.Test
 
     public class GeometryGateway : PortalGateway
     {
-        public GeometryGateway(ISerializer serializer, String baseUrl = @"http://sampleserver6.arcgisonline.com/arcgis")
+        public GeometryGateway(ISerializer serializer, String baseUrl = @"http://sampleserver1.arcgisonline.com/ArcGIS")
             : base(baseUrl, serializer, null)
         { }
     }

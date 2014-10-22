@@ -12,34 +12,6 @@ namespace ArcGIS.Test
 {
     public class ArcGISOnlineTests
     {
-        [Fact]
-        public async Task CanBuffer()
-        {
-            var gateway = new GeometryGateway(new ServiceStackSerializer());
-            var result = await gateway.Query<Polygon>(new Query("MontgomeryQuarters/MapServer/0/".AsEndpoint()));
-
-            var features = result.Features.Where(f => f.Geometry.Rings.Any()).ToList();
-            Assert.NotNull(features);
-
-            await Buffer(new ArcGISOnlineGateway(new ServiceStackSerializer()), features, result.SpatialReference);
-        }
-
-        async Task Buffer(PortalGatewayBase gateway, List<Feature<Polygon>> features, SpatialReference spatialReference)
-        {
-            int featuresCount = features.Count;
-
-            double distance = 10.0;
-            var featuresBuffered = await gateway.Buffer<Polygon>(features, spatialReference, distance);
-
-            Assert.NotNull(featuresBuffered);
-            Assert.Equal(featuresCount, featuresBuffered.Count);
-            for (int indexFeature = 0; indexFeature < featuresCount; ++indexFeature)
-            {
-                // Should be more complex shape, so expect greater number of points.
-                Assert.True(featuresBuffered[indexFeature].Geometry.Rings[0].Points.Count > features[indexFeature].Geometry.Rings[0].Points.Count, "Expecting buffered polygon to contain more points than original");
-            }
-        }
-
         //[Fact]
         //public async Task CanSearchForHostedFeatureServices()
         //{
