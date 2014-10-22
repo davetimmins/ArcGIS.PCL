@@ -30,8 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Jil">
-      <HintPath>..\packages\Jil.2.1.0\lib\net45\Jil.dll</HintPath>
+    <Reference Include="Jil, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Jil.2.2.0\lib\net45\Jil.dll</HintPath>
     </Reference>
     <Reference Include="Sigil">
       <HintPath>..\packages\Sigil.4.2.2\lib\net45\Sigil.dll</HintPath>

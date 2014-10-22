@@ -25,7 +25,7 @@
 		<language />
 		<tags>ArcGIS PCL Json Serializer</tags>
 		<dependencies>
-			<dependency id="ServiceStack.Text.Pcl" version="4.0.31" />
+			<dependency id="ServiceStack.Text.Pcl" version="4.0.32" />
 			<dependency id="ArcGIS.PCL" version="5.0.0" />
 		</dependencies>
 	</metadata>

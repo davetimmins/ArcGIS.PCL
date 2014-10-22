@@ -38,6 +38,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Common\Feature.cs" />
     <Compile Include="Common\IEndpoint.cs" />
     <Compile Include="Common\IGeometry.cs" />

@@ -43,13 +43,16 @@
     <Compile Include="..\ArcGIS.ServiceModel\TokenProvider.cs">
       <Link>TokenProvider.cs</Link>
     </Compile>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="HttpClientFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ModernHttpClient, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ModernHttpClient, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\modernhttpclient.2.1.1\lib\MonoTouch\ModernHttpClient.dll</HintPath>
+      <HintPath>..\packages\modernhttpclient.2.1.2\lib\MonoTouch\ModernHttpClient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http" />

@@ -34,15 +34,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ModernHttpClient, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ModernHttpClient, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\modernhttpclient.2.1.1\lib\MonoAndroid\ModernHttpClient.dll</HintPath>
+      <HintPath>..\packages\modernhttpclient.2.1.2\lib\MonoAndroid\ModernHttpClient.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="OkHttp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\modernhttpclient.2.1.1\lib\MonoAndroid\OkHttp.dll</HintPath>
+      <HintPath>..\packages\modernhttpclient.2.1.2\lib\MonoAndroid\OkHttp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,6 +59,9 @@
     </Compile>
     <Compile Include="..\ArcGIS.ServiceModel\TokenProvider.cs">
       <Link>TokenProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="HttpClientFactory.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
