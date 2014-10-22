@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL</id>
-    <version>5.0.0-beta1</version>
+    <version>5.0.0</version>
     <title>ArcGIS Server Gateway</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -49,8 +49,9 @@
       Added SiteReport admin operation
       Added StartService admin operation
       Added StopService admin operation
-      Added hypermedia self links to responses
-      
+      Added hypermedia self links to responses if enabled using PortalGateway IncludeHypermediaWithResponse flag
+      Added ObjectID and GlobalID getters to Feature
+
       Updated NuGet package references
 
       Breaking changes
