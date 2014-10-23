@@ -7,7 +7,7 @@
 		<authors>Dave Timmins</authors>
 		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
 		<licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
-		<iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
+		<iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo_serializer.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>
       ServiceStack.Text V3 implementation of an ISerializer to use with ArcGIS.PCL.

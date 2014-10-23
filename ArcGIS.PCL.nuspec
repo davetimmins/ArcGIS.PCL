@@ -7,7 +7,7 @@
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
-    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
