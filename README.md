@@ -1,4 +1,4 @@
-<img align="right" height="120" src="https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/gateway.png">
+<img align="right" height="120" src="https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo.png">
 
 ### ArcGIS.PCL
 
