@@ -80,6 +80,11 @@ namespace ArcGIS.ServiceModel.Operation
             DontForceHttps = false;
         }
 
+        /// <summary>
+        /// Set this to indicate that the request is for a federated server
+        /// </summary>
+        public bool IsFederated { get; set; }
+
         public String RelativeUrl
         {
             get { return "tokens/" + Operations.GenerateToken; }
@@ -89,14 +94,14 @@ namespace ArcGIS.ServiceModel.Operation
         {
             if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
 
-            return (String.Equals(rootUrl, "http://www.arcgis.com/sharing/rest/", StringComparison.OrdinalIgnoreCase))
-                ? (DontForceHttps ? rootUrl : rootUrl.Replace("http://", "https://")) + RelativeUrl.Replace("tokens/", "")
+            return IsFederated
+                ? (DontForceHttps ? rootUrl.Replace("sharing/rest/", "") + "sharing/rest/" : rootUrl.Replace("http://", "https://").Replace("sharing/rest/", "") + "sharing/rest/") + RelativeUrl.Replace("tokens/", "")
                 : (DontForceHttps ? rootUrl : rootUrl.Replace("http://", "https://")) + RelativeUrl;
         }
     }
 
     /// <summary>
-    /// Request for generating a token from the hosted OAuth provider on ArcGIS Online  
+    /// Request for generating a token from the hosted OAuth provider on ArcGIS Online
     /// that can be used to access credit-based ArcGIS Online services
     /// </summary>
     [DataContract]

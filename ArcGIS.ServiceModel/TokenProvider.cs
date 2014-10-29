@@ -1,12 +1,8 @@
 ﻿using ArcGIS.ServiceModel.Operation;
 using ArcGIS.ServiceModel.Operation.Admin;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -131,6 +127,28 @@ namespace ArcGIS.ServiceModel
             : base(PortalGateway.AGOPortalUrl, username, password, serializer, referer)
         {
             CanAccessPublicKeyEndpoint = false;
+            TokenRequest.IsFederated = true;
+        }
+    }
+
+    /// <summary>
+    /// Provides a token for ArcGIS Server when it is federated with Portal for ArcGIS
+    /// </summary>
+    public class FederatedTokenProvider : TokenProvider
+    {
+        /// <summary>
+        /// Create a token provider to authenticate against a federated ArcGIS Server
+        /// </summary>
+        /// <param name="rootUrl"></param>
+        /// <param name="username">ArcGIS Online user name</param>
+        /// <param name="password">ArcGIS Online user password</param>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the rootUrl + '/rest'</param>
+        public FederatedTokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = "")
+            : base(rootUrl, username, password, serializer, referer)
+        {
+            TokenRequest.IsFederated = true;
+            if (String.IsNullOrWhiteSpace(referer)) TokenRequest.Referer = rootUrl + "/rest";
         }
     }
 

@@ -35,7 +35,7 @@ namespace ArcGIS.ServiceModel
             rootUrl = rootUrl.TrimEnd('/');
             if (rootUrl.IndexOf("/rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services"));
             if (rootUrl.IndexOf("/admin") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/admin"));
-            return rootUrl.Replace("/rest/services", "") + "/";            
+            return rootUrl.Replace("/rest/services", "") + "/";
         }
 
         public static Dictionary<String, String> ParseQueryString(this String queryString)
@@ -54,7 +54,7 @@ namespace ArcGIS.ServiceModel
         public static String UrlEncode(this String text)
         {
             if (String.IsNullOrEmpty(text)) return text;
-            
+
             var sb = new StringBuilder();
 
             foreach (var charCode in Encoding.UTF8.GetBytes(text))
