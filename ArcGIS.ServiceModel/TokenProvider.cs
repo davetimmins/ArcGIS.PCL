@@ -137,11 +137,11 @@ namespace ArcGIS.ServiceModel
     public class FederatedTokenProvider : TokenProvider
     {
         /// <summary>
-        /// Create a token provider to authenticate against a federated ArcGIS Server
+        /// Create a token provider to authenticate against an ArcGIS Server federated with Portal for ArcGIS
         /// </summary>
         /// <param name="rootUrl"></param>
-        /// <param name="username">ArcGIS Online user name</param>
-        /// <param name="password">ArcGIS Online user password</param>
+        /// <param name="username">Portal for ArcGIS user name</param>
+        /// <param name="password">Portal for ArcGIS user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the rootUrl + '/rest'</param>
         public FederatedTokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = "")
