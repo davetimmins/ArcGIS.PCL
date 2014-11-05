@@ -56,7 +56,7 @@ Target "BuildWindows" (fun _ ->
       |> Log "TestBuild-Output: "
 )
 
-Target "BuildNix" (fun _ ->
+Target "BuildMono" (fun _ ->
     !! "src/ArcGIS.ServiceModel/*.csproj"
       |> MSBuildRelease (buildLibsDir @@ "portable-net4+sl5+netcore45+wp8+MonoAndroid1+MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
@@ -137,7 +137,7 @@ Target "TestWindows" (fun _ ->
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
-Target "TestNix" (fun _ ->
+Target "TestMono" (fun _ ->
     !! (testDir + @"\*.Test.dll")
       |> xUnit (fun p -> 
         {p with 
@@ -224,8 +224,8 @@ Target "Pack" (fun _ ->
 //  Target dependencies
 //--------------------------------------------------------------------------------
 
-Target "RunTestsNix" DoNothing
-"BuildNix" ==> "TestNix" ==> "RunTestsNix"
+Target "RunTestsMono" DoNothing
+"BuildMono" ==> "TestMono" ==> "RunTestsMono"
 
 Target "RunTests" DoNothing
 "BuildWindows" ==> "TestWindows" ==> "RunTests"

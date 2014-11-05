@@ -17,4 +17,4 @@ mono $SCRIPT_PATH/.nuget/NuGet.exe install xunit.runners -OutputDirectory $SCRIP
 
 export encoding=utf-8
 
-mono $SCRIPT_PATH/packages/FAKE/tools/FAKE.exe build.fsx RunTestsNix "$@"
+mono $SCRIPT_PATH/packages/FAKE/tools/FAKE.exe build.fsx RunTestsMono "$@"
