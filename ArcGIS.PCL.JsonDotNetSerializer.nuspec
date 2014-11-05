@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata minClientVersion="2.8.1">
 		<id>ArcGIS.PCL.JsonDotNetSerializer</id>
-		<version>1.0.0</version>
+		<version>@build.number@</version>
 		<title>ArcGIS Server Gateway Json.NET Serializer</title>
 		<authors>Dave Timmins</authors>
 		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -28,6 +28,6 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="ArcGIS.ServiceModel.Serializers.JsonDotNet\bin\Release\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" target="lib\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" />
+		<file src="C:\build-arcgispcl\artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" target="lib\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" />
 	</files>
 </package>

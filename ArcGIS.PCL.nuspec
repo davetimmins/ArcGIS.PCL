@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL</id>
-    <version>5.0.0-beta3</version>
+    <version>@build.number@</version>
     <title>ArcGIS Server Gateway</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -85,7 +85,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="readme.txt" target="readme.txt" />
-    <file src="lib\**\ArcGIS.Service*.dll" target="lib" />
+    <file src="C:\build-arcgispcl\artifacts\build\lib\**\ArcGIS.Service*.dll" target="lib" />
   </files>
 </package>

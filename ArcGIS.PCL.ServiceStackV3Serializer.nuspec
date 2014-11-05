@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata minClientVersion="2.8.1">
 		<id>ArcGIS.PCL.ServiceStackV3Serializer</id>
-		<version>1.0.0</version>
+		<version>@build.number@</version>
 		<title>ArcGIS Server Gateway ServiceStack.Text V3 Serializer</title>
 		<authors>Dave Timmins</authors>
 		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -28,6 +28,6 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="ArcGIS.ServiceModel.Serializers.ServiceStackV3\bin\Release\ArcGIS.ServiceModel.Serializers.ServiceStackV3.dll" target="lib\ArcGIS.ServiceModel.Serializers.ServiceStackV3.dll" />
+		<file src="C:\build-arcgispcl\artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.ServiceStackV3.dll" target="lib\ArcGIS.ServiceModel.Serializers.ServiceStackV3.dll" />
 	</files>
 </package>

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata minClientVersion="2.8.1">
 		<id>ArcGIS.PCL.SimpleJsonSerializer</id>
-		<version>0.1.0-alpha</version>
+		<version>@build.number@</version>
 		<title>ArcGIS Server Gateway SimpleJson Serializer</title>
 		<authors>Dave Timmins</authors>
 		<projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
@@ -26,11 +26,10 @@
 		<language />
 		<tags>ArcGIS PCL Json Serializer</tags>
 		<dependencies>
-			<dependency id="SimpleJson" version="0.38.0" />
 			<dependency id="ArcGIS.PCL" version="5.0.0" />
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="ArcGIS.ServiceModel.Serializers.SimpleJson\bin\Release\ArcGIS.ServiceModel.Serializers.SimpleJson.dll" target="lib\ArcGIS.ServiceModel.Serializers.SimpleJson.dll" />
+		<file src="C:\build-arcgispcl\artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.SimpleJson.dll" target="lib\ArcGIS.ServiceModel.Serializers.SimpleJson.dll" />
 	</files>
 </package>
