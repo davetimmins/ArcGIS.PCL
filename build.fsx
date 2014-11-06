@@ -17,7 +17,10 @@ let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runners" 
 
 CleanDirs [buildDir]
 
-RestorePackages()
+try
+    RestorePackages()
+with
+    | :? System.IO.PathTooLongException as ex -> printfn "Skipping package restore";
 
 //--------------------------------------------------------------------------------
 // Build
