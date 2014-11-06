@@ -28,6 +28,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\build-arcgispcl\artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.ServiceStack.dll" target="lib\ArcGIS.ServiceModel.Serializers.ServiceStack.dll" />
+    <file src="artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.ServiceStack.dll" target="lib\ArcGIS.ServiceModel.Serializers.ServiceStack.dll" />
   </files>
 </package>

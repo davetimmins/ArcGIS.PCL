@@ -29,6 +29,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\build-arcgispcl\artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.Jil.dll" target="lib\ArcGIS.ServiceModel.Serializers.Jil.dll" />
+    <file src="artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.Jil.dll" target="lib\ArcGIS.ServiceModel.Serializers.Jil.dll" />
   </files>
 </package>

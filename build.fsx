@@ -6,7 +6,7 @@ open Fake.AssemblyInfoFile
 open Fake.FileUtils
 
 // Properties
-let tempDirectory = "c:\\build-arcgispcl"
+let tempDirectory = currentDirectory
 let buildDir = tempDirectory @@ "artifacts"
 let buildLibsDir = buildDir @@ "build" @@ "lib"
 let buildSerializerLibsDir = buildDir @@ "build" @@ "serializers"

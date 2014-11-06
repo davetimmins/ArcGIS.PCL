@@ -30,6 +30,6 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="C:\build-arcgispcl\artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.ServiceStack.PCL.dll" target="lib\ArcGIS.ServiceModel.Serializers.ServiceStack.PCL.dll" />
+		<file src="artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.ServiceStack.PCL.dll" target="lib\ArcGIS.ServiceModel.Serializers.ServiceStack.PCL.dll" />
 	</files>
 </package>

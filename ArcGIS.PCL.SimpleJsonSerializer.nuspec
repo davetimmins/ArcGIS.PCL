@@ -21,7 +21,7 @@
 		</summary>
 		<releaseNotes>
 			Initial release
-      ** Current known issue with serializing nested complex types so the ApplyEdits operation will fail
+			** Current known issue with serializing nested complex types so the ApplyEdits operation will fail
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS PCL Json Serializer</tags>
@@ -30,6 +30,6 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="C:\build-arcgispcl\artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.SimpleJson.dll" target="lib\ArcGIS.ServiceModel.Serializers.SimpleJson.dll" />
+		<file src="artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.SimpleJson.dll" target="lib\ArcGIS.ServiceModel.Serializers.SimpleJson.dll" />
 	</files>
 </package>
