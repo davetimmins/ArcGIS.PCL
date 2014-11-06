@@ -58,14 +58,6 @@ Target "BuildMono" (fun _ ->
       |> MSBuildRelease (buildLibsDir @@ "portable-net4+sl5+netcore45+wp8+MonoAndroid1+MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
 
-    !! "src/ArcGIS.ServiceModel.Android/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "MonoAndroid1") "Build"
-      |> Log "AppBuild-Output: "
-
-    !! "src/ArcGIS.ServiceModel.iOS/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "MonoTouch1") "Build"
-      |> Log "AppBuild-Output: "
-
     !! "src/ArcGIS.ServiceModel.NET/*.csproj"
       |> MSBuildRelease (buildLibsDir @@ "net45") "Build"
       |> Log "AppBuild-Output: "
