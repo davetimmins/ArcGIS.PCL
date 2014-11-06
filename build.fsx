@@ -6,7 +6,7 @@ open Fake.AssemblyInfoFile
 open Fake.FileUtils
 
 // Properties
-let tempDirectory = currentDirectory
+let tempDirectory = "./"
 let buildDir = tempDirectory @@ "artifacts"
 let buildLibsDir = buildDir @@ "build" @@ "lib"
 let buildSerializerLibsDir = buildDir @@ "build" @@ "serializers"
@@ -15,7 +15,7 @@ let packagesDir = buildDir @@ "packages"
 let nupacksPath = buildDir @@ "packs"
 let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runners" @@ "tools"
 
-CleanDirs [tempDirectory]
+CleanDirs [buildDir]
 
 RestorePackages()
 
