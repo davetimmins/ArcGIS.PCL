@@ -17,10 +17,7 @@ let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runners" 
 
 CleanDirs [tempDirectory]
 
-for packageConfig in !! (currentDirectory @@ "src" @@ "**" @@ "packages.config") do
-     RestorePackage (fun p ->
-         { p with
-             OutputPath = (tempDirectory @@ "packages")})
+RestorePackages()
 
 //--------------------------------------------------------------------------------
 // Build

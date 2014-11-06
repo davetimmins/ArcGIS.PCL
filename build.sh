@@ -1,20 +1,13 @@
 #!/bin/bash
 
-SCRIPT_PATH="${BASH_SOURCE[0]}";
-if ([ -h "${SCRIPT_PATH}" ]) then
-  while([ -h "${SCRIPT_PATH}" ]) do SCRIPT_PATH=`readlink "${SCRIPT_PATH}"`; done
+mono .nuget/NuGet.exe update -self
+
+if [ ! -f packages/FAKE/tools/FAKE.exe ]; then
+    mono .nuget/NuGet.exe install FAKE -OutputDirectory packages -ExcludeVersion
 fi
-pushd . > /dev/null
-cd `dirname ${SCRIPT_PATH}` > /dev/null
-SCRIPT_PATH=`pwd`;
-popd  > /dev/null
 
-mono $SCRIPT_PATH/.nuget/NuGet.exe update -self
+if [ ! -f packages/FAKE/xunit.runners/tools/xunit.console.clr4.exe ]; then
+    mono .nuget/NuGet.exe install xunit.runners -OutputDirectory packages/FAKE -ExcludeVersion
+fi
 
-mono $SCRIPT_PATH/.nuget/NuGet.exe install FAKE -OutputDirectory $SCRIPT_PATH/src/packages -ExcludeVersion
-
-mono $SCRIPT_PATH/.nuget/NuGet.exe install xunit.runners -OutputDirectory $SCRIPT_PATH/src/packages/FAKE -ExcludeVersion
-
-export encoding=utf-8
-
-mono $SCRIPT_PATH/packages/FAKE/tools/FAKE.exe build.fsx RunTestsMono "$@"
+mono packages/FAKE/tools/FAKE.exe build.fsx RunTestsMono $@
