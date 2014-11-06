@@ -7,6 +7,6 @@ cls
 
 .nuget\NuGet.exe install xunit.runners -OutputDirectory packages/FAKE -ExcludeVersion
 
-packages\FAKE\tools\FAKE.exe build.fsx RunTests
+packages\FAKE\tools\FAKE.exe build.fsx NuGet
 
 pause
