@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using ArcGIS.ServiceModel.Common;
-using System.Text;
 
 namespace ArcGIS.ServiceModel.Operation
 {
@@ -29,7 +28,7 @@ namespace ArcGIS.ServiceModel.Operation
 
         String _referer;
         /// <summary>
-        /// The base URL of the web app that will invoke the Portal API. 
+        /// The base URL of the web app that will invoke the Portal API.
         /// This parameter must be specified if the value of the client parameter is referer.
         /// </summary>
         [DataMember(Name = "referer")]
@@ -135,6 +134,59 @@ namespace ArcGIS.ServiceModel.Operation
         /// <remarks> The default is 120 minutes. Maximum value is 14 days (20160 minutes)</remarks>
         [DataMember(Name = "expiration")]
         public int ExpirationInMinutes { get; set; }
+    }
+
+    [DataContract]
+    public class GenerateFederatedToken : CommonParameters
+    {
+        public GenerateFederatedToken(String serverUrl, ITokenProvider tokenProvider)
+        {
+            FederatedServerUrl = serverUrl;
+            TokenProvider = tokenProvider;
+        }
+
+        /// <summary>
+        /// URL of a federated server for which a server-token needs to be generated.
+        /// A server-token will be returned only if the serverUrl contains the URL of a server that is registered with the portal.
+        /// A server-token will not be generated for a server that is not registered with the portal.
+        /// </summary>
+        [DataMember(Name = "serverUrl")]
+        public String FederatedServerUrl { get; protected set; }
+
+        [DataMember(Name = "request")]
+        public String Request { get { return "getToken"; } }
+
+        [DataMember(Name = "token")]
+        public String TokenValue { get { return FederatedToken.Value; } }
+
+        [DataMember(Name = "referer")]
+        public String Referer { get; set; }
+
+        [IgnoreDataMember]
+        public Token FederatedToken { get; set; }
+
+        /// <summary>
+        /// Set this to true to prevent the BuildAbsoluteUrl returning https as the default scheme
+        /// </summary>
+        [IgnoreDataMember]
+        public bool DontForceHttps { get; set; }
+
+        [IgnoreDataMember]
+        public ITokenProvider TokenProvider { get; protected set; }
+
+        public String RelativeUrl
+        {
+            get { return Operations.GenerateToken; }
+        }
+
+        public String BuildAbsoluteUrl(String rootUrl)
+        {
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+
+            return (DontForceHttps ?
+                rootUrl.Replace("sharing/rest/", "") + "sharing/rest/" :
+                rootUrl.Replace("http://", "https://").Replace("sharing/rest/", "") + "sharing/rest/") + RelativeUrl;
+        }
     }
 
     [DataContract]

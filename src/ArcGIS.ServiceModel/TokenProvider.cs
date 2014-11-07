@@ -8,6 +8,96 @@ using System.Threading.Tasks;
 
 namespace ArcGIS.ServiceModel
 {
+    public class FederatedTokenProvider : ITokenProvider
+    {
+        HttpClient _httpClient;
+        protected readonly GenerateFederatedToken TokenRequest;
+        Token _token;
+
+        /// <summary>
+        /// Create a token provider to authenticate against an ArcGIS Server that is federated
+        /// </summary>
+        /// <param name="tokenProvider"></param>
+        /// <param name="rootUrl"></param>
+        /// <param name="serverUrl"></param>
+        /// <param name="serializer">Used to (de)serialize requests and responses</param>
+        /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the portal rootUrl</param>
+        public FederatedTokenProvider(ITokenProvider tokenProvider, String rootUrl, String serverUrl, ISerializer serializer = null, String referer = null)
+        {
+            if (tokenProvider == null) throw new ArgumentNullException("tokenProvider", "ITokenProvider has not been set.");
+
+            Serializer = serializer ?? SerializerFactory.Get();
+            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+
+            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl has not been set.");
+            if (String.IsNullOrWhiteSpace(serverUrl)) throw new ArgumentNullException("serverUrl", "serverUrl has not been set.");
+
+            RootUrl = rootUrl.AsRootUrl();
+
+            _httpClient = HttpClientFactory.Get();
+
+            TokenRequest = new GenerateFederatedToken(serverUrl, tokenProvider) { Referer = referer };
+        }
+
+        public ISerializer Serializer { get; private set; }
+
+        public ICryptoProvider CryptoProvider { get { return null; } }
+
+        public string RootUrl { get; private set; }
+
+        public string UserName { get { return null; } }
+
+        public async Task<Token> CheckGenerateToken(CancellationToken ct)
+        {
+            if (TokenRequest == null) return null;
+
+            if (_token != null && !_token.IsExpired) return _token;
+
+            _token = null; // reset the Token
+
+            TokenRequest.FederatedToken = await TokenRequest.TokenProvider.CheckGenerateToken(ct);
+
+            HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
+
+            _httpClient.CancelPendingRequests();
+
+            var url = TokenRequest.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
+            Uri uri;
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            if (!validUrl)
+                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+
+            String resultString = String.Empty;
+            try
+            {
+                HttpResponseMessage response = await _httpClient.PostAsync(url, content, ct);
+                response.EnsureSuccessStatusCode();
+
+                resultString = await response.Content.ReadAsStringAsync();
+            }
+            catch (TaskCanceledException cex)
+            {
+                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                return null;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Generate federated token result: " + resultString);
+            var result = Serializer.AsPortalResponse<Token>(resultString);
+
+            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
+
+            _token = result;
+            return _token;
+        }
+    }
+
+    public class ArcGISOnlineFederatedTokenProvider : FederatedTokenProvider
+    {
+        public ArcGISOnlineFederatedTokenProvider(ITokenProvider tokenProvider, String serverUrl, ISerializer serializer = null, String referer = "https://www.arcgis.com")
+            : base(tokenProvider, PortalGateway.AGOPortalUrl, serverUrl, serializer, referer)
+        { }
+    }
+
     /// <summary>
     /// ArcGIS Online application login type OAuth 2.0 token provider
     /// </summary>
@@ -81,7 +171,7 @@ namespace ArcGIS.ServiceModel
 
             if (_token != null && !_token.IsExpired) return _token;
 
-            _token = null; // reset the Token            
+            _token = null; // reset the Token
 
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(OAuthRequest));
 
@@ -134,7 +224,7 @@ namespace ArcGIS.ServiceModel
     /// <summary>
     /// Provides a token for ArcGIS Server when it is federated with Portal for ArcGIS
     /// </summary>
-    public class FederatedTokenProvider : TokenProvider
+    public class PortalFederatedTokenProvider : TokenProvider
     {
         /// <summary>
         /// Create a token provider to authenticate against an ArcGIS Server federated with Portal for ArcGIS
@@ -144,7 +234,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="password">Portal for ArcGIS user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the rootUrl + '/rest'</param>
-        public FederatedTokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = "")
+        public PortalFederatedTokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = null)
             : base(rootUrl, username, password, serializer, referer)
         {
             TokenRequest.IsFederated = true;
