@@ -9,40 +9,41 @@ namespace ArcGIS.ServiceModel.Serializers
     {
         static ISerializer _serializer = null;
 
-        public static void Init()
+        public static void Init(Newtonsoft.Json.JsonSerializerSettings settings = null)
         {
-            _serializer = new JsonDotNetSerializer();
-            SerializerFactory.Get = (() => _serializer ?? new JsonDotNetSerializer());
+            _serializer = new JsonDotNetSerializer(settings);
+            SerializerFactory.Get = (() => _serializer ?? new JsonDotNetSerializer(settings));
         }
 
         readonly Newtonsoft.Json.JsonSerializerSettings _settings;
 
-        public JsonDotNetSerializer()
+        public JsonDotNetSerializer(Newtonsoft.Json.JsonSerializerSettings settings = null)
         {
-            _settings = new Newtonsoft.Json.JsonSerializerSettings
+            _settings = settings ?? new Newtonsoft.Json.JsonSerializerSettings
             {
                 NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                MissingMemberHandling  = Newtonsoft.Json.MissingMemberHandling.Ignore,
-                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
+                StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeHtml,
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None
             };
         }
-        
+
         public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
-        {           
+        {
             var stringValue = Newtonsoft.Json.JsonConvert.SerializeObject(objectToConvert, _settings);
-         
+
             var jobject = Newtonsoft.Json.Linq.JObject.Parse(stringValue);
             var dict = new Dictionary<String, String>();
             foreach (var item in jobject)
             {
                 dict.Add(item.Key, item.Value.ToString());
-            }          
+            }
             return dict;
         }
 
         public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);           
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);
         }
     }
 

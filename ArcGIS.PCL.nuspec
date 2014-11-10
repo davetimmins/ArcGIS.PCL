@@ -51,7 +51,8 @@
       Added StopService admin operation
       Added hypermedia self links to responses if enabled using PortalGateway IncludeHypermediaWithResponse flag
       Added ObjectID and GlobalID getters to Feature
-      Added FederatedTokenProvider for generating tokens for ArcGIS Server when federated with Portal for ArcGIS
+      Added PortalFederatedTokenProvider for generating tokens for ArcGIS Server when federated with Portal for ArcGIS
+      Added FederatedTokenProvider for generating tokens for services when federated with Portal for ArcGIS or ArcGIS Online
 
       Updated NuGet package references
 
@@ -75,10 +76,10 @@
         <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
       <group targetFramework="MonoAndroid1">
-        <dependency id="modernhttpclient" version="2.1.2" />
+        <dependency id="modernhttpclient" version="2.1.3" />
       </group>
       <group targetFramework="MonoTouch1">
-        <dependency id="modernhttpclient" version="2.1.2" />
+        <dependency id="modernhttpclient" version="2.1.3" />
       </group>
       <group targetFramework="portable-net4+sl5+win8+wp8+MonoAndroid1+MonoTouch1">
       </group>

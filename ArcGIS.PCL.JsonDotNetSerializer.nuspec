@@ -23,8 +23,8 @@
 		<language />
 		<tags>ArcGIS PCL Json Serializer</tags>
 		<dependencies>
-			<dependency id="Newtonsoft.Json" version="6.0.3" />
-			<dependency id="ArcGIS.PCL" version="3.1.0" />			
+			<dependency id="Newtonsoft.Json" version="6.0.6" />
+			<dependency id="ArcGIS.PCL" version="5.0.0" />			
 		</dependencies>
 	</metadata>
 	<files>

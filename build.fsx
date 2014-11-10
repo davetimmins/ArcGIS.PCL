@@ -157,7 +157,7 @@ Target "Pack" (fun _ ->
 
     NuGet (fun p ->
      {p with
-        Version = "5.0.0-beta3"
+        Version = "5.0.0-beta4"
         OutputPath = nupacksPath
         WorkingDir = currentDirectory
         Publish = false })
@@ -165,7 +165,7 @@ Target "Pack" (fun _ ->
 
     NuGet (fun p ->
      {p with
-        Version = "1.0.0"
+        Version = "2.0.0"
         OutputPath = nupacksPath
         WorkingDir = currentDirectory
         Publish = false })

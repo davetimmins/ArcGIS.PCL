@@ -11,15 +11,15 @@ namespace ArcGIS.ServiceModel.Serializers.Jil
         static ISerializer _serializer = null;
         Options _options;
 
-        public static void Init()
+        public static void Init(Options options = null)
         {
-            _serializer = new JilSerializer();
-            SerializerFactory.Get = (() => _serializer ?? new JilSerializer());
+            _serializer = new JilSerializer(options);
+            SerializerFactory.Get = (() => _serializer ?? new JilSerializer(options));
         }
 
-        public JilSerializer()
+        public JilSerializer(Options options = null)
         {
-            _options = new Options(excludeNulls: true, includeInherited: true);
+            _options = options ?? new Options(excludeNulls: true, includeInherited: true);
         }
 
         public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters

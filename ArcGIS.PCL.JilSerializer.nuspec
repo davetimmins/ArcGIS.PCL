@@ -24,7 +24,7 @@
     <language />
     <tags>ArcGIS PCL Json Serializer</tags>
     <dependencies>
-      <dependency id="Jil" version="2.2.0" />
+      <dependency id="Jil" version="2.3.0" />
       <dependency id="ArcGIS.PCL" version="5.0.0" />
     </dependencies>
   </metadata>
