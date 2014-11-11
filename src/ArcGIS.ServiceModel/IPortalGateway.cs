@@ -11,7 +11,7 @@ namespace ArcGIS.ServiceModel
         /// <summary>
         /// Made up of scheme://host:port/site
         /// </summary>
-        String RootUrl { get; }
+        string RootUrl { get; }
 
         /// <summary>
         /// Used for generating a token which can then be appended to requests made through this gateway automatically

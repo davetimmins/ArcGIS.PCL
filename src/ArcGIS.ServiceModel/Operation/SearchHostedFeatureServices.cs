@@ -16,8 +16,8 @@ namespace ArcGIS.ServiceModel.Operation
         /// Search for hosted feature services on ArcGIS Online
         /// </summary>
         /// <param name="username">The name of the user (owner) of the feature services</param>
-        public SearchHostedFeatureServices(String username)
-            : base(String.Format("owner:{0} AND (type:\"Feature Service\")", username))
+        public SearchHostedFeatureServices(string username)
+            : base(string.Format("owner:{0} AND (type:\"Feature Service\")", username))
         { }
 
         public SearchHostedFeatureServices()
@@ -35,13 +35,13 @@ namespace ArcGIS.ServiceModel.Operation
         /// SSearch against ArcGISOnline / Portal
         /// </summary>
         /// <param name="query">The search query to execute</param>
-        public SearchArcGISOnline(String query)
+        public SearchArcGISOnline(string query)
         {
             Query = query;
             SortOrder = "asc";
             NumberToReturn = 10;
             StartIndex = 1;
-            SortFields = new List<String>();
+            SortFields = new List<string>();
             Endpoint = new ArcGISOnlineEndpoint(Operations.ArcGISOnlineSearch);
         }
 
@@ -49,7 +49,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// Search query to execute. See http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#//02r3000000mn000000 for more information
         /// </summary>
         [DataMember(Name = "q")]
-        public String Query { get; protected set; }
+        public string Query { get; protected set; }
 
         /// <summary>
         /// The bounding box for a spatial search defined as minx, miny, maxx, or maxy. Search requires q, bbox, or both.
@@ -67,13 +67,13 @@ namespace ArcGIS.ServiceModel.Operation
         /// Document extent is assumed to be in the WGS84 geographic coordinate system.
         /// </summary>
         [DataMember(Name = "bbox")]
-        public String BBox
+        public string BBox
         {
             get
             {
                 return BoundingBox == null || BoundingBox.SpatialReference == null || BoundingBox.SpatialReference != SpatialReference.WGS84 ?
-                    String.Empty :
-                    String.Format("{0},{1},{2},{3}", BoundingBox.XMin, BoundingBox.YMin, BoundingBox.XMax, BoundingBox.YMax);
+                    string.Empty :
+                    string.Format("{0},{1},{2},{3}", BoundingBox.XMin, BoundingBox.YMin, BoundingBox.XMax, BoundingBox.YMax);
             }
         }
 
@@ -82,7 +82,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// Valid fields are: title, created, type, owner, avgRating, numRatings, numComments and numViews
         /// </summary>
         [IgnoreDataMember]
-        public List<String> SortFields { get; set; }
+        public List<string> SortFields { get; set; }
 
         /// <summary>
         /// The list of fields to sort results by. This list is a comma delimited list of field names.
@@ -91,14 +91,14 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>Default is 'created'</remarks>
         [DataMember(Name = "sortField")]
-        public String SortFieldsValue { get { return SortFields == null || !SortFields.Any() ? "created" : String.Join(",", SortFields); } }
+        public string SortFieldsValue { get { return SortFields == null || !SortFields.Any() ? "created" : string.Join(",", SortFields); } }
 
         /// <summary>
         /// Order results by desc or asc
         /// </summary>
         /// <remarks>Default is asc</remarks>
         [DataMember(Name = "sortOrder")]
-        public String SortOrder { get; set; }
+        public string SortOrder { get; set; }
 
         /// <summary>
         /// The maximum number of results to be included in the result set response.
@@ -131,12 +131,12 @@ namespace ArcGIS.ServiceModel.Operation
     public class HostedFeatureService
     {
         [DataMember(Name = "id")]
-        public String Id { get; set; }
+        public string Id { get; set; }
 
         [DataMember(Name = "name")]
-        public String Name { get; set; }
+        public string Name { get; set; }
 
         [DataMember(Name = "url")]
-        public String Url { get; set; }
+        public string Url { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     {
         public ServiceStatus(ServiceDescription serviceDescription)
         {
-            Endpoint = new ArcGISServerAdminEndpoint(String.Format(Operations.ServiceStatus, serviceDescription.Name, serviceDescription.Type));
+            Endpoint = new ArcGISServerAdminEndpoint(string.Format(Operations.ServiceStatus, serviceDescription.Name, serviceDescription.Type));
         }
     }
 
@@ -17,9 +17,9 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     public class ServiceStatusResponse : PortalResponse
     {
         [DataMember(Name = "configuredState")]
-        public String Expected { get; set; }
+        public string Expected { get; set; }
 
         [DataMember(Name = "realTimeState")]
-        public String Actual { get; set; }
+        public string Actual { get; set; }
     }
 }

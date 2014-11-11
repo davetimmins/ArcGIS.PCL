@@ -36,27 +36,27 @@ namespace ArcGIS.ServiceModel.Operation
         public int Code { get; set; }
 
         [DataMember(Name = "message")]
-        public String Message { get; set; }
+        public string Message { get; set; }
 
         [DataMember(Name = "details")]
-        public String[] Details { get; set; }
+        public string[] Details { get; set; }
 
-        public override String ToString()
+        public override string ToString()
         {
-            return String.Format("Code {0}: {1}. {2}", Code, Message, String.Join(" ", Details));
+            return string.Format("Code {0}: {1}. {2}", Code, Message, string.Join(" ", Details));
         }
     }
 
     public class Link
     {
-        public Link(String href, String relation = "self")
+        public Link(string href, string relation = "self")
         {
             Href = href;
             Relation = relation;
             Method = "GET";
         }
 
-        public Link(String href, CommonParameters data, String relation = "self")
+        public Link(string href, CommonParameters data, string relation = "self")
         {
             Href = href;
             Relation = relation;
@@ -65,13 +65,13 @@ namespace ArcGIS.ServiceModel.Operation
         }
 
         [DataMember(Name = "rel")]
-        public String Relation { get; private set; }
+        public string Relation { get; private set; }
 
         [DataMember(Name = "href")]
-        public String Href { get; private set; }
+        public string Href { get; private set; }
 
         [DataMember(Name = "method")]
-        public String Method { get; private set; }
+        public string Method { get; private set; }
 
         [DataMember(Name = "data")]
         public CommonParameters Data { get; private set; }

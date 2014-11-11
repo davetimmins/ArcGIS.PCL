@@ -9,7 +9,7 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     {
         public StartService(ServiceDescription serviceDescription)
         {
-            Endpoint = new ArcGISServerAdminEndpoint(String.Format(Operations.StartService, serviceDescription.Name, serviceDescription.Type));
+            Endpoint = new ArcGISServerAdminEndpoint(string.Format(Operations.StartService, serviceDescription.Name, serviceDescription.Type));
         }
     }
 
@@ -18,7 +18,7 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     {
         public StopService(ServiceDescription serviceDescription)
         {
-            Endpoint = new ArcGISServerAdminEndpoint(String.Format(Operations.StopService, serviceDescription.Name, serviceDescription.Type));
+            Endpoint = new ArcGISServerAdminEndpoint(string.Format(Operations.StopService, serviceDescription.Name, serviceDescription.Type));
         }
     }
 
@@ -26,6 +26,6 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     public class StartStopServiceResponse : PortalResponse
     {
         [DataMember(Name="status")]
-        public String Status { get; set; }
+        public string Status { get; set; }
     }
 }

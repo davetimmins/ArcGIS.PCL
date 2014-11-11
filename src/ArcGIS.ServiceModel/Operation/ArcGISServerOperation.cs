@@ -10,9 +10,9 @@ namespace ArcGIS.ServiceModel.Operation
     {
         protected IEndpoint Endpoint;
 
-        public String RelativeUrl { get { return Endpoint.RelativeUrl; } }
+        public string RelativeUrl { get { return Endpoint.RelativeUrl; } }
 
-        public String BuildAbsoluteUrl(String rootUrl)
+        public string BuildAbsoluteUrl(string rootUrl)
         {
             return Endpoint.BuildAbsoluteUrl(rootUrl);
         }

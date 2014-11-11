@@ -75,28 +75,28 @@ namespace ArcGIS.ServiceModel.Operation
     public class Address
     {
         [DataMember(Name = "Address")]
-        public String AddressText { get; set; }
+        public string AddressText { get; set; }
 
         [DataMember(Name = "Neighborhood")]
-        public String Neighborhood { get; set; }
+        public string Neighborhood { get; set; }
 
         [DataMember(Name = "City")]
-        public String City { get; set; }
+        public string City { get; set; }
 
         [DataMember(Name = "Subregion")]
-        public String Subregion { get; set; }
+        public string Subregion { get; set; }
 
         [DataMember(Name = "Region")]
-        public String Region { get; set; }
+        public string Region { get; set; }
 
         [DataMember(Name = "Postal")]
-        public String Postal { get; set; }
+        public string Postal { get; set; }
 
         [DataMember(Name = "PostalExt")]
-        public String PostalExt { get; set; }
+        public string PostalExt { get; set; }
 
         [DataMember(Name = "CountryCode")]
-        public String CountryCode { get; set; }
+        public string CountryCode { get; set; }
 
         /// <summary>
         /// The name of the component locator used to return a particular match result. 
@@ -105,6 +105,6 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>The Loc_name field is used internally by ArcGIS software and is not intended for use by client applications.</remarks>
         [DataMember(Name = "Loc_name")]
-        public String LocatorName { get; set; }
+        public string LocatorName { get; set; }
     }
 }

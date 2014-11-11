@@ -17,7 +17,7 @@ namespace ArcGIS.ServiceModel
         /// <typeparam name="T"></typeparam>
         /// <param name="objectToConvert"></param>
         /// <returns></returns>
-        Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters;
+        Dictionary<string, string> AsDictionary<T>(T objectToConvert) where T : CommonParameters;
 
         /// <summary>
         /// Deserialize string as a <see cref="IPortalResponse"/>
@@ -25,7 +25,7 @@ namespace ArcGIS.ServiceModel
         /// <typeparam name="T">The type of the result from the call</typeparam>
         /// <param name="dataToConvert">Json string to deserialize</param>
         /// <returns></returns>
-        T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse;
+        T AsPortalResponse<T>(string dataToConvert) where T : IPortalResponse;
     }
 
     /// <summary>

@@ -17,10 +17,10 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     public class PublicKeyResponse : PortalResponse
     {
         [DataMember(Name = "publicKey")]
-        public String PublicKey { get; set; }
+        public string PublicKey { get; set; }
 
         [DataMember(Name = "modulus")]
-        public String Mod { get; set; }
+        public string Mod { get; set; }
 
         [IgnoreDataMember]
         public byte[] Exponent { get { return PublicKey.HexToBytes(); } }

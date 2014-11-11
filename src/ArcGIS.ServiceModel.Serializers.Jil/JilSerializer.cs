@@ -22,15 +22,15 @@ namespace ArcGIS.ServiceModel.Serializers.Jil
             _options = options ?? new Options(excludeNulls: true, includeInherited: true);
         }
 
-        public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
+        public Dictionary<string, string> AsDictionary<T>(T objectToConvert) where T : CommonParameters
         {
             var stringValue = JSON.Serialize<T>(objectToConvert, _options);
 
-            var result = JSON.Deserialize<Dictionary<String, object>>(stringValue, _options);
+            var result = JSON.Deserialize<Dictionary<string, object>>(stringValue, _options);
             return result.ToDictionary(k => k.Key, k => k.Value.ToString().Replace("\"", ""));
         }
 
-        public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
+        public T AsPortalResponse<T>(string dataToConvert) where T : IPortalResponse
         {
             return JSON.Deserialize<T>(dataToConvert, _options);
         }

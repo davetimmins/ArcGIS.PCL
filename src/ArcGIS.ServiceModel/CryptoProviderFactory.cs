@@ -35,9 +35,9 @@ namespace ArcGIS.ServiceModel
 
                 var encryptedUsername = rsa.Encrypt(Encoding.UTF8.GetBytes(tokenRequest.Username), false).BytesToHex();
                 var encryptedPassword = rsa.Encrypt(Encoding.UTF8.GetBytes(tokenRequest.Password), false).BytesToHex();
-                var encryptedClient = String.IsNullOrWhiteSpace(tokenRequest.Client) ? "" : rsa.Encrypt(Encoding.UTF8.GetBytes(tokenRequest.Client), false).BytesToHex();
+                var encryptedClient = string.IsNullOrWhiteSpace(tokenRequest.Client) ? "" : rsa.Encrypt(Encoding.UTF8.GetBytes(tokenRequest.Client), false).BytesToHex();
                 var encryptedExpiration = rsa.Encrypt(Encoding.UTF8.GetBytes(tokenRequest.ExpirationInMinutes.ToString()), false).BytesToHex();
-                var encryptedReferer = String.IsNullOrWhiteSpace(tokenRequest.Referer) ? "" : rsa.Encrypt(Encoding.UTF8.GetBytes(tokenRequest.Referer), false).BytesToHex();
+                var encryptedReferer = string.IsNullOrWhiteSpace(tokenRequest.Referer) ? "" : rsa.Encrypt(Encoding.UTF8.GetBytes(tokenRequest.Referer), false).BytesToHex();
 
                 tokenRequest.Encrypt(encryptedUsername, encryptedPassword, encryptedExpiration, encryptedClient, encryptedReferer);
 

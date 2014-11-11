@@ -30,7 +30,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// The search string. This is the text that is searched across the layers and fields the user specifies.
         /// </summary>
         [DataMember(Name = "searchText")]
-        public String SearchText { get; set; }
+        public string SearchText { get; set; }
 
         /// <summary>
         /// If false, the operation searches for an exact match of the SearchText string. An exact match is case sensitive. 
@@ -60,10 +60,10 @@ namespace ArcGIS.ServiceModel.Operation
         ///  The names of the fields to search.
         /// </summary>
         [IgnoreDataMember]
-        public List<String> SearchFields { get; set; }
+        public List<string> SearchFields { get; set; }
 
         [DataMember(Name = "searchFields")]
-        public String SearchFieldsValue { get { return SearchFields == null ? String.Empty : String.Join(",", SearchFields); } }
+        public string SearchFieldsValue { get { return SearchFields == null ? string.Empty : string.Join(",", SearchFields); } }
 
         /// <summary>
         ///  The layers to perform the find operation on.
@@ -72,7 +72,7 @@ namespace ArcGIS.ServiceModel.Operation
         public List<int> LayerIdsToSearch { get; set; }
 
         [DataMember(Name = "layers")]
-        public String LayerIdsToSearchValue { get { return LayerIdsToSearch == null ? String.Empty : String.Join(",", LayerIdsToSearch); } }
+        public string LayerIdsToSearchValue { get { return LayerIdsToSearch == null ? string.Empty : string.Join(",", LayerIdsToSearch); } }
 
         /// <summary>
         /// This option can be used to specify the maximum allowable offset to be used for generalizing geometries returned by the find operation.
@@ -105,7 +105,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// Switch map layers to point to an alternate geodabase version.
         /// </summary>
         [DataMember(Name = "gdbVersion")]
-        public String GdbVersion { get; set; }
+        public string GdbVersion { get; set; }
     }
 
     [DataContract]
@@ -122,22 +122,22 @@ namespace ArcGIS.ServiceModel.Operation
         public int LayerId { get; set; }
 
         [DataMember(Name = "layerName")]
-        public String LayerName { get; set; }
+        public string LayerName { get; set; }
 
         [DataMember(Name = "displayFieldName")]
-        public String DisplayFieldName { get; set; }
+        public string DisplayFieldName { get; set; }
 
         [DataMember(Name = "foundFieldName")]
-        public String FoundFieldName { get; set; }
+        public string FoundFieldName { get; set; }
 
         [DataMember(Name = "value")]
-        public String Value { get; set; }
+        public string Value { get; set; }
 
         [DataMember(Name = "attributes")]
-        public Dictionary<String, object> Attributes { get; set; }
+        public Dictionary<string, object> Attributes { get; set; }
 
         [DataMember(Name = "geometryType")]
-        public String GeometryType { get; set; }
+        public string GeometryType { get; set; }
 
         [DataMember(Name = "geometry")]
         public object Geometry { get; set; }

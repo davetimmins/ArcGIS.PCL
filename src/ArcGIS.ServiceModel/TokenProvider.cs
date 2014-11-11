@@ -22,15 +22,15 @@ namespace ArcGIS.ServiceModel
         /// <param name="serverUrl"></param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the portal rootUrl</param>
-        public FederatedTokenProvider(ITokenProvider tokenProvider, String rootUrl, String serverUrl, ISerializer serializer = null, String referer = null)
+        public FederatedTokenProvider(ITokenProvider tokenProvider, string rootUrl, string serverUrl, ISerializer serializer = null, string referer = null)
         {
             if (tokenProvider == null) throw new ArgumentNullException("tokenProvider", "ITokenProvider has not been set.");
 
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
 
-            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl has not been set.");
-            if (String.IsNullOrWhiteSpace(serverUrl)) throw new ArgumentNullException("serverUrl", "serverUrl has not been set.");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl has not been set.");
+            if (string.IsNullOrWhiteSpace(serverUrl)) throw new ArgumentNullException("serverUrl", "serverUrl has not been set.");
 
             RootUrl = rootUrl.AsRootUrl();
 
@@ -65,9 +65,9 @@ namespace ArcGIS.ServiceModel
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
-                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+                throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
 
-            String resultString = String.Empty;
+            string resultString = string.Empty;
             try
             {
                 HttpResponseMessage response = await _httpClient.PostAsync(url, content, ct);
@@ -93,7 +93,7 @@ namespace ArcGIS.ServiceModel
 
     public class ArcGISOnlineFederatedTokenProvider : FederatedTokenProvider
     {
-        public ArcGISOnlineFederatedTokenProvider(ITokenProvider tokenProvider, String serverUrl, ISerializer serializer = null, String referer = "https://www.arcgis.com")
+        public ArcGISOnlineFederatedTokenProvider(ITokenProvider tokenProvider, string serverUrl, ISerializer serializer = null, string referer = "https://www.arcgis.com")
             : base(tokenProvider, PortalGateway.AGOPortalUrl, serverUrl, serializer, referer)
         { }
     }
@@ -113,9 +113,9 @@ namespace ArcGIS.ServiceModel
         /// <param name="clientId">The Client Id from your API access section of your application from developers.arcgis.com</param>
         /// <param name="clientSecret">The Client Secret from your API access section of your application from developers.arcgis.com</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public ArcGISOnlineAppLoginOAuthProvider(String clientId, String clientSecret, ISerializer serializer = null)
+        public ArcGISOnlineAppLoginOAuthProvider(string clientId, string clientSecret, ISerializer serializer = null)
         {
-            if (String.IsNullOrWhiteSpace(clientId) || String.IsNullOrWhiteSpace(clientSecret))
+            if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
             {
                 System.Diagnostics.Debug.WriteLine("ArcGISOnlineAppLoginOAuthProvider not initialized as client Id/secret not supplied.");
                 return;
@@ -154,12 +154,12 @@ namespace ArcGIS.ServiceModel
             GC.SuppressFinalize(this);
         }
 
-        public String RootUrl
+        public string RootUrl
         {
             get { return "https://www.arcgis.com/sharing/oauth2/token"; }
         }
 
-        public String UserName { get { return null; } }
+        public string UserName { get { return null; } }
 
         public ISerializer Serializer { get; private set; }
 
@@ -177,7 +177,7 @@ namespace ArcGIS.ServiceModel
 
             _httpClient.CancelPendingRequests();
 
-            String resultString = String.Empty;
+            string resultString = string.Empty;
             try
             {
                 HttpResponseMessage response = await _httpClient.PostAsync(RootUrl, content, ct);
@@ -213,7 +213,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="password">ArcGIS Online user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation</param>
-        public ArcGISOnlineTokenProvider(String username, String password, ISerializer serializer = null, String referer = "https://www.arcgis.com")
+        public ArcGISOnlineTokenProvider(string username, string password, ISerializer serializer = null, string referer = "https://www.arcgis.com")
             : base(PortalGateway.AGOPortalUrl, username, password, serializer, referer)
         {
             CanAccessPublicKeyEndpoint = false;
@@ -234,11 +234,11 @@ namespace ArcGIS.ServiceModel
         /// <param name="password">Portal for ArcGIS user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the rootUrl + '/rest'</param>
-        public PortalFederatedTokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = null)
+        public PortalFederatedTokenProvider(string rootUrl, string username, string password, ISerializer serializer = null, string referer = null)
             : base(rootUrl, username, password, serializer, referer)
         {
             TokenRequest.IsFederated = true;
-            if (String.IsNullOrWhiteSpace(referer)) TokenRequest.Referer = rootUrl + "/rest";
+            if (string.IsNullOrWhiteSpace(referer)) TokenRequest.Referer = rootUrl + "/rest";
         }
     }
 
@@ -262,9 +262,9 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation</param>
         /// <param name="useEncryption">If true then the token generation request will be encryted</param>
-        public TokenProvider(String rootUrl, String username, String password, ISerializer serializer = null, String referer = "", ICryptoProvider cryptoProvider = null)
+        public TokenProvider(string rootUrl, string username, string password, ISerializer serializer = null, string referer = "", ICryptoProvider cryptoProvider = null)
         {
-            if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 System.Diagnostics.Debug.WriteLine("TokenProvider for '" + RootUrl + "' not initialized as username/password not supplied.");
                 return;
@@ -308,20 +308,20 @@ namespace ArcGIS.ServiceModel
 
         public ICryptoProvider CryptoProvider { get; private set; }
 
-        public String RootUrl { get; private set; }
+        public string RootUrl { get; private set; }
 
-        public String UserName { get; private set; }
+        public string UserName { get; private set; }
 
         public ISerializer Serializer { get; private set; }
 
         void CheckRefererHeader()
         {
-            if (_httpClient == null || String.IsNullOrWhiteSpace(TokenRequest.Referer)) return;
+            if (_httpClient == null || string.IsNullOrWhiteSpace(TokenRequest.Referer)) return;
 
             Uri referer;
             bool validReferrerUrl = Uri.TryCreate(TokenRequest.Referer, UriKind.Absolute, out referer);
             if (!validReferrerUrl)
-                throw new HttpRequestException(String.Format("Not a valid url for referrer: {0}", TokenRequest.Referer));
+                throw new HttpRequestException(string.Format("Not a valid url for referrer: {0}", TokenRequest.Referer));
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
 
@@ -347,14 +347,14 @@ namespace ArcGIS.ServiceModel
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
-                throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
+                throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
 
             if (CryptoProvider != null && _publicKey == null && CanAccessPublicKeyEndpoint)
             {
                 var publicKey = new PublicKey();
                 var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGateway.AsRequestQueryString(Serializer, publicKey);
 
-                String publicKeyResultString = null;
+                string publicKeyResultString = null;
                 try
                 {
                     _httpClient.CancelPendingRequests();
@@ -389,7 +389,7 @@ namespace ArcGIS.ServiceModel
 
             _httpClient.CancelPendingRequests();
 
-            String resultString = String.Empty;
+            string resultString = string.Empty;
             try
             {
                 HttpResponseMessage response = await _httpClient.PostAsync(uri, content, ct);
@@ -408,7 +408,7 @@ namespace ArcGIS.ServiceModel
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
-            if (!String.IsNullOrWhiteSpace(TokenRequest.Referer)) result.Referer = TokenRequest.Referer;
+            if (!string.IsNullOrWhiteSpace(TokenRequest.Referer)) result.Referer = TokenRequest.Referer;
 
             _token = result;
             return _token;

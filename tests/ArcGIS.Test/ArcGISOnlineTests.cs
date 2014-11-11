@@ -24,7 +24,7 @@ namespace ArcGIS.Test
         //    Assert.Null(hostedServices.Error);
         //    Assert.NotNull(hostedServices.Results);
         //    Assert.NotEmpty(hostedServices.Results);
-        //    Assert.False(hostedServices.Results.All(s => String.IsNullOrWhiteSpace(s.Id)));
+        //    Assert.False(hostedServices.Results.All(s => string.IsNullOrWhiteSpace(s.Id)));
         //}
         
         //[Fact]

@@ -56,7 +56,7 @@ namespace ArcGIS.Test
             Convert<GeoJsonMultiPolygon, Polygon>(start + multiPolygonData + end);
         }
 
-        void Convert<TGeoJSON, TGeometry>(String data)
+        void Convert<TGeoJSON, TGeometry>(string data)
             where TGeoJSON : IGeoJsonGeometry
             where TGeometry : IGeometry
         {

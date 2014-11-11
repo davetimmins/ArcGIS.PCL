@@ -20,7 +20,7 @@ namespace ArcGIS.Test
             : this(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer, null)
         { }
 
-        public ArcGISGateway(String root, ISerializer serializer, ITokenProvider tokenProvider)
+        public ArcGISGateway(string root, ISerializer serializer, ITokenProvider tokenProvider)
             : base(root, serializer, tokenProvider)
         {
         }
@@ -35,7 +35,7 @@ namespace ArcGIS.Test
             return Get<AgsObject>(endpoint, CancellationToken.None);
         }
 
-        internal readonly static Dictionary<String, Func<Type>> TypeMap = new Dictionary<String, Func<Type>>
+        internal readonly static Dictionary<string, Func<Type>> TypeMap = new Dictionary<string, Func<Type>>
             {
                 { GeometryTypes.Point, () => typeof(Point) },
                 { GeometryTypes.MultiPoint, () => typeof(MultiPoint) },
@@ -182,7 +182,7 @@ namespace ArcGIS.Test
             Assert.True(resultPoint.Features.Any());
             Assert.True(resultPoint.Features.All(i => i.Geometry != null));
 
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<String> { "lengthkm" } };
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<string> { "lengthkm" } };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Features.Any());
@@ -190,7 +190,7 @@ namespace ArcGIS.Test
 
             gateway = new ArcGISGateway(_jsonDotNetSerializer);
 
-            var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = new List<String> { "areasqkm" } };
+            var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = new List<string> { "areasqkm" } };
             var resultPolygon = await gateway.QueryAsPost<Polygon>(queryPolygon);
 
             Assert.True(resultPolygon.Features.Any());
@@ -208,7 +208,7 @@ namespace ArcGIS.Test
             Assert.True(resultPoint.Features.Any());
             Assert.True(resultPoint.Features.All(i => i.Geometry == null));
 
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<String> { "lengthkm" }, ReturnGeometry = false };
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<string> { "lengthkm" }, ReturnGeometry = false };
             var resultPolyline = await gateway.QueryAsPost<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Features.Any());
@@ -246,7 +246,7 @@ namespace ArcGIS.Test
         {
             var gateway = new ArcGISGateway(_jsonDotNetSerializer);
 
-            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<String> { "lengthkm" }, ReturnGeometry = false };
+            var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<string> { "lengthkm" }, ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
 
             Assert.True(resultPolyline.Features.Any());
@@ -256,7 +256,7 @@ namespace ArcGIS.Test
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint())
             {
                 Where = "areasqkm = 0.012",
-                OutFields = new List<String> { "areasqkm", "elevation", "resolution", "reachcode" }
+                OutFields = new List<string> { "areasqkm", "elevation", "resolution", "reachcode" }
             };
             var resultPolygon = await gateway.Query<Polygon>(queryPolygon);
 
@@ -426,7 +426,7 @@ namespace ArcGIS.Test
             {
                 SearchText = "route",
                 LayerIdsToSearch = new List<int> { 1, 2, 3 },
-                SearchFields = new List<String> { "Name", "RouteName" }
+                SearchFields = new List<string> { "Name", "RouteName" }
             };
             var result = await gateway.Find(find);
 
@@ -445,7 +445,7 @@ namespace ArcGIS.Test
             {
                 SearchText = "route",
                 LayerIdsToSearch = new List<int> { 1, 2, 3 },
-                SearchFields = new List<String> { "Name", "RouteName" },
+                SearchFields = new List<string> { "Name", "RouteName" },
                 ReturnGeometry = false
             };
             var result = await gateway.Find(find);

@@ -10,15 +10,18 @@
 		<iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo_serializer.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>
-      Json.NET implementation of an ISerializer to use with ArcGIS.PCL.
+			Json.NET implementation of an ISerializer to use with ArcGIS.PCL.
 
-      To use just call JsonDotNetSerializer.Init().
-    </description>
+			To use just call JsonDotNetSerializer.Init().
+		</description>
 		<summary>
 			Json.NET implementation of an ISerializer to use with ArcGIS.PCL.		
 		</summary>
 		<releaseNotes>
-			Initial release
+			Added optional JsonSerializerSettings parameter to constructor
+
+			- Breaking changes
+				ContractResolver setting has been removed from default settings
 		</releaseNotes>
 		<language />
 		<tags>ArcGIS PCL Json Serializer</tags>

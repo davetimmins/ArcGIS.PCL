@@ -9,38 +9,38 @@ namespace ArcGIS.ServiceModel
 {
     public static class StringExtensions
     {
-        public static ArcGISServerEndpoint AsEndpoint(this String relativeUrl)
+        public static ArcGISServerEndpoint AsEndpoint(this string relativeUrl)
         {
             return new ArcGISServerEndpoint(relativeUrl);
         }
 
-        public static ArcGISServerAdminEndpoint AsAdminEndpoint(this String relativeUrl)
+        public static ArcGISServerAdminEndpoint AsAdminEndpoint(this string relativeUrl)
         {
             return new ArcGISServerAdminEndpoint(relativeUrl);
         }
 
-        public static ArcGISOnlineEndpoint AsArcGISOnlineEndpoint(this String relativeUrl)
+        public static ArcGISOnlineEndpoint AsArcGISOnlineEndpoint(this string relativeUrl)
         {
             return new ArcGISOnlineEndpoint(relativeUrl);
         }
 
-        public static AbsoluteEndpoint AsAbsoluteEndpoint(this String url)
+        public static AbsoluteEndpoint AsAbsoluteEndpoint(this string url)
         {
             return new AbsoluteEndpoint(url);
         }
 
-        public static String AsRootUrl(this String rootUrl)
+        public static string AsRootUrl(this string rootUrl)
         {
-            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             rootUrl = rootUrl.TrimEnd('/');
             if (rootUrl.IndexOf("/rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services"));
             if (rootUrl.IndexOf("/admin") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/admin"));
             return rootUrl.Replace("/rest/services", "") + "/";
         }
 
-        public static Dictionary<String, String> ParseQueryString(this String queryString)
+        public static Dictionary<string, string> ParseQueryString(this string queryString)
         {
-            if (String.IsNullOrWhiteSpace(queryString)) return new Dictionary<String, String>();
+            if (string.IsNullOrWhiteSpace(queryString)) return new Dictionary<string, string>();
 
             // remove anything other than query string from url
             if (queryString.Contains("?"))
@@ -48,12 +48,12 @@ namespace ArcGIS.ServiceModel
 
             return Regex.Split(queryString, "&")
                 .Select(vp => Regex.Split(vp, "="))
-                .ToDictionary(singlePair => singlePair[0], singlePair => singlePair.Length == 2 ? singlePair[1] : String.Empty);
+                .ToDictionary(singlePair => singlePair[0], singlePair => singlePair.Length == 2 ? singlePair[1] : string.Empty);
         }
 
-        public static String UrlEncode(this String text)
+        public static string UrlEncode(this string text)
         {
-            if (String.IsNullOrEmpty(text)) return text;
+            if (string.IsNullOrEmpty(text)) return text;
 
             var sb = new StringBuilder();
 
@@ -78,9 +78,9 @@ namespace ArcGIS.ServiceModel
         /// </summary>
         /// <param name="hex">Hex-encoded string</param>
         /// <returns>Byte representation of the hex-encoded input</returns>
-        public static byte[] HexToBytes(this String hex)
+        public static byte[] HexToBytes(this string hex)
         {
-            if (String.IsNullOrWhiteSpace(hex)) return null;
+            if (string.IsNullOrWhiteSpace(hex)) return null;
 
             int length = hex.Length;
 

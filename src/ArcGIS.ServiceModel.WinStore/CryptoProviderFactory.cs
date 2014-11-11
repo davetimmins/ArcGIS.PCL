@@ -47,16 +47,16 @@ namespace ArcGIS.ServiceModel
 
             var encryptedUsername = Encrypt(bufferContent, tokenRequest.Username).BytesToHex();
             var encryptedPassword = Encrypt(bufferContent, tokenRequest.Password).BytesToHex();
-            var encryptedClient = String.IsNullOrWhiteSpace(tokenRequest.Client) ? "" : Encrypt(bufferContent, tokenRequest.Client).BytesToHex();
+            var encryptedClient = string.IsNullOrWhiteSpace(tokenRequest.Client) ? "" : Encrypt(bufferContent, tokenRequest.Client).BytesToHex();
             var encryptedExpiration = Encrypt(bufferContent, tokenRequest.ExpirationInMinutes.ToString()).BytesToHex();
-            var encryptedReferer = String.IsNullOrWhiteSpace(tokenRequest.Referer) ? "" : Encrypt(bufferContent, tokenRequest.Referer).BytesToHex();
+            var encryptedReferer = string.IsNullOrWhiteSpace(tokenRequest.Referer) ? "" : Encrypt(bufferContent, tokenRequest.Referer).BytesToHex();
 
             tokenRequest.Encrypt(encryptedUsername, encryptedPassword, encryptedExpiration, encryptedClient, encryptedReferer);
 
             return tokenRequest;
         }
 
-        static byte[] Encrypt(byte[] bufferContent, String data)
+        static byte[] Encrypt(byte[] bufferContent, string data)
         {
             IBuffer keyBuffer = CryptographicBuffer.CreateFromByteArray(bufferContent);
 

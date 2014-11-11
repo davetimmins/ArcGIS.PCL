@@ -22,12 +22,12 @@ namespace ArcGIS.ServiceModel.Serializers
             ServiceStack.Text.JsConfig.IncludeNullValues = false;
         }
 
-        public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
+        public Dictionary<string, string> AsDictionary<T>(T objectToConvert) where T : CommonParameters
         {
             return ServiceStack.Text.TypeSerializer.ToStringDictionary<T>(objectToConvert);
         }
 
-        public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
+        public T AsPortalResponse<T>(string dataToConvert) where T : IPortalResponse
         {
             return ServiceStack.Text.JsonSerializer.DeserializeFromString<T>(dataToConvert);
         }

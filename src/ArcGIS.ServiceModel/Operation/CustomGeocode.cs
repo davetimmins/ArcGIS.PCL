@@ -23,7 +23,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// Specifies the location to be searched for.
         /// </summary>
         [DataMember(Name = "text")]
-        public String Text { get; set; }
+        public string Text { get; set; }
 
         /// <summary>
         /// The spatial reference of the x/y coordinates returned by a geocode request. 
@@ -45,10 +45,10 @@ namespace ArcGIS.ServiceModel.Operation
         ///  The field names of the attributes to be returned.
         /// </summary>
         [IgnoreDataMember]
-        public List<String> OutFields { get; set; }
+        public List<string> OutFields { get; set; }
 
         [DataMember(Name = "outFields")]
-        public String OutFieldsValue { get { return OutFields == null ? String.Empty : String.Join(",", OutFields); } }
+        public string OutFieldsValue { get { return OutFields == null ? string.Empty : string.Join(",", OutFields); } }
     }
 
     [DataContract]
@@ -65,7 +65,7 @@ namespace ArcGIS.ServiceModel.Operation
     public class Candidate
     {
         [DataMember(Name = "address")]
-        public String Address { get; set; }
+        public string Address { get; set; }
 
         [DataMember(Name = "location")]
         public Point Location { get; set; }
@@ -74,6 +74,6 @@ namespace ArcGIS.ServiceModel.Operation
         public double Score { get; set; }
 
         [DataMember(Name = "attributes")]
-        public Dictionary<String, object> Attributes { get; set; }
+        public Dictionary<string, object> Attributes { get; set; }
     }
 }

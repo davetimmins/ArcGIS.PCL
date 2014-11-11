@@ -28,12 +28,12 @@ namespace ArcGIS.ServiceModel.Serializers
             };
         }
 
-        public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
+        public Dictionary<string, string> AsDictionary<T>(T objectToConvert) where T : CommonParameters
         {
             var stringValue = Newtonsoft.Json.JsonConvert.SerializeObject(objectToConvert, _settings);
 
             var jobject = Newtonsoft.Json.Linq.JObject.Parse(stringValue);
-            var dict = new Dictionary<String, String>();
+            var dict = new Dictionary<string, string>();
             foreach (var item in jobject)
             {
                 dict.Add(item.Key, item.Value.ToString());
@@ -41,7 +41,7 @@ namespace ArcGIS.ServiceModel.Serializers
             return dict;
         }
 
-        public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
+        public T AsPortalResponse<T>(string dataToConvert) where T : IPortalResponse
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);
         }

@@ -88,7 +88,7 @@ namespace ArcGIS.Test
 
     public class GeometryGateway : PortalGateway
     {
-        public GeometryGateway(ISerializer serializer, String baseUrl = @"http://sampleserver1.arcgisonline.com/ArcGIS")
+        public GeometryGateway(ISerializer serializer, string baseUrl = @"http://sampleserver1.arcgisonline.com/ArcGIS")
             : base(baseUrl, serializer, null)
         { }
     }

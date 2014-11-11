@@ -12,7 +12,7 @@ namespace ArcGIS.ServiceModel
         /// <summary>
         /// Made up of scheme://host:port/site
         /// </summary>
-        String RootUrl { get; }
+        string RootUrl { get; }
 
         /// <summary>
         /// Used for (de)serializtion of requests and responses. 
@@ -33,6 +33,6 @@ namespace ArcGIS.ServiceModel
         /// <summary>
         /// The username that this token provider is for
         /// </summary>
-        String UserName { get; }
+        string UserName { get; }
     }
 }

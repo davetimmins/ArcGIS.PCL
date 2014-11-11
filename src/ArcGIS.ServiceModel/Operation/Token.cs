@@ -11,40 +11,40 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class GenerateToken : CommonParameters, IEndpoint
     {
-        public GenerateToken(String username, String password)
+        public GenerateToken(string username, string password)
         {
             Username = username;
             Password = password;
             ExpirationInMinutes = 60;
         }
 
-        String _client;
+        string _client;
         /// <summary>
         /// The client identification type for which the token is to be granted.
         /// </summary>
         /// <remarks>The default value is referer. Setting it to null will also set the Referer to null</remarks>
         [DataMember(Name = "client")]
-        public String Client { get { return _client; } set { _client = value; if (String.IsNullOrWhiteSpace(_client)) Referer = null; } }
+        public string Client { get { return _client; } set { _client = value; if (string.IsNullOrWhiteSpace(_client)) Referer = null; } }
 
-        String _referer;
+        string _referer;
         /// <summary>
         /// The base URL of the web app that will invoke the Portal API.
         /// This parameter must be specified if the value of the client parameter is referer.
         /// </summary>
         [DataMember(Name = "referer")]
-        public String Referer { get { return _referer; } set { _referer = value; if (!String.IsNullOrWhiteSpace(_referer)) Client = "referer"; } }
+        public string Referer { get { return _referer; } set { _referer = value; if (!string.IsNullOrWhiteSpace(_referer)) Client = "referer"; } }
 
         /// <summary>
         /// Username of user who wants to get a token.
         /// </summary>
         [DataMember(Name = "username")]
-        public String Username { get; private set; }
+        public string Username { get; private set; }
 
         /// <summary>
         /// Password of user who wants to get a token.
         /// </summary>
         [DataMember(Name = "password")]
-        public String Password { get; private set; }
+        public string Password { get; private set; }
 
         [DataMember(Name = "encrypted")]
         public bool Encrypted { get; private set; }
@@ -56,9 +56,9 @@ namespace ArcGIS.ServiceModel.Operation
         [IgnoreDataMember]
         public int ExpirationInMinutes { get; set; }
 
-        String _expiration;
+        string _expiration;
         [DataMember(Name = "expiration")]
-        public String Expiration { get { return String.IsNullOrWhiteSpace(_expiration) ? ExpirationInMinutes.ToString() : _expiration; } }
+        public string Expiration { get { return string.IsNullOrWhiteSpace(_expiration) ? ExpirationInMinutes.ToString() : _expiration; } }
 
         /// <summary>
         /// Set this to true to prevent the BuildAbsoluteUrl returning https as the default scheme
@@ -66,15 +66,15 @@ namespace ArcGIS.ServiceModel.Operation
         [IgnoreDataMember]
         public bool DontForceHttps { get; set; }
 
-        public void Encrypt(String username, String password, String expiration = "", String client = "", String referer = "")
+        public void Encrypt(string username, string password, string expiration = "", string client = "", string referer = "")
         {
-            if (String.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username");
-            if (String.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password");
             Username = username;
             Password = password;
-            if (!String.IsNullOrWhiteSpace(expiration)) _expiration = expiration;
-            if (!String.IsNullOrWhiteSpace(client)) _client = client;
-            if (!String.IsNullOrWhiteSpace(referer)) _referer = referer;
+            if (!string.IsNullOrWhiteSpace(expiration)) _expiration = expiration;
+            if (!string.IsNullOrWhiteSpace(client)) _client = client;
+            if (!string.IsNullOrWhiteSpace(referer)) _referer = referer;
             Encrypted = true;
             DontForceHttps = false;
         }
@@ -84,14 +84,14 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         public bool IsFederated { get; set; }
 
-        public String RelativeUrl
+        public string RelativeUrl
         {
             get { return "tokens/" + Operations.GenerateToken; }
         }
 
-        public String BuildAbsoluteUrl(String rootUrl)
+        public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
 
             return IsFederated
                 ? (DontForceHttps ? rootUrl.Replace("sharing/rest/", "") + "sharing/rest/" : rootUrl.Replace("http://", "https://").Replace("sharing/rest/", "") + "sharing/rest/") + RelativeUrl.Replace("tokens/", "")
@@ -106,7 +106,7 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class GenerateOAuthToken : CommonParameters
     {
-        public GenerateOAuthToken(String clientId, String clientSecret)
+        public GenerateOAuthToken(string clientId, string clientSecret)
         {
             ClientId = clientId;
             ClientSecret = clientSecret;
@@ -117,16 +117,16 @@ namespace ArcGIS.ServiceModel.Operation
         /// The Client Id from your API access section of your application from developers.arcgis.com
         /// </summary>
         [DataMember(Name = "client_id")]
-        public String ClientId { get; private set; }
+        public string ClientId { get; private set; }
 
         /// <summary>
         /// The Client Secret from your API access section of your application from developers.arcgis.com
         /// </summary>
         [DataMember(Name = "client_secret")]
-        public String ClientSecret { get; private set; }
+        public string ClientSecret { get; private set; }
 
         [DataMember(Name = "grant_type")]
-        public virtual String Type { get { return "client_credentials"; } }
+        public virtual string Type { get { return "client_credentials"; } }
 
         /// <summary>
         /// The token expiration time in minutes.
@@ -139,7 +139,7 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class GenerateFederatedToken : CommonParameters
     {
-        public GenerateFederatedToken(String serverUrl, ITokenProvider tokenProvider)
+        public GenerateFederatedToken(string serverUrl, ITokenProvider tokenProvider)
         {
             FederatedServerUrl = serverUrl;
             TokenProvider = tokenProvider;
@@ -151,16 +151,16 @@ namespace ArcGIS.ServiceModel.Operation
         /// A server-token will not be generated for a server that is not registered with the portal.
         /// </summary>
         [DataMember(Name = "serverUrl")]
-        public String FederatedServerUrl { get; protected set; }
+        public string FederatedServerUrl { get; protected set; }
 
         [DataMember(Name = "request")]
-        public String Request { get { return "getToken"; } }
+        public string Request { get { return "getToken"; } }
 
         [DataMember(Name = "token")]
-        public String TokenValue { get { return FederatedToken.Value; } }
+        public string TokenValue { get { return FederatedToken.Value; } }
 
         [DataMember(Name = "referer")]
-        public String Referer { get; set; }
+        public string Referer { get; set; }
 
         [IgnoreDataMember]
         public Token FederatedToken { get; set; }
@@ -174,14 +174,14 @@ namespace ArcGIS.ServiceModel.Operation
         [IgnoreDataMember]
         public ITokenProvider TokenProvider { get; protected set; }
 
-        public String RelativeUrl
+        public string RelativeUrl
         {
             get { return Operations.GenerateToken; }
         }
 
-        public String BuildAbsoluteUrl(String rootUrl)
+        public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
 
             return (DontForceHttps ?
                 rootUrl.Replace("sharing/rest/", "") + "sharing/rest/" :
@@ -193,7 +193,7 @@ namespace ArcGIS.ServiceModel.Operation
     public class OAuthToken : PortalResponse
     {
         [DataMember(Name = "access_token")]
-        public String Value { get; set; }
+        public string Value { get; set; }
 
         /// <summary>
         /// The expiration time of the token in seconds.
@@ -220,7 +220,7 @@ namespace ArcGIS.ServiceModel.Operation
     public class Token : PortalResponse
     {
         [DataMember(Name = "token")]
-        public String Value { get; set; }
+        public string Value { get; set; }
 
         /// <summary>
         /// The expiration time of the token in milliseconds since Jan 1st, 1970.
@@ -234,7 +234,7 @@ namespace ArcGIS.ServiceModel.Operation
         [IgnoreDataMember]
         public bool IsExpired
         {
-            get { return !String.IsNullOrWhiteSpace(Value) && Expiry > 0 && DateTime.Compare(Expiry.FromUnixTime(), DateTime.UtcNow) < 1; }
+            get { return !string.IsNullOrWhiteSpace(Value) && Expiry > 0 && DateTime.Compare(Expiry.FromUnixTime(), DateTime.UtcNow) < 1; }
         }
 
         /// <summary>
@@ -243,11 +243,11 @@ namespace ArcGIS.ServiceModel.Operation
         [IgnoreDataMember]
         public DateTime ExpiresAt
         {
-            get { return (String.IsNullOrWhiteSpace(Value) || Expiry == 0) ? DateTime.Now : Expiry.FromUnixTime().ToLocalTime(); }
+            get { return (string.IsNullOrWhiteSpace(Value) || Expiry == 0) ? DateTime.Now : Expiry.FromUnixTime().ToLocalTime(); }
         }
 
         [IgnoreDataMember]
-        public String Referer { get; set; }
+        public string Referer { get; set; }
 
         /// <summary>
         /// True if the token must always pass over ssl.

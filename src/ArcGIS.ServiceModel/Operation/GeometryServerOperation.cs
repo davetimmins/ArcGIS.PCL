@@ -107,12 +107,12 @@ namespace ArcGIS.ServiceModel.Operation
     public class GeometryCollection<T> where T : IGeometry
     {
         [DataMember(Name = "geometryType")]
-        public String GeometryType
+        public string GeometryType
         {
             get
             {
                 return Geometries == null
-                    ? String.Empty
+                    ? string.Empty
                     : GeometryTypes.TypeMap[Geometries.First().GetType()]();
             }
         }
@@ -126,7 +126,7 @@ namespace ArcGIS.ServiceModel.Operation
         public GeometryOperation(IEndpoint endpoint,
             List<Feature<T>> features,
             SpatialReference outputSpatialReference,
-            String operation)
+            string operation)
         {
             if (endpoint == null) throw new ArgumentNullException("endpoint");
             Endpoint = (endpoint is AbsoluteEndpoint) ?

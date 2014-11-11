@@ -15,16 +15,16 @@ namespace ArcGIS.ServiceModel.Serializers
             SerializerFactory.Get = (() => _serializer ?? new SimpleJsonSerializer());
         }
 
-        public Dictionary<String, String> AsDictionary<T>(T objectToConvert) where T : CommonParameters
+        public Dictionary<string, string> AsDictionary<T>(T objectToConvert) where T : CommonParameters
         {
             var stringValue = SimpleJson.SerializeObject(objectToConvert, SimpleJson.DataContractJsonSerializerStrategy);
 
-            var result = SimpleJson.DeserializeObject<Dictionary<String, object>>(stringValue, SimpleJson.DataContractJsonSerializerStrategy);
+            var result = SimpleJson.DeserializeObject<Dictionary<string, object>>(stringValue, SimpleJson.DataContractJsonSerializerStrategy);
 
             return result.Where(i => i.Value != null).ToDictionary(k => k.Key, k => k.Value.ToString().Replace("\"", ""));
         }
 
-        public T AsPortalResponse<T>(String dataToConvert) where T : IPortalResponse
+        public T AsPortalResponse<T>(string dataToConvert) where T : IPortalResponse
         {
             return SimpleJson.DeserializeObject<T>(dataToConvert, SimpleJson.DataContractJsonSerializerStrategy);
         }

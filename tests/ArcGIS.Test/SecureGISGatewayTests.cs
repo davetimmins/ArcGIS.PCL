@@ -162,7 +162,7 @@ namespace ArcGIS.Test
             foreach (var service in services)
             {
                 var sd = service.AsServiceDescription();
-                if (String.Equals("STARTED", service.Status.Actual, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals("STARTED", service.Status.Actual, StringComparison.OrdinalIgnoreCase))
                 {
                     var stoppedResult = await gateway.StopService(sd);
                     Assert.NotNull(stoppedResult);

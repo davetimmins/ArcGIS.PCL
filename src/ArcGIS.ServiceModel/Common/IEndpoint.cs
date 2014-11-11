@@ -10,14 +10,14 @@ namespace ArcGIS.ServiceModel.Common
         /// <summary>
         /// Relative url of the resource
         /// </summary>
-        String RelativeUrl { get; }
+        string RelativeUrl { get; }
 
         /// <summary>
         /// Check the url is complete (ignore the scheme)
         /// </summary>
         /// <param name="rootUrl"></param>
         /// <returns></returns>
-        String BuildAbsoluteUrl(String rootUrl);
+        string BuildAbsoluteUrl(string rootUrl);
     }
 
     /// <summary>
@@ -29,9 +29,9 @@ namespace ArcGIS.ServiceModel.Common
         /// Creates a new ArcGIS Server REST endpoint representation
         /// </summary>
         /// <param name="relativePath">Path of the endpoint relative to the root url of the ArcGIS Server</param>
-        public ArcGISServerEndpoint(String relativePath)
+        public ArcGISServerEndpoint(string relativePath)
         {
-            if (String.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");
             RelativeUrl = relativePath.Trim('/');
             if (RelativeUrl.IndexOf("rest/services") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("rest/services"));
             RelativeUrl = RelativeUrl.Replace("rest/services/", "");
@@ -40,11 +40,11 @@ namespace ArcGIS.ServiceModel.Common
             System.Diagnostics.Debug.WriteLine("Created ArcGISServerEndpoint for " + RelativeUrl);
         }
         
-        public String RelativeUrl { get; private set; }
+        public string RelativeUrl { get; private set; }
 
-        public String BuildAbsoluteUrl(String rootUrl)
+        public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl
                        : RelativeUrl;
@@ -60,9 +60,9 @@ namespace ArcGIS.ServiceModel.Common
         /// Creates a new ArcGIS Server REST Administration endpoint representation
         /// </summary>
         /// <param name="relativePath">Path of the endpoint relative to the root url of the ArcGIS Server</param>
-        public ArcGISServerAdminEndpoint(String relativePath)
+        public ArcGISServerAdminEndpoint(string relativePath)
         {
-            if (String.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");
             RelativeUrl = relativePath.Trim('/');
             if (RelativeUrl.IndexOf("admin") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("admin"));
             RelativeUrl = RelativeUrl.Replace("admin/", "");
@@ -71,11 +71,11 @@ namespace ArcGIS.ServiceModel.Common
             System.Diagnostics.Debug.WriteLine("Created ArcGISServerAdminEndpoint for " + RelativeUrl);
         }
 
-        public String RelativeUrl { get; private set; }
+        public string RelativeUrl { get; private set; }
 
-        public String BuildAbsoluteUrl(String rootUrl)
+        public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl
                        : RelativeUrl;
@@ -88,9 +88,9 @@ namespace ArcGIS.ServiceModel.Common
         /// Creates a new ArcGIS Online or Portal REST endpoint representation
         /// </summary>
         /// <param name="relativePath">Path of the endpoint relative to the root url of ArcGIS Online / Portal</param>
-        public ArcGISOnlineEndpoint(String relativePath)
+        public ArcGISOnlineEndpoint(string relativePath)
         {
-            if (String.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath");
             RelativeUrl = relativePath.Trim('/');
             if (RelativeUrl.IndexOf("sharing/rest") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("sharing/rest"));
             RelativeUrl = RelativeUrl.Replace("sharing/rest/", "");
@@ -98,11 +98,11 @@ namespace ArcGIS.ServiceModel.Common
             System.Diagnostics.Debug.WriteLine("Created ArcGISOnlineEndpoint for " + RelativeUrl);
         }
 
-        public String RelativeUrl { get; private set; }
+        public string RelativeUrl { get; private set; }
 
-        public String BuildAbsoluteUrl(String rootUrl)
+        public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (String.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl
                        : RelativeUrl;
@@ -115,14 +115,14 @@ namespace ArcGIS.ServiceModel.Common
         /// Create an IEndpoint for the path 
         /// </summary>
         /// <param name="path"></param>
-        public AbsoluteEndpoint(String path)
+        public AbsoluteEndpoint(string path)
         {
             RelativeUrl = path;
         }
 
-        public String RelativeUrl { get; private set; }
+        public string RelativeUrl { get; private set; }
 
-        public String BuildAbsoluteUrl(String rootUrl)
+        public string BuildAbsoluteUrl(string rootUrl)
         {
             return RelativeUrl;
         }

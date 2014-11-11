@@ -11,7 +11,7 @@ namespace ArcGIS.ServiceModel.GeoJson
     public class FeatureCollection<TGeometry> where TGeometry : IGeoJsonGeometry
     {
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "bbox")]
         public double[] BoundingBox { get; set; }
@@ -27,7 +27,7 @@ namespace ArcGIS.ServiceModel.GeoJson
     public class Crs
     {
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "properties")]
         public CrsProperties Properties { get; set; }
@@ -37,13 +37,13 @@ namespace ArcGIS.ServiceModel.GeoJson
     public class CrsProperties
     {
         [DataMember(Name = "name")]
-        public String Name { get; set; }
+        public string Name { get; set; }
 
         [DataMember(Name = "href")]
-        public String Href { get; set; }
+        public string Href { get; set; }
 
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "code")]
         public int Wkid { get; set; }
@@ -56,10 +56,10 @@ namespace ArcGIS.ServiceModel.GeoJson
         public object Id { get; set; }
 
         [DataMember(Name = "properties")]
-        public Dictionary<String, object> Properties { get; set; }
+        public Dictionary<string, object> Properties { get; set; }
 
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "bbox")]
         public double[] BoundingBox { get; set; }
@@ -72,7 +72,7 @@ namespace ArcGIS.ServiceModel.GeoJson
     public class GeoJsonPoint : IGeoJsonGeometry
     {
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "coordinates")]
         public double[] Coordinates { get; set; }
@@ -95,7 +95,7 @@ namespace ArcGIS.ServiceModel.GeoJson
         };
 
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "coordinates")]
         public PointCollection Coordinates { get; set; }
@@ -118,7 +118,7 @@ namespace ArcGIS.ServiceModel.GeoJson
         };
 
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "coordinates")]
         public PointCollectionList Coordinates { get; set; }
@@ -135,7 +135,7 @@ namespace ArcGIS.ServiceModel.GeoJson
     public class GeoJsonMultiPolygon : IGeoJsonGeometry
     {
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "coordinates")]
         public List<PointCollectionList> Coordinates { get; set; }
@@ -156,7 +156,7 @@ namespace ArcGIS.ServiceModel.GeoJson
     public interface IGeoJsonGeometry
     {
         [DataMember(Name = "type")]
-        String Type { get; set; }
+        string Type { get; set; }
 
         IGeometry ToGeometry(Type type);
     }

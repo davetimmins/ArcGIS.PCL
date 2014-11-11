@@ -36,9 +36,9 @@ namespace ArcGIS.ServiceModel.Operation.Admin
 
     public class ServiceReport : ArcGISServerOperation
     {
-        public ServiceReport(String path)
+        public ServiceReport(string path)
         {
-            Endpoint = new ArcGISServerAdminEndpoint(String.Format(Operations.ServiceReport, path.Replace("/", "")).Replace("//", "/"));
+            Endpoint = new ArcGISServerAdminEndpoint(string.Format(Operations.ServiceReport, path.Replace("/", "")).Replace("//", "/"));
         }
     }
 
@@ -53,16 +53,16 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     public class ServiceReportResponse
     {
         [DataMember(Name = "folderName")]
-        public String FolderName { get; set; }
+        public string FolderName { get; set; }
 
         [DataMember(Name = "serviceName")]
-        public String ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "description")]
-        public String Description { get; set; }
+        public string Description { get; set; }
 
         [DataMember(Name = "status")]
         public ServiceStatusResponse Status { get; set; }

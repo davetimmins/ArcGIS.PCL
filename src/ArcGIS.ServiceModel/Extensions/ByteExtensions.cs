@@ -12,7 +12,7 @@ namespace ArcGIS.ServiceModel
         /// <returns>Hex-encoded string</returns>
         public static string BytesToHex(this byte[] bytes)
         {
-            if (bytes == null) return String.Empty;
+            if (bytes == null) return string.Empty;
 
             var sb = new StringBuilder(bytes.Length * 2);
 

@@ -78,9 +78,9 @@ namespace ArcGIS.ServiceModel.Common
         [DataMember(Name = "latestVcsWkid")]
         public int? LatestVCSWkid { get; set; }
 
-        String _wkt;
+        string _wkt;
         [DataMember(Name = "wkt")]
-        public String Wkt
+        public string Wkt
         {
             get { return _wkt; }
             set
@@ -119,9 +119,9 @@ namespace ArcGIS.ServiceModel.Common
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return (String.IsNullOrWhiteSpace(Wkt))
+            return (string.IsNullOrWhiteSpace(Wkt))
                 ? (Wkid == other.Wkid || LatestWkid == other.LatestWkid) && (VCSWkid == other.VCSWkid || LatestVCSWkid == other.LatestVCSWkid)
-                : String.Equals(Wkt, other.Wkt, StringComparison.OrdinalIgnoreCase);
+                : string.Equals(Wkt, other.Wkt, StringComparison.OrdinalIgnoreCase);
         }
 
         public override int GetHashCode()

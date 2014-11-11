@@ -37,7 +37,7 @@ namespace ArcGIS.ServiceModel.Operation
         public List<int> Deletes { get; set; }
 
         [DataMember(Name = "deletes")]
-        public String DeleteIds { get { return Deletes == null ? String.Empty : String.Join(",", Deletes); } }
+        public string DeleteIds { get { return Deletes == null ? string.Empty : string.Join(",", Deletes); } }
     }
     
     /// <summary>
@@ -66,7 +66,7 @@ namespace ArcGIS.ServiceModel.Operation
         public int ObjectId { get; set; }
 
         [DataMember(Name = "globalId")]
-        public String GlobalId { get; set; }
+        public string GlobalId { get; set; }
 
         [DataMember(Name = "success")]
         public bool Success { get; set; }

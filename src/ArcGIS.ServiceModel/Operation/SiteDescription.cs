@@ -53,7 +53,7 @@ namespace ArcGIS.ServiceModel.Operation
             {
                 foreach (var service in Services)
                 {
-                    yield return new ArcGISServerEndpoint(String.Format("{0}/{1}", service.Name, service.Type));
+                    yield return new ArcGISServerEndpoint(string.Format("{0}/{1}", service.Name, service.Type));
                 }
                 
             }
@@ -64,13 +64,13 @@ namespace ArcGIS.ServiceModel.Operation
     public class SiteFolderDescription : PortalResponse
     {
         [IgnoreDataMember]
-        public String Path { get; set; }
+        public string Path { get; set; }
 
         [DataMember(Name = "currentVersion")]
         public double Version { get; set; }
 
         [DataMember(Name = "folders")]
-        public String[] Folders { get; set; }
+        public string[] Folders { get; set; }
 
         [DataMember(Name = "services")]
         public ServiceDescription[] Services { get; set; }
@@ -80,15 +80,15 @@ namespace ArcGIS.ServiceModel.Operation
     public class ServiceDescription
     {
         [DataMember(Name = "name")]
-        public String Name { get; set; }
+        public string Name { get; set; }
 
         [DataMember(Name = "type")]
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         [IgnoreDataMember]
         public ArcGISServerEndpoint ArcGISServerEndpoint
         {
-            get { return new ArcGISServerEndpoint(String.Format("{0}/{1}", Name, Type)); }
+            get { return new ArcGISServerEndpoint(string.Format("{0}/{1}", Name, Type)); }
         }
     }
 }
