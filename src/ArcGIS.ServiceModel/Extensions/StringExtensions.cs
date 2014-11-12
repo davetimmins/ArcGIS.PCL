@@ -31,7 +31,7 @@ namespace ArcGIS.ServiceModel
 
         public static string AsRootUrl(this string rootUrl)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
             rootUrl = rootUrl.TrimEnd('/');
             if (rootUrl.IndexOf("/rest/services") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services"));
             if (rootUrl.IndexOf("/admin") > 0) rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/admin"));

@@ -13,8 +13,8 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public SingleInputGeocode(ArcGISServerEndpoint endpoint)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputGeocode);  
+            Guard.AgainstNullArgument("endpoint", endpoint);
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputGeocode);
 
             MaxResults = 1;
             Distance = null;
@@ -102,8 +102,8 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public SuggestGeocode(ArcGISServerEndpoint endpoint)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SuggestGeocode);  
+            Guard.AgainstNullArgument("endpoint", endpoint);
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SuggestGeocode);
 
             Distance = null;
         }

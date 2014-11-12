@@ -18,8 +18,8 @@ namespace ArcGIS.ServiceModel.Operation
         /// <param name="endpoint">Resource to apply the query against</param>
         public Find(ArcGISServerEndpoint endpoint)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Find); 
+            Guard.AgainstNullArgument("endpoint", endpoint);
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Find);
 
             FuzzySearch = true;
             ReturnGeometry = true;

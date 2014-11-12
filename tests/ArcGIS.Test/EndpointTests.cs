@@ -36,6 +36,8 @@ namespace ArcGIS.Test
         [Fact]
         public void ArcGISServerAdminEndpointHasCorrectFormat()
         {
+            Assert.Throws<ArgumentNullException>(() => new ArcGISServerAdminEndpoint(null));
+            Assert.Throws<ArgumentNullException>(() => new ArcGISServerAdminEndpoint(String.Empty));
             Assert.Throws<ArgumentNullException>(() => new ArcGISServerAdminEndpoint(""));
 
             var endpoint2 = new ArcGISServerAdminEndpoint("/admin/admin/admin/");

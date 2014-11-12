@@ -15,8 +15,8 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public SingleInputCustomGeocode(ArcGISServerEndpoint endpoint)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputCustomGeocode);         
+            Guard.AgainstNullArgument("endpoint", endpoint);
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputCustomGeocode);
         }
 
         /// <summary>

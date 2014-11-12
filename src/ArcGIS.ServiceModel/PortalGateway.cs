@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ArcGIS.ServiceModel.Common;
@@ -114,15 +113,27 @@ namespace ArcGIS.ServiceModel
             catch (HttpRequestException ex)
             {
                 // don't have access to the folder
-                System.Diagnostics.Debug.WriteLine("HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                result.Add(new SiteFolderDescription
+                {
+                    Error = new ArcGISError
+                    {
+                        Message = "HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl,
+                        Details = new[] { ex.ToString() }
+                    }
+                });
                 return result;
             }
             catch (System.Runtime.Serialization.SerializationException ex)
             {
                 // don't have access to the folder
-                System.Diagnostics.Debug.WriteLine("SerializationException for Get SiteFolderDescription at path " + endpoint.RelativeUrl);
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                result.Add(new SiteFolderDescription
+                {
+                    Error = new ArcGISError
+                    {
+                        Message = "SerializationException for Get SiteFolderDescription at path " + endpoint.RelativeUrl,
+                        Details = new[] { ex.ToString() }
+                    }
+                });
                 return result;
             }
             if (ct.IsCancellationRequested) return result;
@@ -312,13 +323,14 @@ namespace ArcGIS.ServiceModel
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
         public PortalGatewayBase(String rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
         {
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
+
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
 
             _httpClient = HttpClientFactory.Get();
-            System.Diagnostics.Debug.WriteLine("Created PortalGateway for " + RootUrl);
         }
 
         ~PortalGatewayBase()
@@ -541,6 +553,8 @@ namespace ArcGIS.ServiceModel
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
+            Guard.AgainstNullArgument("requestObject", requestObject);
+
             var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
             if (url.Length > 2000)
@@ -551,11 +565,15 @@ namespace ArcGIS.ServiceModel
 
         protected Task<T> Get<T>(IEndpoint endpoint, CancellationToken ct) where T : IPortalResponse
         {
+            Guard.AgainstNullArgument("endpoint", endpoint);
+
             return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), ct);
         }
 
         protected async Task<T> Get<T>(String url, CancellationToken ct) where T : IPortalResponse
         {
+            Guard.AgainstNullArgument("url", url);
+
             var token = await CheckGenerateToken(ct);
             if (ct.IsCancellationRequested) return default(T);
 
@@ -574,7 +592,6 @@ namespace ArcGIS.ServiceModel
 
             _httpClient.CancelPendingRequests();
 
-            System.Diagnostics.Debug.WriteLine(uri);
             String resultString = String.Empty;
             try
             {
@@ -583,13 +600,11 @@ namespace ArcGIS.ServiceModel
 
                 resultString = await response.Content.ReadAsStringAsync();
             }
-            catch (TaskCanceledException cex)
+            catch (TaskCanceledException)
             {
-                System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return default(T);
             }
 
-            System.Diagnostics.Debug.WriteLine(resultString);
             var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
@@ -601,6 +616,8 @@ namespace ArcGIS.ServiceModel
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
+            Guard.AgainstNullArgument("requestObject", requestObject);
+
             var endpoint = requestObject;
             var parameters = Serializer.AsDictionary(requestObject);
 
@@ -639,7 +656,6 @@ namespace ArcGIS.ServiceModel
             if (!validUrl)
                 throw new HttpRequestException(String.Format("Not a valid url: {0}", url));
 
-            System.Diagnostics.Debug.WriteLine(uri);
             String resultString = String.Empty;
             try
             {
@@ -648,13 +664,11 @@ namespace ArcGIS.ServiceModel
 
                 resultString = await response.Content.ReadAsStringAsync();
             }
-            catch (TaskCanceledException cex)
+            catch (TaskCanceledException)
             {
-                System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return default(T);
             }
 
-            System.Diagnostics.Debug.WriteLine(resultString);
             var result = Serializer.AsPortalResponse<T>(resultString);
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
 
@@ -664,6 +678,9 @@ namespace ArcGIS.ServiceModel
 
         internal static String AsRequestQueryString<T>(ISerializer serializer, T objectToConvert) where T : CommonParameters
         {
+            Guard.AgainstNullArgument("serializer", serializer);
+            Guard.AgainstNullArgument("objectToConvert", objectToConvert);
+
             var dictionary = serializer.AsDictionary(objectToConvert);
 
             return "?" + String.Join("&", dictionary.Keys.Select(k => String.Format("{0}={1}", k, dictionary[k].UrlEncode())));

@@ -18,8 +18,8 @@ namespace ArcGIS.ServiceModel.Operation
         /// <param name="endpoint">Resource to apply the query against</param>
         public Query(ArcGISServerEndpoint endpoint)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Query);  
+            Guard.AgainstNullArgument("endpoint", endpoint);
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Query);
 
             Where = "1=1";
             OutFields = new List<String>();
@@ -215,7 +215,7 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "objectIds")]
         public int[] ObjectIds { get; set; }
     }
-    
+
     /// <summary>
     /// Perform a query that only returns a count of the results
     /// </summary>

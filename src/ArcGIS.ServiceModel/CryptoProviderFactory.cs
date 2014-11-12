@@ -21,8 +21,9 @@ namespace ArcGIS.ServiceModel
     {
         public Operation.GenerateToken Encrypt(Operation.GenerateToken tokenRequest, byte[] exponent, byte[] modulus)
         {
-            if (exponent == null || modulus == null)
-                throw new InvalidOperationException("Exponent and modulus must be set");
+            Guard.AgainstNullArgument("tokenRequest", tokenRequest);
+            Guard.AgainstNullArgument("exponent", exponent);
+            Guard.AgainstNullArgument("modulus", modulus);
 
             using (var rsa = new System.Security.Cryptography.RSACryptoServiceProvider(512))
             {

@@ -68,8 +68,8 @@ namespace ArcGIS.ServiceModel.Operation
 
         public void Encrypt(string username, string password, string expiration = "", string client = "", string referer = "")
         {
-            if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username");
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password");
+            Guard.AgainstNullArgument("username", username);
+            Guard.AgainstNullArgument("password", password);
             Username = username;
             Password = password;
             if (!string.IsNullOrWhiteSpace(expiration)) _expiration = expiration;
@@ -91,7 +91,7 @@ namespace ArcGIS.ServiceModel.Operation
 
         public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
 
             return IsFederated
                 ? (DontForceHttps ? rootUrl.Replace("sharing/rest/", "") + "sharing/rest/" : rootUrl.Replace("http://", "https://").Replace("sharing/rest/", "") + "sharing/rest/") + RelativeUrl.Replace("tokens/", "")
@@ -181,7 +181,7 @@ namespace ArcGIS.ServiceModel.Operation
 
         public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
 
             return (DontForceHttps ?
                 rootUrl.Replace("sharing/rest/", "") + "sharing/rest/" :

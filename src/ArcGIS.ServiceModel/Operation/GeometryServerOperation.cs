@@ -20,10 +20,10 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public SimplifyGeometry(IEndpoint endpoint, List<Feature<T>> features = null, SpatialReference spatialReference = null)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
+            Guard.AgainstNullArgument("endpoint", endpoint);
             Endpoint = (endpoint is AbsoluteEndpoint) ?
-               (IEndpoint) new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify)
-             : (IEndpoint) new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify);
+               (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify)
+             : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify);
 
             Geometries = new GeometryCollection<T> { Geometries = features == null ? null : features.Select(f => f.Geometry).ToList() };
             SpatialReference = spatialReference;
@@ -128,7 +128,7 @@ namespace ArcGIS.ServiceModel.Operation
             SpatialReference outputSpatialReference,
             string operation)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
+            Guard.AgainstNullArgument("endpoint", endpoint);
             Endpoint = (endpoint is AbsoluteEndpoint) ?
                (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation)
              : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation);

@@ -14,7 +14,7 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public ApplyEdits(ArcGISServerEndpoint endpoint)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
+            Guard.AgainstNullArgument("endpoint", endpoint);
             Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ApplyEdits);           
         }
 

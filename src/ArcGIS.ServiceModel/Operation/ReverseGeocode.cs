@@ -6,7 +6,7 @@ namespace ArcGIS.ServiceModel.Operation
 {
     [DataContract]
     public abstract class GeocodeOperation : ArcGISServerOperation
-    {       
+    {
         /// <summary>
         /// Defines an origin point location that is used with the distance parameter to sort geocoding candidates based upon their proximity to the location. 
         /// The distance parameter specifies the radial distance from the location in meters. 
@@ -24,7 +24,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// You must pass a bbox value in addition to location/distance if you want to confine the search results to a specific area.
         /// </summary>
         [DataMember(Name = "distance")]
-        public double? Distance { get; set; }        
+        public double? Distance { get; set; }
     }
 
     /// <summary>
@@ -37,8 +37,8 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public ReverseGeocode(ArcGISServerEndpoint endpoint)
         {
-            if (endpoint == null) throw new ArgumentNullException("endpoint");
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ReverseGeocode);  
+            Guard.AgainstNullArgument("endpoint", endpoint);
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ReverseGeocode);
 
             Distance = 100;
         }

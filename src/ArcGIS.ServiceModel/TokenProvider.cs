@@ -25,16 +25,14 @@ namespace ArcGIS.ServiceModel
         public FederatedTokenProvider(ITokenProvider tokenProvider, string rootUrl, string serverUrl, ISerializer serializer = null, string referer = null)
         {
             Guard.AgainstNullArgument("tokenProvider", tokenProvider);
-            Guard.AgainstNullArgument("rootUrl", rootUrl);
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
             Guard.AgainstNullArgument("serverUrl", serverUrl);
 
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
 
             RootUrl = rootUrl.AsRootUrl();
-
             _httpClient = HttpClientFactory.Get();
-
             TokenRequest = new GenerateFederatedToken(serverUrl, tokenProvider) { Referer = referer };
         }
 
@@ -98,13 +96,11 @@ namespace ArcGIS.ServiceModel
 
                 resultString = await response.Content.ReadAsStringAsync();
             }
-            catch (TaskCanceledException cex)
+            catch (TaskCanceledException)
             {
-                System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return null;
             }
 
-            System.Diagnostics.Debug.WriteLine("Generate federated token result: " + resultString);
             var result = Serializer.AsPortalResponse<Token>(resultString);
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
@@ -138,19 +134,14 @@ namespace ArcGIS.ServiceModel
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public ArcGISOnlineAppLoginOAuthProvider(string clientId, string clientSecret, ISerializer serializer = null)
         {
-            if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
-            {
-                System.Diagnostics.Debug.WriteLine("ArcGISOnlineAppLoginOAuthProvider not initialized as client Id/secret not supplied.");
-                return;
-            }
+            Guard.AgainstNullArgument("clientId", clientId);
+            Guard.AgainstNullArgument("clientSecret", clientSecret);
 
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
             OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
 
             _httpClient = HttpClientFactory.Get();
-
-            System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
 
         ~ArcGISOnlineAppLoginOAuthProvider()
@@ -208,13 +199,11 @@ namespace ArcGIS.ServiceModel
 
                 resultString = await response.Content.ReadAsStringAsync();
             }
-            catch (TaskCanceledException cex)
+            catch (TaskCanceledException)
             {
-                System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return null;
             }
 
-            System.Diagnostics.Debug.WriteLine("Generate OAuth token result: " + resultString);
             var result = Serializer.AsPortalResponse<OAuthToken>(resultString);
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
@@ -287,11 +276,9 @@ namespace ArcGIS.ServiceModel
         /// <param name="useEncryption">If true then the token generation request will be encryted</param>
         public TokenProvider(string rootUrl, string username, string password, ISerializer serializer = null, string referer = "", ICryptoProvider cryptoProvider = null)
         {
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-            {
-                System.Diagnostics.Debug.WriteLine("TokenProvider for '" + RootUrl + "' not initialized as username/password not supplied.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
+            Guard.AgainstNullArgument("username", username);
+            Guard.AgainstNullArgument("password", password);
 
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
@@ -301,8 +288,6 @@ namespace ArcGIS.ServiceModel
             UserName = username;
 
             _httpClient = HttpClientFactory.Get();
-
-            System.Diagnostics.Debug.WriteLine("Created TokenProvider for " + RootUrl);
         }
 
         ~TokenProvider()
@@ -385,15 +370,13 @@ namespace ArcGIS.ServiceModel
                     response.EnsureSuccessStatusCode();
                     publicKeyResultString = await response.Content.ReadAsStringAsync();
                 }
-                catch (TaskCanceledException cex)
+                catch (TaskCanceledException)
                 {
-                    System.Diagnostics.Debug.WriteLine(cex.ToString());
                     return null;
                 }
-                catch (HttpRequestException ex)
+                catch (HttpRequestException)
                 {
                     CanAccessPublicKeyEndpoint = false;
-                    System.Diagnostics.Debug.WriteLine("Public Key access failed for " + encryptionInfoEndpoint + ". " + ex.ToString());
                 }
 
                 if (ct.IsCancellationRequested) return null;
@@ -420,13 +403,11 @@ namespace ArcGIS.ServiceModel
 
                 resultString = await response.Content.ReadAsStringAsync();
             }
-            catch (TaskCanceledException cex)
+            catch (TaskCanceledException)
             {
-                System.Diagnostics.Debug.WriteLine(cex.ToString());
                 return null;
             }
 
-            System.Diagnostics.Debug.WriteLine("Generate token result: " + resultString);
             var result = Serializer.AsPortalResponse<Token>(resultString);
 
             if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());

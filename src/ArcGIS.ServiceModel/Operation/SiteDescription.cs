@@ -55,7 +55,6 @@ namespace ArcGIS.ServiceModel.Operation
                 {
                     yield return new ArcGISServerEndpoint(string.Format("{0}/{1}", service.Name, service.Type));
                 }
-                
             }
         }
     }
