@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ArcGIS.ServiceModel.Common;
 
@@ -15,13 +14,13 @@ namespace ArcGIS.ServiceModel.Operation
         public ApplyEdits(ArcGISServerEndpoint endpoint)
         {
             Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ApplyEdits);           
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ApplyEdits);
         }
 
         /// <summary>
         /// The array of features to be added.
         /// </summary>
-        [DataMember(Name="adds")]
+        [DataMember(Name = "adds")]
         public List<Feature<T>> Adds { get; set; }
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "deletes")]
         public string DeleteIds { get { return Deletes == null ? string.Empty : string.Join(",", Deletes); } }
     }
-    
+
     /// <summary>
     ///  Results of the apply edits. The results are grouped by type of edit.
     /// </summary>
