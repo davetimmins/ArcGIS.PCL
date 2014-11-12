@@ -28,7 +28,7 @@ with
 
 Target "BuildWindows" (fun _ ->
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net4+sl5+netcore45+wp8+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "portable-net4+win81+wp81+MonoAndroid1+MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.NET/*.csproj"
@@ -40,11 +40,11 @@ Target "BuildWindows" (fun _ ->
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.WinStore/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "win8") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "win81") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.WP/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "wp8") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "wp81") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.Serializers.*/*.csproj"
@@ -58,7 +58,7 @@ Target "BuildWindows" (fun _ ->
 
 Target "BuildMono" (fun _ ->
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net4+sl5+netcore45+wp8+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "portable-net4+win81+wp81+MonoAndroid1+MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.NET/*.csproj"
@@ -80,7 +80,7 @@ Target "BuildMono" (fun _ ->
 
 Target "BuildAll" (fun _ ->
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net4+sl5+netcore45+wp8+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "portable-net4+win81+wp81+MonoAndroid1+MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.Android/*.csproj"
@@ -100,11 +100,11 @@ Target "BuildAll" (fun _ ->
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.WinStore/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "win8") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "win81") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.WP/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "wp8") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "wp81") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.Serializers.*/*.csproj"

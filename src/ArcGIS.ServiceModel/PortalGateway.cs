@@ -32,7 +32,7 @@ namespace ArcGIS.ServiceModel
 
         protected override IEndpoint GeometryServiceEndpoint
         {
-            get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()); }
+            get { return GeometryServiceIEndpoint ?? (GeometryServiceIEndpoint = (IEndpoint)GeometryServerUrl.AsAbsoluteEndpoint()); }
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace ArcGIS.ServiceModel
         protected const String GeometryServerUrlRelative = "/Utilities/Geometry/GeometryServer";
         protected const String GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
         HttpClient _httpClient;
-        protected IEndpoint _geometryServiceEndpoint;
+        protected IEndpoint GeometryServiceIEndpoint;
 
         /// <summary>
         /// Create an ArcGIS Server gateway to access secure resources
@@ -354,7 +354,7 @@ namespace ArcGIS.ServiceModel
 
         protected virtual IEndpoint GeometryServiceEndpoint
         {
-            get { return _geometryServiceEndpoint ?? (_geometryServiceEndpoint = (IEndpoint)GeometryServerUrlRelative.AsEndpoint()); }
+            get { return GeometryServiceIEndpoint ?? (GeometryServiceIEndpoint = (IEndpoint)GeometryServerUrlRelative.AsEndpoint()); }
         }
 
         /// <summary>

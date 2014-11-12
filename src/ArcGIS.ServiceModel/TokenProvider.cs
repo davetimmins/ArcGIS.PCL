@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ArcGIS.ServiceModel
 {
-    public class FederatedTokenProvider : ITokenProvider
+    public class FederatedTokenProvider : ITokenProvider, IDisposable
     {
         HttpClient _httpClient;
         protected readonly GenerateFederatedToken TokenRequest;
@@ -24,19 +24,42 @@ namespace ArcGIS.ServiceModel
         /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the portal rootUrl</param>
         public FederatedTokenProvider(ITokenProvider tokenProvider, string rootUrl, string serverUrl, ISerializer serializer = null, string referer = null)
         {
-            if (tokenProvider == null) throw new ArgumentNullException("tokenProvider", "ITokenProvider has not been set.");
+            Guard.AgainstNullArgument("tokenProvider", tokenProvider);
+            Guard.AgainstNullArgument("rootUrl", rootUrl);
+            Guard.AgainstNullArgument("serverUrl", serverUrl);
 
             Serializer = serializer ?? SerializerFactory.Get();
             if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
-
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl has not been set.");
-            if (string.IsNullOrWhiteSpace(serverUrl)) throw new ArgumentNullException("serverUrl", "serverUrl has not been set.");
 
             RootUrl = rootUrl.AsRootUrl();
 
             _httpClient = HttpClientFactory.Get();
 
             TokenRequest = new GenerateFederatedToken(serverUrl, tokenProvider) { Referer = referer };
+        }
+
+        ~FederatedTokenProvider()
+        {
+            Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_httpClient != null)
+                {
+                    _httpClient.Dispose();
+                    _httpClient = null;
+                }
+                _token = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public ISerializer Serializer { get; private set; }

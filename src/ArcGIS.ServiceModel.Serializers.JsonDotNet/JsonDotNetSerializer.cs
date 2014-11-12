@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ArcGIS.ServiceModel;
+﻿using System.Collections.Generic;
 using ArcGIS.ServiceModel.Operation;
 
 namespace ArcGIS.ServiceModel.Serializers
@@ -46,6 +44,4 @@ namespace ArcGIS.ServiceModel.Serializers
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dataToConvert, _settings);
         }
     }
-
-
 }
