@@ -32,10 +32,24 @@ namespace ArcGIS.ServiceModel.Common
         public ArcGISServerEndpoint(string relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath", "relativePath is null.");
-            RelativeUrl = relativePath.Trim('/');
-            if (RelativeUrl.IndexOf("rest/services") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("rest/services"));
+
+            Uri uri;
+            if (!Uri.TryCreate(relativePath, UriKind.RelativeOrAbsolute, out uri))
+                throw new InvalidOperationException("Not a valid relative url " + relativePath);
+
+            if (uri.IsAbsoluteUri)
+            {
+                RelativeUrl = uri.AbsolutePath.Trim('/') + "/";
+            }
+            else
+            {
+                RelativeUrl = uri.OriginalString.Trim('/') + "/";
+            }
+
+            if (RelativeUrl.IndexOf("rest/services/", StringComparison.OrdinalIgnoreCase) > -1)
+                RelativeUrl = RelativeUrl.Substring(RelativeUrl.LastIndexOf("rest/services/", StringComparison.OrdinalIgnoreCase));
             RelativeUrl = RelativeUrl.Replace("rest/services/", "");
-            RelativeUrl = "rest/services/" + RelativeUrl;
+            RelativeUrl = "rest/services/" + RelativeUrl.Trim('/');
         }
 
         public string RelativeUrl { get; private set; }
@@ -61,10 +75,24 @@ namespace ArcGIS.ServiceModel.Common
         public ArcGISServerAdminEndpoint(string relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath", "relativePath is null.");
-            RelativeUrl = relativePath.Trim('/');
-            if (RelativeUrl.IndexOf("admin") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("admin"));
+
+            Uri uri;
+            if (!Uri.TryCreate(relativePath, UriKind.RelativeOrAbsolute, out uri))
+                throw new InvalidOperationException("Not a valid relative url " + relativePath);
+
+            if (uri.IsAbsoluteUri)
+            {
+                RelativeUrl = uri.AbsolutePath.Trim('/') + "/";
+            }
+            else
+            {
+                RelativeUrl = uri.OriginalString.Trim('/') + "/";
+            }
+
+            if (RelativeUrl.IndexOf("admin/", StringComparison.OrdinalIgnoreCase) > -1)
+                RelativeUrl = RelativeUrl.Substring(RelativeUrl.LastIndexOf("admin/", StringComparison.OrdinalIgnoreCase));
             RelativeUrl = RelativeUrl.Replace("admin/", "");
-            RelativeUrl = "admin/" + RelativeUrl;
+            RelativeUrl = "admin/" + RelativeUrl.Trim('/');
         }
 
         public string RelativeUrl { get; private set; }
@@ -87,9 +115,24 @@ namespace ArcGIS.ServiceModel.Common
         public ArcGISOnlineEndpoint(string relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath", "relativePath is null.");
-            RelativeUrl = relativePath.Trim('/');
-            if (RelativeUrl.IndexOf("sharing/rest") > 0) RelativeUrl = RelativeUrl.Substring(RelativeUrl.IndexOf("sharing/rest"));
+
+            Uri uri;
+            if (!Uri.TryCreate(relativePath, UriKind.RelativeOrAbsolute, out uri))
+                throw new InvalidOperationException("Not a valid relative url " + relativePath);
+
+            if (uri.IsAbsoluteUri)
+            {
+                RelativeUrl = uri.AbsolutePath.Trim('/') + "/";
+            }
+            else
+            {
+                RelativeUrl = uri.OriginalString.Trim('/') + "/";
+            }
+
+            if (RelativeUrl.IndexOf("sharing/rest/", StringComparison.OrdinalIgnoreCase) > -1)
+                RelativeUrl = RelativeUrl.Substring(RelativeUrl.LastIndexOf("sharing/rest/", StringComparison.OrdinalIgnoreCase));
             RelativeUrl = RelativeUrl.Replace("sharing/rest/", "");
+            RelativeUrl = "sharing/rest/" + RelativeUrl.Trim('/');
         }
 
         public string RelativeUrl { get; private set; }
@@ -107,7 +150,7 @@ namespace ArcGIS.ServiceModel.Common
     public class AbsoluteEndpoint : IEndpoint
     {
         /// <summary>
-        /// Create an IEndpoint for the path 
+        /// Create an IEndpoint for the path
         /// </summary>
         /// <param name="path"></param>
         public AbsoluteEndpoint(string path)

@@ -119,7 +119,7 @@ namespace ArcGIS.Test
 
             Assert.NotNull(response);
             Assert.True(response.Version > 0);
-            
+
             foreach (var resource in response.ArcGISServerEndpoints)
             {
                 var ping = await gateway.Ping(resource);
@@ -134,6 +134,50 @@ namespace ArcGIS.Test
             Assert.True(gateway.RootUrl.EndsWith("/"));
             Assert.True(gateway.RootUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) || gateway.RootUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase));
             Assert.False(gateway.RootUrl.ToLowerInvariant().Contains("/rest/services/"));
+
+            Assert.Throws<ArgumentNullException>(() => "".AsRootUrl());
+
+            var rootUrl = "https://www.arcgis.com/arcgis".AsRootUrl();
+            Assert.Equal("https://www.arcgis.com/arcgis/", rootUrl);
+
+            rootUrl = "https://www.arcgis.com/ArcGIS".AsRootUrl();
+            Assert.Equal("https://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/".AsRootUrl();
+            Assert.NotEqual("http://www.arcgis.com/arcgis/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/rest/services".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/rest/services/".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/rest/services/rest/services".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/rest/services/rest/services/".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/admin".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/admin/".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/rest/admin/services".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/rest/admin/services/".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+
+            rootUrl = "http://www.arcgis.com/ArcGIS/rest/ADMIN/services/".AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
         }
 
         [Fact]
