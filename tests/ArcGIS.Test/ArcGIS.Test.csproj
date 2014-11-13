@@ -35,17 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
-      <HintPath>..\..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -89,9 +78,9 @@
     <Compile Include="SecureGISGatewayTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ArcGIS.ServiceModel.NETv4\ArcGIS.ServiceModel.NETv4.csproj">
-      <Project>{e89e2a1f-acc7-4f01-b66b-83c000061428}</Project>
-      <Name>ArcGIS.ServiceModel.NETv4</Name>
+    <ProjectReference Include="..\..\src\ArcGIS.ServiceModel.NET\ArcGIS.ServiceModel.NET.csproj">
+      <Project>{eba52c4d-2d08-4fe6-aa52-8118774b4362}</Project>
+      <Name>ArcGIS.ServiceModel.NET</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\ArcGIS.ServiceModel.Serializers.JsonDotNet\ArcGIS.ServiceModel.Serializers.JsonDotNet.csproj">
       <Project>{9eec199f-9d98-48d0-a8e7-54609a686f07}</Project>

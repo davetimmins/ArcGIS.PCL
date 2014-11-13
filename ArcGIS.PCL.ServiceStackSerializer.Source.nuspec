@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata minClientVersion="2.8.1">
-    <id>ArcGIS.PCL.ServiceStackSerializer</id>
+    <id>ArcGIS.PCL.ServiceStackSerializer.Source</id>
     <version>@build.number@</version>
     <title>ArcGIS Server Gateway ServiceStack.Text Serializer</title>
     <authors>Dave Timmins</authors>
@@ -10,24 +10,25 @@
     <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo_serializer.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-      ServiceStack.Text implementation of an ISerializer to use with ArcGIS.PCL.
+      ServiceStack.Text source code implementation of an ISerializer to use with ArcGIS.PCL.
 
       To use just call ServiceStackSerializer.Init().
     </description>
     <summary>
-      ServiceStack.Text implementation of an ISerializer to use with ArcGIS.PCL.
+      ServiceStack.Text source code implementation of an ISerializer to use with ArcGIS.PCL.
     </summary>
     <releaseNotes>
       Initial release
     </releaseNotes>
     <language />
     <tags>ArcGIS PCL Json Serializer</tags>
+    <developmentDependency>true</developmentDependency>
     <dependencies>
-      <dependency id="ServiceStack.Text" version="4.0.32" />
-      <dependency id="ArcGIS.PCL" version="5.0.0" />
+      <dependency id="ServiceStack.Text" version="3.9.71" />
+      <dependency id="ArcGIS.PCL" version="4.1.1" />
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.ServiceStack.dll" target="lib\ArcGIS.ServiceModel.Serializers.ServiceStack.dll" />
+    <file src="artifacts\build\serializers\ServiceStackSerializer.cs.pp" target="content\portable-net45+win81+wp81+MonoAndroid1+MonoTouch1" />
   </files>
 </package>

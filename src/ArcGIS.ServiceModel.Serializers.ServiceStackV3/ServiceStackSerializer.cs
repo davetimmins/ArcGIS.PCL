@@ -1,9 +1,8 @@
-﻿using ArcGIS.ServiceModel.Operation;
-using System;
-using System.Collections.Generic;
-
-namespace ArcGIS.ServiceModel.Serializers
+﻿namespace ArcGIS.ServiceModel.Serializers
 {
+    using ArcGIS.ServiceModel.Operation;
+    using System.Collections.Generic;
+
     public class ServiceStackSerializer : ISerializer
     {
         static ISerializer _serializer = null;

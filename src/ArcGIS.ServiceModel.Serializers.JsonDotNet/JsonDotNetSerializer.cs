@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using ArcGIS.ServiceModel.Operation;
-
-namespace ArcGIS.ServiceModel.Serializers
+﻿namespace ArcGIS.ServiceModel.Serializers
 {
+    using System.Collections.Generic;
+    using ArcGIS.ServiceModel.Operation;
+
     public class JsonDotNetSerializer : ISerializer
     {
         static ISerializer _serializer = null;

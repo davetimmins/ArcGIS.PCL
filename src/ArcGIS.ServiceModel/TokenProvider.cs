@@ -236,7 +236,7 @@ namespace ArcGIS.ServiceModel
     /// <summary>
     /// Provides a token for ArcGIS Server when it is federated with Portal for ArcGIS
     /// </summary>
-    public class PortalFederatedTokenProvider : TokenProvider
+    public class ServerFederatedWithPortalTokenProvider : TokenProvider
     {
         /// <summary>
         /// Create a token provider to authenticate against an ArcGIS Server federated with Portal for ArcGIS
@@ -246,7 +246,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="password">Portal for ArcGIS user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the rootUrl + '/rest'</param>
-        public PortalFederatedTokenProvider(string rootUrl, string username, string password, ISerializer serializer = null, string referer = null)
+        public ServerFederatedWithPortalTokenProvider(string rootUrl, string username, string password, ISerializer serializer = null, string referer = null)
             : base(rootUrl, username, password, serializer, referer)
         {
             TokenRequest.IsFederated = true;
