@@ -33,7 +33,7 @@ namespace ArcGIS.ServiceModel.Operation
         ///  The object IDs of this layer / table to be deleted.
         /// </summary>
         [IgnoreDataMember]
-        public List<int> Deletes { get; set; }
+        public List<long> Deletes { get; set; }
 
         [DataMember(Name = "deletes")]
         public string DeleteIds { get { return Deletes == null ? string.Empty : string.Join(",", Deletes); } }
@@ -62,7 +62,7 @@ namespace ArcGIS.ServiceModel.Operation
     public class ApplyEditResponse : PortalResponse
     {
         [DataMember(Name = "objectId")]
-        public int ObjectId { get; set; }
+        public long ObjectId { get; set; }
 
         [DataMember(Name = "globalId")]
         public string GlobalId { get; set; }

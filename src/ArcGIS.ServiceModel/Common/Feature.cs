@@ -13,12 +13,12 @@ namespace ArcGIS.ServiceModel.Common
     [DataContract]
     public class Feature<T> : IEquatable<Feature<T>> where T : IGeometry
     {
-        const String ObjectIDName = "objectid";
-        const String GlobalIDName = "globalid";
+        const string ObjectIDName = "objectid";
+        const string GlobalIDName = "globalid";
 
         public Feature()
         {
-            Attributes = new Dictionary<String, object>();
+            Attributes = new Dictionary<string, object>();
         }
 
         [DataMember(Name = "geometry")]
@@ -31,7 +31,7 @@ namespace ArcGIS.ServiceModel.Common
         /// </summary>
         /// <remarks>Date values are encoded as numbers. The number represents the number of milliseconds since epoch (January 1, 1970) in UTC.</remarks>
         [DataMember(Name = "attributes")]
-        public Dictionary<String, object> Attributes { get; set; }
+        public Dictionary<string, object> Attributes { get; set; }
 
         long _oid = 0;
         /// <summary>
@@ -43,7 +43,7 @@ namespace ArcGIS.ServiceModel.Common
             {
                 if (Attributes != null && Attributes.Any() && _oid == 0)
                 {
-                    var copy = new Dictionary<String, object>(Attributes, StringComparer.OrdinalIgnoreCase);
+                    var copy = new Dictionary<string, object>(Attributes, StringComparer.OrdinalIgnoreCase);
                     if (copy.ContainsKey(ObjectIDName)) _oid = long.Parse(copy[ObjectIDName].ToString());
                 }
 
@@ -51,17 +51,17 @@ namespace ArcGIS.ServiceModel.Common
             }
         }
 
-        String _globalID = "";
+        string _globalID = "";
         /// <summary>
         /// Get the GlobalID for the feature. Will return an empty string if not found
         /// </summary>
-        public String GlobalID
+        public string GlobalID
         {
             get
             {
-                if (Attributes != null && Attributes.Any() && String.IsNullOrWhiteSpace(_globalID))
+                if (Attributes != null && Attributes.Any() && string.IsNullOrWhiteSpace(_globalID))
                 {
-                    var copy = new Dictionary<String, object>(Attributes, StringComparer.OrdinalIgnoreCase);
+                    var copy = new Dictionary<string, object>(Attributes, StringComparer.OrdinalIgnoreCase);
                     if (copy.ContainsKey(GlobalIDName)) _globalID = copy[GlobalIDName].ToString();
                 }
 

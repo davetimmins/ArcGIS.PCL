@@ -274,7 +274,7 @@ namespace ArcGIS.Test
             var queryPointByOID = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
             {
                 ReturnGeometry = false,
-                ObjectIds = resultPoint.Features.Take(10).Select(f => int.Parse(f.Attributes["objectid"].ToString())).ToList()
+                ObjectIds = resultPoint.Features.Take(10).Select(f => long.Parse(f.Attributes["objectid"].ToString())).ToList()
             };
             var resultPointByOID = await gateway.Query<Point>(queryPointByOID);
 
@@ -282,6 +282,7 @@ namespace ArcGIS.Test
             Assert.True(resultPointByOID.Features.All(i => i.Geometry == null));
             Assert.True(resultPoint.Features.Count() > 10);
             Assert.True(resultPointByOID.Features.Count() == 10);
+            Assert.False(queryPointByOID.ObjectIds.Except(resultPointByOID.Features.Select(f => f.ObjectID)).Any());
         }
 
 
@@ -452,7 +453,7 @@ namespace ArcGIS.Test
 
             var deletes = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
             {
-                Deletes = new List<int> { id }
+                Deletes = new List<long> { id }
             };
             var resultDelete = await gateway.ApplyEdits(deletes);
 

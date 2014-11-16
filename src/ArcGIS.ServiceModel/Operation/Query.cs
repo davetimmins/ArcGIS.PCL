@@ -22,7 +22,7 @@ namespace ArcGIS.ServiceModel.Operation
             Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Query);
 
             Where = "1=1";
-            OutFields = new List<String>();
+            OutFields = new List<string>();
             ReturnGeometry = true;
             SpatialRelationship = SpatialRelationshipTypes.Intersects;
         }
@@ -32,13 +32,13 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>Default is '1=1'</remarks>
         [DataMember(Name = "where")]
-        public String Where { get; set; }
+        public string Where { get; set; }
 
         /// <summary>
         ///  The names of the fields to search.
         /// </summary>
         [IgnoreDataMember]
-        public List<String> OutFields { get; set; }
+        public List<string> OutFields { get; set; }
 
         /// <summary>
         /// The list of fields to be included in the returned resultset. This list is a comma delimited list of field names. 
@@ -46,19 +46,19 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>Default is '*' (all fields)</remarks>
         [DataMember(Name = "outFields")]
-        public String OutFieldsValue { get { return OutFields == null || !OutFields.Any() ? "*" : String.Join(",", OutFields); } }
+        public string OutFieldsValue { get { return OutFields == null || !OutFields.Any() ? "*" : string.Join(",", OutFields); } }
 
         /// <summary>
         ///  The object IDs of this layer/table to be queried.
         /// </summary>
         [IgnoreDataMember]
-        public List<int> ObjectIds { get; set; }
+        public List<long> ObjectIds { get; set; }
 
         /// <summary>
         /// The list of object Ids to be queried. This list is a comma delimited list of field names. 
         /// </summary>
         [DataMember(Name = "objectIds")]
-        public String ObjectIdsValue { get { return ObjectIds == null || !ObjectIds.Any() ? "" : String.Join(",", ObjectIds); } }
+        public string ObjectIdsValue { get { return ObjectIds == null || !ObjectIds.Any() ? "" : string.Join(",", ObjectIds); } }
 
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>Default is esriGeometryEnvelope</remarks>
         [DataMember(Name = "geometryType")]
-        public String GeometryType
+        public string GeometryType
         {
             get
             {
@@ -110,7 +110,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses | esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps | esriSpatialRelTouches | esriSpatialRelWithin | esriSpatialRelRelation
         /// </summary>
         [DataMember(Name = "spatialRel")]
-        public String SpatialRelationship { get; set; }
+        public string SpatialRelationship { get; set; }
 
         /// <summary>
         /// If true, the resultset includes the geometry associated with each result.
@@ -130,11 +130,11 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>If no To value is specified we will use the From value again, equivalent of using a time instant.</remarks>
         [DataMember(Name = "time")]
-        public String Time
+        public string Time
         {
             get
             {
-                return (From == null) ? String.Empty : String.Format("{0},{1}",
+                return (From == null) ? string.Empty : string.Format("{0},{1}",
                   From.Value.ToUnixTime(),
                   (To ?? From.Value).ToUnixTime());
             }
@@ -171,7 +171,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// GeoDatabase version to query.
         /// </summary>
         [DataMember(Name = "gdbVersion")]
-        public String GdbVersion { get; set; }
+        public string GdbVersion { get; set; }
 
         /// <summary>
         /// If true, returns distinct values based on the fields specified in outFields. 
@@ -210,10 +210,10 @@ namespace ArcGIS.ServiceModel.Operation
     public class QueryForIdsResponse : PortalResponse
     {
         [DataMember(Name = "objectIdFieldName")]
-        public String ObjectIdFieldName { get; set; }
+        public string ObjectIdFieldName { get; set; }
 
         [DataMember(Name = "objectIds")]
-        public int[] ObjectIds { get; set; }
+        public long[] ObjectIds { get; set; }
     }
 
     /// <summary>
@@ -241,7 +241,7 @@ namespace ArcGIS.ServiceModel.Operation
 
     public static class GeometryTypes
     {
-        internal readonly static Dictionary<Type, Func<String>> TypeMap = new Dictionary<Type, Func<String>>
+        internal readonly static Dictionary<Type, Func<string>> TypeMap = new Dictionary<Type, Func<string>>
             {
                 { typeof(Point), () => GeometryTypes.Point },
                 { typeof(MultiPoint), () => GeometryTypes.MultiPoint },
@@ -250,23 +250,23 @@ namespace ArcGIS.ServiceModel.Operation
                 { typeof(Polyline), () => GeometryTypes.Polyline }
             };
 
-        public const String Point = "esriGeometryPoint";
-        public const String MultiPoint = "esriGeometryMultipoint";
-        public const String Polyline = "esriGeometryPolyline";
-        public const String Polygon = "esriGeometryPolygon";
-        public const String Envelope = "esriGeometryEnvelope";
+        public const string Point = "esriGeometryPoint";
+        public const string MultiPoint = "esriGeometryMultipoint";
+        public const string Polyline = "esriGeometryPolyline";
+        public const string Polygon = "esriGeometryPolygon";
+        public const string Envelope = "esriGeometryEnvelope";
     }
 
     public static class SpatialRelationshipTypes
     {
-        public const String Intersects = "esriSpatialRelIntersects";
-        public const String Contains = "esriSpatialRelContains";
-        public const String Crosses = "esriSpatialRelCrosses";
-        public const String EnvelopeIntersects = "esriSpatialRelEnvelopeIntersects";
-        public const String IndexIntersects = "esriSpatialRelIndexIntersects";
-        public const String Overlaps = "esriSpatialRelOverlaps";
-        public const String Touches = "esriSpatialRelTouches";
-        public const String Within = "esriSpatialRelWithin";
-        public const String Relation = "esriSpatialRelRelation";
+        public const string Intersects = "esriSpatialRelIntersects";
+        public const string Contains = "esriSpatialRelContains";
+        public const string Crosses = "esriSpatialRelCrosses";
+        public const string EnvelopeIntersects = "esriSpatialRelEnvelopeIntersects";
+        public const string IndexIntersects = "esriSpatialRelIndexIntersects";
+        public const string Overlaps = "esriSpatialRelOverlaps";
+        public const string Touches = "esriSpatialRelTouches";
+        public const string Within = "esriSpatialRelWithin";
+        public const string Relation = "esriSpatialRelRelation";
     }
 }

@@ -4,7 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyCompanyAttribute("")]
 [assembly: AssemblyCopyrightAttribute("Copyright Dave Timmins (c) 2013")]
-[assembly: CLSCompliantAttribute(true)]
 [assembly: AssemblyProductAttribute("ArcGIS REST API ServiceModel PCL")]
 [assembly: AssemblyVersionAttribute("5.0.0")]
 [assembly: AssemblyFileVersionAttribute("5.0.0")]

@@ -98,7 +98,6 @@ Target "BuildAll" (fun _ ->
     CreateCSharpAssemblyInfo "./src/CommonAssemblyInfo.cs"
         [Attribute.Company ""
          Attribute.Copyright "Copyright Dave Timmins (c) 2013"
-         Attribute.CLSCompliant true
          Attribute.Product "ArcGIS REST API ServiceModel PCL"
          Attribute.Version assemblyVersion
          Attribute.FileVersion assemblyVersion

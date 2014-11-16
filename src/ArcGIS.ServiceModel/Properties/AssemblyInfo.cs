@@ -10,6 +10,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.Android")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.iOS")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.NET")]
-[assembly: InternalsVisibleTo("ArcGIS.ServiceModel.NETv4")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.WinStore")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.WP")]
