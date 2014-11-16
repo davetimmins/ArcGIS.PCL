@@ -1,5 +1,6 @@
 ﻿namespace ArcGIS.ServiceModel.Serializers
 {
+    using ArcGIS.ServiceModel;
     using ArcGIS.ServiceModel.Operation;
     using System.Collections.Generic;
 

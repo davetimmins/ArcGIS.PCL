@@ -15,7 +15,7 @@ namespace ArcGIS.Test
         { }
     }
 
-    public class GeocodeTests
+    public class GeocodeTests : TestsFixture
     {
         [Fact]
         public async Task CanGeocode()

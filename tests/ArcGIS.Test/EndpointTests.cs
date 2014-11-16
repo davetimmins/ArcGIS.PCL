@@ -4,7 +4,7 @@ using Xunit;
 
 namespace ArcGIS.Test
 {
-    public class EndpointTests
+    public class EndpointTests : TestsFixture
     {
         [Fact]
         public void ArcGISServerEndpointHasCorrectFormat()

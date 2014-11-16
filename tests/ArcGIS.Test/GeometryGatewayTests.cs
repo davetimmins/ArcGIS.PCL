@@ -1,17 +1,15 @@
-﻿using ArcGIS.ServiceModel.Common;
+﻿using ArcGIS.ServiceModel;
+using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Operation;
-using ArcGIS.ServiceModel;
-using System;
+using ArcGIS.ServiceModel.Serializers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using ArcGIS.ServiceModel.Serializers;
 
 namespace ArcGIS.Test
 {
-    public class GeometryGatewayTests
+    public class GeometryGatewayTests : TestsFixture
     {
         [Fact]
         public async Task CanProject()

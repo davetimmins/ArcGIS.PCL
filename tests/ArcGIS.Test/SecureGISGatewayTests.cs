@@ -1,12 +1,12 @@
-﻿using System;
+﻿using ArcGIS.ServiceModel;
+using ArcGIS.ServiceModel.Common;
+using ArcGIS.ServiceModel.Operation;
+using ArcGIS.ServiceModel.Serializers;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ArcGIS.ServiceModel.Common;
 using Xunit;
-using ArcGIS.ServiceModel;
-using ArcGIS.ServiceModel.Operation;
-using ArcGIS.ServiceModel.Serializers;
 
 namespace ArcGIS.Test
 {
@@ -39,7 +39,7 @@ namespace ArcGIS.Test
         { }
     }
 
-    public class SecureGISGatewayTests
+    public class SecureGISGatewayTests : TestsFixture
     {
         ServiceStackSerializer _serviceStackSerializer;
 

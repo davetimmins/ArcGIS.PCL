@@ -24,7 +24,7 @@
       ContractResolver setting has been removed from default settings
     </releaseNotes>
     <language />
-    <tags>ArcGIS PCL Json Serializer</tags>
+    <tags>ArcGIS PCL Json Serializer Json.NET</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="6.0.6" />
       <dependency id="ArcGIS.PCL" version="4.1.1" />

@@ -21,7 +21,7 @@
       Now targets .NET 4.5
     </releaseNotes>
     <language />
-    <tags>ArcGIS PCL Json Serializer</tags>
+    <tags>ArcGIS PCL Json Serializer ServiceStack</tags>
     <dependencies>
       <dependency id="ServiceStack.Text" version="[3.9.71,4)" />
       <dependency id="ArcGIS.PCL" version="4.1.1" />

@@ -3,7 +3,7 @@
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL.ServiceStackSerializer.Source</id>
     <version>@build.number@</version>
-    <title>ArcGIS Server Gateway ServiceStack.Text Serializer</title>
+    <title>ArcGIS Server Gateway ServiceStack.Text Serializer source code package</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
@@ -21,7 +21,7 @@
       Initial release
     </releaseNotes>
     <language />
-    <tags>ArcGIS PCL Json Serializer</tags>
+    <tags>ArcGIS PCL Json Serializer ServiceStack</tags>
     <developmentDependency>true</developmentDependency>
     <dependencies>
       <dependency id="ServiceStack.Text" version="3.9.71" />

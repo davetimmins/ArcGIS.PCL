@@ -72,7 +72,7 @@ namespace ArcGIS.Test
         { }
     }
 
-    public class ArcGISGatewayTests
+    public class ArcGISGatewayTests : TestsFixture
     {
         ServiceStackSerializer _serviceStackSerializer;
         JsonDotNetSerializer _jsonDotNetSerializer;

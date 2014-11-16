@@ -10,7 +10,7 @@ using Xunit;
 
 namespace ArcGIS.Test
 {
-    public class ArcGISOnlineTests
+    public class ArcGISOnlineTests : TestsFixture
     {
         //[Fact]
         //public async Task CanSearchForHostedFeatureServices()

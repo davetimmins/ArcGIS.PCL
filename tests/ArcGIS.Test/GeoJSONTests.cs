@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using ServiceStack.Text;
-using ArcGIS.ServiceModel.GeoJson;
-using ArcGIS.ServiceModel;
+﻿using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Common;
+using ArcGIS.ServiceModel.GeoJson;
+using ServiceStack.Text;
+using System.Linq;
+using Xunit;
 
 namespace ArcGIS.Test
 {
-    public class GeoJSONTests
+    public class GeoJSONTests : TestsFixture
     {
         [Fact]
         public void CanDeserialize()
