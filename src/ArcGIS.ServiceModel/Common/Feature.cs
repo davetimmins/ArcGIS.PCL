@@ -44,25 +44,25 @@ namespace ArcGIS.ServiceModel.Common
                 if (Attributes != null && Attributes.Any() && _oid == 0)
                 {
                     var copy = new Dictionary<string, object>(Attributes, StringComparer.OrdinalIgnoreCase);
-                    if (copy.ContainsKey(ObjectIDName)) _oid = long.Parse(copy[ObjectIDName].ToString());
+                    if (copy.ContainsKey(ObjectIDName)) long.TryParse(copy[ObjectIDName].ToString(), out _oid);
                 }
 
                 return _oid;
             }
         }
 
-        string _globalID = "";
+        Guid _globalID;
         /// <summary>
-        /// Get the GlobalID for the feature. Will return an empty string if not found
+        /// Get the GlobalID for the feature. Will return an empty Guid if not found
         /// </summary>
-        public string GlobalID
+        public Guid GlobalID
         {
             get
             {
-                if (Attributes != null && Attributes.Any() && string.IsNullOrWhiteSpace(_globalID))
+                if (Attributes != null && Attributes.Any() && _globalID == Guid.Empty)
                 {
                     var copy = new Dictionary<string, object>(Attributes, StringComparer.OrdinalIgnoreCase);
-                    if (copy.ContainsKey(GlobalIDName)) _globalID = copy[GlobalIDName].ToString();
+                    if (copy.ContainsKey(GlobalIDName)) Guid.TryParse(copy[GlobalIDName].ToString(), out _globalID);
                 }
 
                 return _globalID;

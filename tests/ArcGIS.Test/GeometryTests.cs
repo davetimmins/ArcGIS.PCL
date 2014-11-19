@@ -167,32 +167,30 @@ namespace ArcGIS.Test
 
             var feature = new Feature<Point>();
             feature.Attributes.Add("GlobalId", guid);
-            Assert.False(string.IsNullOrWhiteSpace(feature.GlobalID));
-            Assert.Equal(feature.GlobalID, guid.ToString());
+            Assert.NotEqual(Guid.Empty, feature.GlobalID);
+            Assert.Equal(guid, feature.GlobalID);
 
             var feature2 = new Feature<Point>();
             feature2.Attributes.Add("GlobalID", guid);
-            Assert.False(string.IsNullOrWhiteSpace(feature2.GlobalID));
-            Assert.Equal(feature2.GlobalID, guid.ToString());
+            Assert.NotEqual(Guid.Empty, feature2.GlobalID);
+            Assert.Equal(guid, feature2.GlobalID);
 
             var feature3 = new Feature<Point>();
             feature3.Attributes.Add("Globalid", guid);
-            Assert.False(string.IsNullOrWhiteSpace(feature3.GlobalID));
-            Assert.Equal(feature3.GlobalID, guid.ToString());
+            Assert.NotEqual(Guid.Empty, feature3.GlobalID);
+            Assert.Equal(guid, feature3.GlobalID);
 
             var feature4 = new Feature<Point>();
             feature4.Attributes.Add("globalid", guid);
-            Assert.False(string.IsNullOrWhiteSpace(feature4.GlobalID));
-            Assert.Equal(feature4.GlobalID, guid.ToString());
+            Assert.NotEqual(Guid.Empty, feature4.GlobalID);
+            Assert.Equal(guid, feature4.GlobalID);
 
             var feature5 = new Feature<Point>();
             feature5.Attributes.Add("globavcbbcblid", guid);
-            Assert.True(string.IsNullOrWhiteSpace(feature5.GlobalID));
-            Assert.Equal(feature5.GlobalID, "");
+            Assert.Equal(Guid.Empty, feature5.GlobalID);
 
             var feature6 = new Feature<Point>();
-            Assert.True(string.IsNullOrWhiteSpace(feature6.GlobalID));
-            Assert.Equal(feature6.GlobalID, "");
+            Assert.Equal(Guid.Empty, feature6.GlobalID);
         }
     }
 }
