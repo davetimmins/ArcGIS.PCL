@@ -76,7 +76,7 @@ namespace ArcGIS.ServiceModel
 
             _token = null; // reset the Token
 
-            TokenRequest.FederatedToken = await TokenRequest.TokenProvider.CheckGenerateToken(ct);
+            TokenRequest.FederatedToken = await TokenRequest.TokenProvider.CheckGenerateToken(ct).ConfigureAwait(false);
 
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
 
@@ -91,10 +91,10 @@ namespace ArcGIS.ServiceModel
             string resultString = string.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(url, content, ct);
+                HttpResponseMessage response = await _httpClient.PostAsync(url, content, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
-                resultString = await response.Content.ReadAsStringAsync();
+                resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
@@ -194,10 +194,10 @@ namespace ArcGIS.ServiceModel
             string resultString = string.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(RootUrl, content, ct);
+                HttpResponseMessage response = await _httpClient.PostAsync(RootUrl, content, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
-                resultString = await response.Content.ReadAsStringAsync();
+                resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
@@ -366,9 +366,9 @@ namespace ArcGIS.ServiceModel
                 try
                 {
                     _httpClient.CancelPendingRequests();
-                    HttpResponseMessage response = await _httpClient.GetAsync(encryptionInfoEndpoint, ct);
+                    HttpResponseMessage response = await _httpClient.GetAsync(encryptionInfoEndpoint, ct).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
-                    publicKeyResultString = await response.Content.ReadAsStringAsync();
+                    publicKeyResultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
                 {
@@ -398,10 +398,10 @@ namespace ArcGIS.ServiceModel
             string resultString = string.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(uri, content, ct);
+                HttpResponseMessage response = await _httpClient.PostAsync(uri, content, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
-                resultString = await response.Content.ReadAsStringAsync();
+                resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {

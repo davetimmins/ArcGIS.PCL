@@ -92,7 +92,7 @@ namespace ArcGIS.ServiceModel
         {
             var result = new SiteDescription();
 
-            result.Resources.AddRange(await DescribeEndpoint("/".AsEndpoint(), ct));
+            result.Resources.AddRange(await DescribeEndpoint("/".AsEndpoint(), ct).ConfigureAwait(false));
 
             return result;
         }
@@ -108,7 +108,7 @@ namespace ArcGIS.ServiceModel
             var result = new List<SiteFolderDescription>();
             try
             {
-                folderDescription = await Get<SiteFolderDescription>(endpoint, ct);
+                folderDescription = await Get<SiteFolderDescription>(endpoint, ct).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
@@ -144,7 +144,7 @@ namespace ArcGIS.ServiceModel
             if (folderDescription.Folders != null)
                 foreach (var folder in folderDescription.Folders)
                 {
-                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), ct));
+                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), ct).ConfigureAwait(false));
                 }
 
             return result;
@@ -162,7 +162,7 @@ namespace ArcGIS.ServiceModel
 
             if (String.IsNullOrWhiteSpace(path))
             {
-                var folderDescription = await Get<SiteFolderDescription>("/".AsEndpoint(), ct);
+                var folderDescription = await Get<SiteFolderDescription>("/".AsEndpoint(), ct).ConfigureAwait(false);
                 folders.Add("/");
                 folders.AddRange(folderDescription.Folders);
             }
@@ -172,7 +172,7 @@ namespace ArcGIS.ServiceModel
             var result = new SiteReportResponse();
             foreach (var folder in folders)
             {
-                var folderReport = await Get<FolderReportResponse>(new ServiceReport(folder), ct);
+                var folderReport = await Get<FolderReportResponse>(new ServiceReport(folder), ct).ConfigureAwait(false);
 
                 result.Resources.Add(folderReport);
 
@@ -463,7 +463,7 @@ namespace ArcGIS.ServiceModel
         public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationToken ct) where T : IGeometry
         {
             var op = new ProjectGeometry<T>(GeometryServiceEndpoint, features, outputSpatialReference);
-            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, ct);
+            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, ct).ConfigureAwait(false);
 
             if (ct.IsCancellationRequested) return null;
 
@@ -489,7 +489,7 @@ namespace ArcGIS.ServiceModel
         public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationToken ct) where T : IGeometry
         {
             var op = new BufferGeometry<T>(GeometryServiceEndpoint, features, spatialReference, distance);
-            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, ct);
+            var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, ct).ConfigureAwait(false);
 
             if (ct.IsCancellationRequested) return null;
 
@@ -514,7 +514,7 @@ namespace ArcGIS.ServiceModel
         public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationToken ct) where T : IGeometry
         {
             var op = new SimplifyGeometry<T>(GeometryServiceEndpoint, features, spatialReference);
-            var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, ct);
+            var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, ct).ConfigureAwait(false);
 
             if (ct.IsCancellationRequested) return null;
 
@@ -532,7 +532,7 @@ namespace ArcGIS.ServiceModel
         {
             if (TokenProvider == null) return null;
 
-            var token = await TokenProvider.CheckGenerateToken(ct);
+            var token = await TokenProvider.CheckGenerateToken(ct).ConfigureAwait(false);
 
             if (token != null) CheckRefererHeader(token.Referer);
             return token;
@@ -574,7 +574,7 @@ namespace ArcGIS.ServiceModel
         {
             Guard.AgainstNullArgument("url", url);
 
-            var token = await CheckGenerateToken(ct);
+            var token = await CheckGenerateToken(ct).ConfigureAwait(false);
             if (ct.IsCancellationRequested) return default(T);
 
             if (!url.Contains("f=")) url += (url.Contains("?") ? "&" : "?") + "f=json";
@@ -595,10 +595,10 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(uri, ct);
+                HttpResponseMessage response = await _httpClient.GetAsync(uri, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
-                resultString = await response.Content.ReadAsStringAsync();
+                resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
@@ -623,7 +623,7 @@ namespace ArcGIS.ServiceModel
 
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
 
-            var token = await CheckGenerateToken(ct);
+            var token = await CheckGenerateToken(ct).ConfigureAwait(false);
             if (ct.IsCancellationRequested) return default(T);
 
             // these should have already been added
@@ -659,10 +659,10 @@ namespace ArcGIS.ServiceModel
             String resultString = String.Empty;
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(uri, content, ct);
+                HttpResponseMessage response = await _httpClient.PostAsync(uri, content, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
-                resultString = await response.Content.ReadAsStringAsync();
+                resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
