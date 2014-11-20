@@ -60,7 +60,7 @@ namespace ArcGIS.ServiceModel
     /// <summary>
     /// Provides a secure ArcGIS Server gateway where the token service is at the same root url
     /// </summary>
-    public class SecureArcGISServerGateway : PortalGateway
+    public class SecurePortalGateway : PortalGateway
     {
         /// <summary>
         /// 
@@ -69,7 +69,7 @@ namespace ArcGIS.ServiceModel
         /// <param name="username">ArcGIS Server user name</param>
         /// <param name="password">ArcGIS Server user password</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
-        public SecureArcGISServerGateway(String rootUrl, String username, String password, ISerializer serializer = null)
+        public SecurePortalGateway(String rootUrl, String username, String password, ISerializer serializer = null)
             : base(rootUrl, serializer, new TokenProvider(rootUrl, username, password, serializer))
         { }
     }

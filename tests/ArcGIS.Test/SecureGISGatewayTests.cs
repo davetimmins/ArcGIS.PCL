@@ -18,7 +18,7 @@ namespace ArcGIS.Test
         { }
     }
 
-    public class SecureGISGateway : SecureArcGISServerGateway
+    public class SecureGISGateway : SecurePortalGateway
     {
         public SecureGISGateway(ISerializer serializer)
             : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
@@ -152,7 +152,7 @@ namespace ArcGIS.Test
         // [Fact]
         public async Task CanStopAndStartService()
         {
-            var gateway = new SecureArcGISServerGateway("", "", "", _serviceStackSerializer);
+            var gateway = new SecurePortalGateway("", "", "", _serviceStackSerializer);
             var folder = ""; // set this to only get a specific folder
             var site = await gateway.SiteReport(folder);
             Assert.NotNull(site);
