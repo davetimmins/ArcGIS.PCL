@@ -66,6 +66,7 @@
       > Target Windows 8.1 for Windows Store library
       > Target WP 8.1 for Windows Phone library
       > Removed .NET 4 support
+      > Rename SecureArcGISServerGateway to SecurePortalGateway
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>

@@ -15,7 +15,7 @@ namespace ArcGIS.Test
                 var httpClientHandler = new HttpClientHandler();
                 if (httpClientHandler.SupportsAutomaticDecompression)
                     httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-                var httpClient = new HttpClient(httpClientHandler);
+                var httpClient = new HttpClient(httpClientHandler) { Timeout = TimeSpan.FromMinutes(3) };
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
