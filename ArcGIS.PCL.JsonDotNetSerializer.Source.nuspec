@@ -1,36 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata minClientVersion="2.8.1">
-    <id>ArcGIS.PCL.JsonDotNetSerializer</id>
+    <id>ArcGIS.PCL.JsonDotNetSerializer.Source</id>
     <version>@build.number@</version>
-    <title>ArcGIS Server Gateway Json.NET Serializer</title>
+    <title>ArcGIS Server Gateway Json.NET Serializer source code package</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
-    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo_serializer.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo_serializer_source.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-      Json.NET implementation of an ISerializer to use with ArcGIS.PCL.
+      Json.NET source code  implementation of an ISerializer to use with ArcGIS.PCL.
 
       To use just call JsonDotNetSerializer.Init().
     </description>
     <summary>
-      Json.NET implementation of an ISerializer to use with ArcGIS.PCL.
+      Json.NET source code  implementation of an ISerializer to use with ArcGIS.PCL.
     </summary>
     <releaseNotes>
-      Added optional JsonSerializerSettings parameter to constructor
-
-      - Breaking changes
-      ContractResolver setting has been removed from default settings
+      Initial release (marked as v2 for parity with binary package)
     </releaseNotes>
     <language />
     <tags>ArcGIS PCL Json Serializer Json.NET</tags>
+    <developmentDependency>true</developmentDependency>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="6.0.6" />
       <dependency id="ArcGIS.PCL" version="4.1.1" />
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" target="lib\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" />
+    <file src="artifacts\build\serializers\JsonDotNetSerializer.cs.pp" target="content\portable-net45+win81+wp81+MonoAndroid1+MonoTouch1" />
   </files>
 </package>

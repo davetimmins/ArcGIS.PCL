@@ -1,0 +1,272 @@
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using ArcGIS.ServiceModel.Common;
+
+namespace ArcGIS.ServiceModel.Operation
+{
+    /// <summary>
+    /// Basic query request operation
+    /// </summary>
+    [DataContract]
+    public class Query : ArcGISServerOperation
+    {
+        /// <summary>
+        /// Represents a request for a query against a service resource
+        /// </summary>
+        /// <param name="endpoint">Resource to apply the query against</param>
+        public Query(ArcGISServerEndpoint endpoint)
+        {
+            Guard.AgainstNullArgument("endpoint", endpoint);
+            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Query);
+
+            Where = "1=1";
+            OutFields = new List<string>();
+            ReturnGeometry = true;
+            SpatialRelationship = SpatialRelationshipTypes.Intersects;
+        }
+
+        /// <summary>
+        /// A where clause for the query filter. Any legal SQL where clause operating on the fields in the layer is allowed.
+        /// </summary>
+        /// <remarks>Default is '1=1'</remarks>
+        [DataMember(Name = "where")]
+        public string Where { get; set; }
+
+        /// <summary>
+        ///  The names of the fields to search.
+        /// </summary>
+        [IgnoreDataMember]
+        public List<string> OutFields { get; set; }
+
+        /// <summary>
+        /// The list of fields to be included in the returned resultset. This list is a comma delimited list of field names. 
+        /// If you specify the shape field in the list of return fields, it is ignored. To request geometry, set returnGeometry to true. 
+        /// </summary>
+        /// <remarks>Default is '*' (all fields)</remarks>
+        [DataMember(Name = "outFields")]
+        public string OutFieldsValue { get { return OutFields == null || !OutFields.Any() ? "*" : string.Join(",", OutFields); } }
+
+        /// <summary>
+        ///  The object IDs of this layer/table to be queried.
+        /// </summary>
+        [IgnoreDataMember]
+        public List<long> ObjectIds { get; set; }
+
+        /// <summary>
+        /// The list of object Ids to be queried. This list is a comma delimited list of field names. 
+        /// </summary>
+        [DataMember(Name = "objectIds")]
+        public string ObjectIdsValue { get { return ObjectIds == null || !ObjectIds.Any() ? "" : string.Join(",", ObjectIds); } }
+
+
+        /// <summary>
+        /// The spatial reference of the input geometry. 
+        /// </summary>
+        [DataMember(Name = "inSR")]
+        public SpatialReference InputSpatialReference
+        {
+            get { return Geometry == null ? null : Geometry.SpatialReference ?? SpatialReference.WGS84; }
+        }
+
+        /// <summary>
+        /// The spatial reference of the returned geometry. 
+        /// If not specified, the geometry is returned in the spatial reference of the input.
+        /// </summary>
+        [DataMember(Name = "outSR")]
+        public SpatialReference OutputSpatialReference { get; set; }
+
+        /// <summary>
+        /// The geometry to apply as the spatial filter.
+        /// The structure of the geometry is the same as the structure of the json geometry objects returned by the ArcGIS REST API.
+        /// </summary>
+        /// <remarks>Default is empty</remarks>
+        [DataMember(Name = "geometry")]
+        public IGeometry Geometry { get; set; }
+
+        /// <summary>
+        /// The type of geometry specified by the geometry parameter. 
+        /// The geometry type can be an envelope, point, line, or polygon.
+        /// The default geometry type is "esriGeometryEnvelope". 
+        /// Values: esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | esriGeometryEnvelope
+        /// </summary>
+        /// <remarks>Default is esriGeometryEnvelope</remarks>
+        [DataMember(Name = "geometryType")]
+        public string GeometryType
+        {
+            get
+            {
+                return Geometry == null
+                    ? GeometryTypes.Envelope
+                    : GeometryTypes.TypeMap[Geometry.GetType()]();
+            }
+        }
+
+        /// <summary>
+        /// The spatial relationship to be applied on the input geometry while performing the query.
+        /// The supported spatial relationships include intersects, contains, envelope intersects, within, etc.
+        /// The default spatial relationship is "esriSpatialRelIntersects".
+        /// Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses | esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps | esriSpatialRelTouches | esriSpatialRelWithin | esriSpatialRelRelation
+        /// </summary>
+        [DataMember(Name = "spatialRel")]
+        public string SpatialRelationship { get; set; }
+
+        /// <summary>
+        /// If true, the resultset includes the geometry associated with each result.
+        /// </summary>
+        /// <remarks>Default is true</remarks>
+        [DataMember(Name = "returnGeometry")]
+        public bool ReturnGeometry { get; set; }
+
+        [IgnoreDataMember]
+        public DateTime? From { get; set; }
+
+        [IgnoreDataMember]
+        public DateTime? To { get; set; }
+
+        /// <summary>
+        /// The time instant or the time extent to query.
+        /// </summary>
+        /// <remarks>If no To value is specified we will use the From value again, equivalent of using a time instant.</remarks>
+        [DataMember(Name = "time")]
+        public string Time
+        {
+            get
+            {
+                return (From == null) ? string.Empty : string.Format("{0},{1}",
+                  From.Value.ToUnixTime(),
+                  (To ?? From.Value).ToUnixTime());
+            }
+        }
+
+        /// <summary>
+        /// This option can be used to specify the maximum allowable offset to be used for generalizing geometries returned by the query operation.
+        /// </summary>
+        [DataMember(Name = "maxAllowableOffset")]
+        public int? MaxAllowableOffset { get; set; }
+
+        /// <summary>
+        /// This option can be used to specify the number of decimal places in the response geometries returned by the query operation. 
+        /// This applies to X and Y values only (not m or z values).
+        /// </summary>
+        [DataMember(Name = "geometryPrecision")]
+        public int? GeometryPrecision { get; set; }
+
+        /// <summary>
+        /// If true, Z values will be included in the results if the features have Z values. Otherwise, Z values are not returned.
+        /// </summary>
+        /// <remarks>Default is false. This parameter only applies if returnGeometry=true.</remarks>
+        [DataMember(Name = "returnZ")]
+        public bool ReturnZ { get; set; }
+
+        /// <summary>
+        /// If true, M values will be included in the results if the features have M values. Otherwise, M values are not returned.
+        /// </summary>
+        /// <remarks>Default is false. This parameter only applies if returnGeometry=true.</remarks>
+        [DataMember(Name = "returnM")]
+        public bool ReturnM { get; set; }
+
+        /// <summary>
+        /// GeoDatabase version to query.
+        /// </summary>
+        [DataMember(Name = "gdbVersion")]
+        public string GdbVersion { get; set; }
+
+        /// <summary>
+        /// If true, returns distinct values based on the fields specified in outFields. 
+        /// This parameter applies only if supportsAdvancedQueries property of the layer is true.
+        [DataMember(Name = "returnDistinctValues")]
+        public bool ReturnDistinctValues { get; set; }
+    }
+
+    [DataContract]
+    public class QueryResponse<T> : PortalResponse where T : IGeometry
+    {
+        [DataMember(Name = "features")]
+        public IEnumerable<Feature<T>> Features { get; set; }
+
+        [DataMember(Name = "spatialReference")]
+        public SpatialReference SpatialReference { get; set; }
+    }
+
+    /// <summary>
+    /// Perform a query that only returns the ObjectIds for the results
+    /// </summary>
+    [DataContract]
+    public class QueryForIds : Query
+    {
+        public QueryForIds(ArcGISServerEndpoint endpoint)
+            : base(endpoint)
+        {
+            ReturnGeometry = false;
+        }
+
+        [DataMember(Name = "returnIdsOnly")]
+        public bool ReturnIdsOnly { get { return true; } }
+    }
+
+    [DataContract]
+    public class QueryForIdsResponse : PortalResponse
+    {
+        [DataMember(Name = "objectIdFieldName")]
+        public string ObjectIdFieldName { get; set; }
+
+        [DataMember(Name = "objectIds")]
+        public long[] ObjectIds { get; set; }
+    }
+
+    /// <summary>
+    /// Perform a query that only returns a count of the results
+    /// </summary>
+    [DataContract]
+    public class QueryForCount : Query
+    {
+        public QueryForCount(ArcGISServerEndpoint endpoint)
+            : base(endpoint)
+        {
+            ReturnGeometry = false;
+        }
+
+        [DataMember(Name = "returnCountOnly")]
+        public bool ReturnCountOnly { get { return true; } }
+    }
+
+    [DataContract]
+    public class QueryForCountResponse : PortalResponse
+    {
+        [DataMember(Name = "count")]
+        public int NumberOfResults { get; set; }
+    }
+
+    public static class GeometryTypes
+    {
+        internal readonly static Dictionary<Type, Func<string>> TypeMap = new Dictionary<Type, Func<string>>
+            {
+                { typeof(Point), () => GeometryTypes.Point },
+                { typeof(MultiPoint), () => GeometryTypes.MultiPoint },
+                { typeof(Extent), () => GeometryTypes.Envelope },
+                { typeof(Polygon), () => GeometryTypes.Polygon },
+                { typeof(Polyline), () => GeometryTypes.Polyline }
+            };
+
+        public const string Point = "esriGeometryPoint";
+        public const string MultiPoint = "esriGeometryMultipoint";
+        public const string Polyline = "esriGeometryPolyline";
+        public const string Polygon = "esriGeometryPolygon";
+        public const string Envelope = "esriGeometryEnvelope";
+    }
+
+    public static class SpatialRelationshipTypes
+    {
+        public const string Intersects = "esriSpatialRelIntersects";
+        public const string Contains = "esriSpatialRelContains";
+        public const string Crosses = "esriSpatialRelCrosses";
+        public const string EnvelopeIntersects = "esriSpatialRelEnvelopeIntersects";
+        public const string IndexIntersects = "esriSpatialRelIndexIntersects";
+        public const string Overlaps = "esriSpatialRelOverlaps";
+        public const string Touches = "esriSpatialRelTouches";
+        public const string Within = "esriSpatialRelWithin";
+        public const string Relation = "esriSpatialRelRelation";
+    }
+}

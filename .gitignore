@@ -56,6 +56,8 @@ _ReSharper*/
 packages/
 dist/
 lib/
+artifacts/
+Backup/
 
 #nodejs
 node_modules/
