@@ -39,14 +39,14 @@
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS. (PCL Profile 259)
+      Works with .NET for Windows Store apps, .NET framework 4.5 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS. (PCL Profile 111)
     </description>
     <summary>
       ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS. (PCL Profile 259)
+      Works with .NET for Windows Store apps, .NET framework 4.5 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS. (PCL Profile 111)
     </summary>
     <releaseNotes>
       Added SiteReport admin operation
