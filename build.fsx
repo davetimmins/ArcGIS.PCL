@@ -16,7 +16,7 @@ let packagesDir = buildDir @@ "packages"
 let nupacksPath = buildDir @@ "packs"
 let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runners" @@ "tools"
 let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.0.0"
-let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.0.0-beta05"
+let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.0.0"
 
 CleanDirs [buildDir]
 
@@ -41,7 +41,7 @@ Target "BuildWindows" (fun _ ->
          Attribute.InformationalVersion assemblyInformationalVersion]
 
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wp81+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.NET/*.csproj"
@@ -53,7 +53,7 @@ Target "BuildWindows" (fun _ ->
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.WP/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "wp81") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "wpa81") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.Serializers.*/*.csproj"
@@ -77,7 +77,7 @@ Target "BuildMono" (fun _ ->
          Attribute.InformationalVersion assemblyInformationalVersion]
 
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wp81+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.NET/*.csproj"
@@ -104,7 +104,7 @@ Target "BuildAll" (fun _ ->
          Attribute.InformationalVersion assemblyInformationalVersion]
 
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wp81+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.Android/*.csproj"
@@ -124,7 +124,7 @@ Target "BuildAll" (fun _ ->
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.WP/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "wp81") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "wpa81") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.Serializers.*/*.csproj"

@@ -6,7 +6,7 @@ using System.Reflection;
 [assembly: AssemblyProductAttribute("ArcGIS REST API ServiceModel PCL")]
 [assembly: AssemblyVersionAttribute("5.0.0")]
 [assembly: AssemblyFileVersionAttribute("5.0.0")]
-[assembly: AssemblyInformationalVersionAttribute("5.0.0-beta05")]
+[assembly: AssemblyInformationalVersionAttribute("5.0.0")]
 namespace System {
     internal static class AssemblyVersionInformation {
         internal const string Version = "5.0.0";

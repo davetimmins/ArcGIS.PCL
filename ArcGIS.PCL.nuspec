@@ -14,36 +14,39 @@
 
       Supports the following as typed operations:
 
-      • CheckGenerateToken - create a token automatically via an ITokenProvider
-      • Query&lt;T&gt; - query a layer by attribute and / or spatial filters
-      • QueryForCount - only return the number of results for the query operation
-      • QueryForIds - only return the ObjectIds for the results of the query operation
-      • Find - search across n layers and fields in a service
-      • ApplyEdits&lt;T&gt; - post adds, updates and deletes to a feature service layer
-      • Geocode - single line of input to perform a geocode using a custom locator or the Esri world locator
-      • Suggest - lightweight geocode operation that only returns text results, commonly used for predictive searching
-      • ReverseGeocode - find location candidates for an input point location
-      • Simplify&lt;T&gt; - alter geometries to be topologically consistent
-      • Project&lt;T&gt; - convert geometries to a different spatial reference
-      • Buffer&lt;T&gt; - buffers geometries by the distance requested
-      • DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hosted feature services for a user
-      • Ping - verify that the server can be accessed
-      • PublicKey - admin operation to get public key used for encryption of token requests
-      • ServiceStatus - admin operation to get the configured and actual status of a service
-      • ServiceReport - admin operation to get the service report
-      • StartService - admin operation to start a service
-      • StopService - admin operation to stop a service
+      > CheckGenerateToken - create a token automatically via an ITokenProvider
+      > Query&lt;T&gt; - query a layer by attribute and / or spatial filters
+      > QueryForCount - only return the number of results for the query operation
+      > QueryForIds - only return the ObjectIds for the results of the query operation
+      > Find - search across n layers and fields in a service
+      > ApplyEdits&lt;T&gt; - post adds, updates and deletes to a feature service layer
+      > Geocode - single line of input to perform a geocode using a custom locator or the Esri world locator
+      > Suggest - lightweight geocode operation that only returns text results, commonly used for predictive searching
+      > ReverseGeocode - find location candidates for an input point location
+      > Simplify&lt;T&gt; - alter geometries to be topologically consistent
+      > Project&lt;T&gt; - convert geometries to a different spatial reference
+      > Buffer&lt;T&gt; - buffers geometries by the distance requested
+      > DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hosted feature services for a user
+      > Ping - verify that the server can be accessed
+
+      REST admin operations:
+
+      > PublicKey - admin operation to get public key used for encryption of token requests
+      > ServiceStatus - admin operation to get the configured and actual status of a service
+      > ServiceReport - admin operation to get the service report
+      > StartService - admin operation to start a service
+      > StopService - admin operation to stop a service
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS. (PCL Profile 328)
+      Works with .NET for Windows Store apps, .NET framework 4.5 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS. (PCL Profile 259)
     </description>
     <summary>
       ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS. (PCL Profile 328)
+      Works with .NET for Windows Store apps, .NET framework 4.5 and higher, Windows Phone 8 and higher, Xamarin Android and Xamarin iOS. (PCL Profile 259)
     </summary>
     <releaseNotes>
       Added SiteReport admin operation
@@ -51,21 +54,23 @@
       Added StopService admin operation
       Added hypermedia self links to responses if enabled using PortalGateway IncludeHypermediaWithResponse flag
       Added ObjectID and GlobalID getters to Feature
-      Added PortalFederatedTokenProvider for generating tokens for ArcGIS Server when federated with Portal for ArcGIS
-      Added FederatedTokenProvider for generating tokens for services when federated with Portal for ArcGIS or ArcGIS Online
+      Added new ITokenProvider types for generating tokens for services when federated with Portal for ArcGIS or ArcGIS Online
+      Better error messages for ApplyEdits
 
       Updated NuGet package references
 
-      Breaking changes
-      - added Links property to IPortalResponse interface
-      - Target Windows 8.1 for Windows Store library
-      - Target WP 8.1 for Windows Phone library
-      - Removed .NET 4 support
+      Breaking changes:
+
+      > added Links property to IPortalResponse interface
+      > change all ObjectID types to long (was int)
+      > Target Windows 8.1 for Windows Store library
+      > Target WP 8.1 for Windows Phone library
+      > Removed .NET 4 support
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
     <dependencies>
-      <group targetFramework="wp81">
+      <group targetFramework="wpa81">
         <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
       <group targetFramework="net45">
@@ -80,7 +85,7 @@
       <group targetFramework="MonoTouch1">
         <dependency id="modernhttpclient" version="2.1.4" />
       </group>
-      <group targetFramework="portable-net45+win81+wp81+MonoAndroid1+MonoTouch1">
+      <group targetFramework="portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1">
       </group>
     </dependencies>
   </metadata>
