@@ -257,7 +257,24 @@ namespace ArcGIS.Test
 
             Assert.True(resultPolyline.Features.Any());
             Assert.True(resultPolyline.Features.All(i => i.Geometry == null));
+        }
 
+        [Fact]
+        public async Task QueryCanUseWhereClause()
+        {
+            var gateway = new ArcGISGateway(_jsonDotNetSerializer);
+
+            var queryPoint = new Query(@"Earthquakes/Since_1970/MapServer/0".AsEndpoint())
+            {
+                ReturnGeometry = false,
+                Where = "UPPER(Name) LIKE UPPER('New Zea%')"
+            };
+            queryPoint.OutFields.Add("Name");
+            var resultPoint = await gateway.Query<Point>(queryPoint);
+
+            Assert.True(resultPoint.Features.Any());
+            Assert.True(resultPoint.Features.All(i => i.Geometry == null));
+            Assert.True(resultPoint.Features.All(i => i.Attributes["Name"].ToString().StartsWithIgnoreCase("New Zea")));
         }
 
         [Fact]
@@ -284,7 +301,6 @@ namespace ArcGIS.Test
             Assert.True(resultPointByOID.Features.Count() == 10);
             Assert.False(queryPointByOID.ObjectIds.Except(resultPointByOID.Features.Select(f => f.ObjectID)).Any());
         }
-
 
         [Fact]
         public async Task QueryOutFieldsAreHonored()
