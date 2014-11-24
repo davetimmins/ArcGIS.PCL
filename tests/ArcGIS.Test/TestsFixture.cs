@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel;
+using ArcGIS.ServiceModel.Serializers;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -10,6 +11,8 @@ namespace ArcGIS.Test
     {
         public TestsFixture()
         {
+            ServiceStackSerializer.Init();
+
             HttpClientFactory.Get = (() =>
             {
                 var httpClientHandler = new HttpClientHandler();

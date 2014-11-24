@@ -1,7 +1,6 @@
 ﻿using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Common;
 using ArcGIS.ServiceModel.Operation;
-using ArcGIS.ServiceModel.Serializers;
 using System;
 using System.Linq;
 using System.Threading;
@@ -10,78 +9,32 @@ using Xunit;
 
 namespace ArcGIS.Test
 {
-    public class SecureTokenProvider : TokenProvider
-    {
-        public SecureTokenProvider(ISerializer serializer)
-            : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
-        // these credentials are from the Esri samples before you complain :)
-        { }
-    }
-
-    public class SecureGISGateway : SecurePortalGateway
-    {
-        public SecureGISGateway(ISerializer serializer)
-            : base(@"http://serverapps10.esri.com/arcgis", "user1", "pass.word1", serializer)
-        { }
-    }
-
-    public class SecureGISGateway2 : PortalGateway
-    {
-        public SecureGISGateway2(ISerializer serializer, ITokenProvider tokenProvider)
-            : base(@"http://serverapps10.esri.com/arcgis", serializer, tokenProvider)
-        { }
-    }
-
-    public class NonSecureGISGateway : PortalGateway
-    {
-        public NonSecureGISGateway(ISerializer serializer)
-            : base(@"http://serverapps10.esri.com/arcgis", serializer, null)
-        { }
-    }
-
     public class SecureGISGatewayTests : TestsFixture
     {
-        ServiceStackSerializer _serviceStackSerializer;
-
         public SecureGISGatewayTests()
         {
-            _serviceStackSerializer = new ServiceStackSerializer();
-            CryptoProviderFactory.Disabled = true; 
+            CryptoProviderFactory.Disabled = true;
         }
 
-        [Fact]
-        public async Task CanGenerateToken()
+        [Theory]
+        [InlineData("http://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
+        public async Task CanGenerateToken(string rootUrl, string username, string password)
         {
-            var tokenProvider = new SecureTokenProvider(_serviceStackSerializer);
-            var gateway = new SecureGISGateway(_serviceStackSerializer);
-
-            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
-
-            var response = await gateway.Ping(endpoint);
+            var tokenProvider = new TokenProvider(rootUrl, username, password);
 
             var token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);
             Assert.False(token.IsExpired);
-            Assert.Null(response.Error);
-
-            gateway = new SecureGISGateway(new JsonDotNetSerializer());
-
-            response = await gateway.Ping(endpoint);
-
-            token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
-
-            Assert.NotNull(token);
-            Assert.NotNull(token.Value);
-            Assert.False(token.IsExpired);
-            Assert.Null(response.Error);
+            Assert.Null(token.Error);
         }
 
-        [Fact]
-        public async Task CanDescribeSite()
+        [Theory]
+        [InlineData("http://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
+        public async Task CanDescribeSecureSite(string rootUrl, string username, string password)
         {
-            var gateway = new SecureGISGateway(_serviceStackSerializer);
+            var gateway = new SecurePortalGateway(rootUrl, username, password);
 
             var response = await gateway.DescribeSite();
 
@@ -108,27 +61,26 @@ namespace ArcGIS.Test
             Assert.True(token.IsExpired);
         }
 
-        [Fact]
-        public async Task CannotAccessSecureResourceWithoutToken()
+        [Theory]
+        [InlineData("http://serverapps10.esri.com/arcgis", "Oil/MapServer")]
+        public async Task CannotAccessSecureResourceWithoutToken(string rootUrl, string relativeUrl)
         {
-            var gateway = new NonSecureGISGateway(_serviceStackSerializer);
-
-            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
+            var gateway = new PortalGateway(rootUrl);
+            var endpoint = new ArcGISServerEndpoint(relativeUrl);
 
             var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Ping(endpoint));
+
             Assert.NotNull(exception);
             Assert.Contains("Unauthorized access", exception.Message);
         }
 
-        [Fact]
-        public async Task InvalidTokenReported()
+        [Theory]
+        [InlineData("http://serverapps10.esri.com/arcgis", "user1", "pass.word1", "Oil/MapServer")]
+        public async Task InvalidTokenReported(string rootUrl, string username, string password, string relativeUrl)
         {
-            var tokenProvider = new SecureTokenProvider(_serviceStackSerializer);
-            var gateway = new SecureGISGateway2(_serviceStackSerializer, tokenProvider);
-
-            var endpoint = new ArcGISServerEndpoint("Oil/MapServer");
-
-            var response = await gateway.Ping(endpoint);
+            var tokenProvider = new TokenProvider(rootUrl, username, password);
+            var gateway = new PortalGateway(rootUrl, tokenProvider: tokenProvider);
+            var endpoint = new ArcGISServerEndpoint(relativeUrl);
 
             var token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
 
@@ -136,10 +88,9 @@ namespace ArcGIS.Test
             Assert.NotNull(token.Value);
             Assert.False(token.IsExpired);
             Assert.Null(token.Error);
-            Assert.Null(response.Error);
 
             token.Value += "chuff";
-            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint())
+            var query = new Query(endpoint)
             {
                 Token = token.Value
             };
@@ -152,7 +103,7 @@ namespace ArcGIS.Test
         // [Fact]
         public async Task CanStopAndStartService()
         {
-            var gateway = new SecurePortalGateway("", "", "", _serviceStackSerializer);
+            var gateway = new SecurePortalGateway("", "", "");
             var folder = ""; // set this to only get a specific folder
             var site = await gateway.SiteReport(folder);
             Assert.NotNull(site);

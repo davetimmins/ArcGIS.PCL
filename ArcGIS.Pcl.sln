@@ -48,6 +48,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.Serializers.ServiceStackV3", "src\ArcGIS.ServiceModel.Serializers.ServiceStackV3\ArcGIS.ServiceModel.Serializers.ServiceStackV3.csproj", "{5895202C-46D9-4372-9C8D-0B591FC3D7D8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B14328FC-8301-46BF-810E-91AE383EEAA2}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.WP", "src\ArcGIS.ServiceModel.WP\ArcGIS.ServiceModel.WP.csproj", "{16FB71C9-D8B3-469F-9CC3-0B3D47F0B0CB}"
 EndProject

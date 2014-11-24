@@ -127,70 +127,85 @@ namespace ArcGIS.Test
             Assert.False(SpatialReference.WGS84 != new SpatialReference { Wkid = SpatialReference.WGS84.Wkid });
         }
 
-        [Fact]
-        public void CanGetObjectID()
+        [Theory]
+        [InlineData("ObjectId")]
+        [InlineData("ObjectID")]
+        [InlineData("Objectid")]
+        [InlineData("objectid")]
+        [InlineData("OBJECTID")]
+        [InlineData("OBJECTid")]
+        public void CanGetValidObjectID(string key)
         {
             long oid = 34223;
-
             var feature = new Feature<Point>();
-            feature.Attributes.Add("ObjectId", oid);
+            feature.Attributes.Add(key, oid);
+
             Assert.True(feature.ObjectID > 0);
-            Assert.Equal(feature.ObjectID, oid);
+            Assert.Equal(oid, feature.ObjectID);
+        }
 
-            var feature2 = new Feature<Point>();
-            feature2.Attributes.Add("ObjectID", oid);
-            Assert.True(feature2.ObjectID > 0);
-            Assert.Equal(feature2.ObjectID, oid);
+        [Theory]
+        [InlineData("Object-Id")]
+        [InlineData("Object ID")]
+        [InlineData("Object_id")]
+        [InlineData("object+id")]
+        [InlineData("objevxvcvxcctid")]
+        public void CannotGetInvalidObjectID(string key)
+        {
+            long oid = 34223;
+            var feature = new Feature<Point>();
+            feature.Attributes.Add(key, oid);
 
-            var feature3 = new Feature<Point>();
-            feature3.Attributes.Add("Objectid", oid);
-            Assert.True(feature3.ObjectID > 0);
-            Assert.Equal(feature3.ObjectID, oid);
-
-            var feature4 = new Feature<Point>();
-            feature4.Attributes.Add("objectid", oid);
-            Assert.True(feature4.ObjectID > 0);
-            Assert.Equal(feature4.ObjectID, oid);
-
-            var feature5 = new Feature<Point>();
-            feature5.Attributes.Add("objevxvcvxcctid", oid);
-            Assert.Equal(feature5.ObjectID, 0);
-
-            var feature6 = new Feature<Point>();
-            Assert.Equal(feature6.ObjectID, 0);
+            Assert.Equal(0, feature.ObjectID);
         }
 
         [Fact]
-        public void CanGetGlobalID()
+        public void ObjectIDIsZeroOnInitialise()
+        {
+            var feature = new Feature<Point>();
+
+            Assert.Equal(0, feature.ObjectID);
+        }
+
+        [Theory]
+        [InlineData("GlobalId")]
+        [InlineData("GlobalID")]
+        [InlineData("Globalid")]
+        [InlineData("globalid")]
+        [InlineData("globalID")]
+        [InlineData("GLOBALID")]
+        [InlineData("GLOBALid")]
+        public void CanGetValidGlobalID(string key)
         {
             var guid = Guid.NewGuid();
-
             var feature = new Feature<Point>();
-            feature.Attributes.Add("GlobalId", guid);
+            feature.Attributes.Add(key, guid);
+
             Assert.NotEqual(Guid.Empty, feature.GlobalID);
             Assert.Equal(guid, feature.GlobalID);
+        }
 
-            var feature2 = new Feature<Point>();
-            feature2.Attributes.Add("GlobalID", guid);
-            Assert.NotEqual(Guid.Empty, feature2.GlobalID);
-            Assert.Equal(guid, feature2.GlobalID);
+        [Theory]
+        [InlineData("Global-Id")]
+        [InlineData("Global ID")]
+        [InlineData("Global_id")]
+        [InlineData("global+id")]
+        [InlineData("globavcbbcblid")]
+        public void CannotGetInvalidGlobalD(string key)
+        {
+            var guid = Guid.NewGuid();
+            var feature = new Feature<Point>();
+            feature.Attributes.Add(key, guid);
 
-            var feature3 = new Feature<Point>();
-            feature3.Attributes.Add("Globalid", guid);
-            Assert.NotEqual(Guid.Empty, feature3.GlobalID);
-            Assert.Equal(guid, feature3.GlobalID);
+            Assert.Equal(Guid.Empty, feature.GlobalID);
+        }
 
-            var feature4 = new Feature<Point>();
-            feature4.Attributes.Add("globalid", guid);
-            Assert.NotEqual(Guid.Empty, feature4.GlobalID);
-            Assert.Equal(guid, feature4.GlobalID);
+        [Fact]
+        public void GlobalIDIsEmptyOnInitialise()
+        {
+            var feature = new Feature<Point>();
 
-            var feature5 = new Feature<Point>();
-            feature5.Attributes.Add("globavcbbcblid", guid);
-            Assert.Equal(Guid.Empty, feature5.GlobalID);
-
-            var feature6 = new Feature<Point>();
-            Assert.Equal(Guid.Empty, feature6.GlobalID);
+            Assert.Equal(Guid.Empty, feature.GlobalID);
         }
     }
 }
