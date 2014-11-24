@@ -3,7 +3,7 @@
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL.ServiceStackV3Serializer</id>
     <version>@build.number@</version>
-    <title>ArcGIS Server Gateway ServiceStack.Text V3 Serializer</title>
+    <title>ArcGIS.PCL ServiceStack.Text V3 Serializer</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
@@ -18,7 +18,7 @@
       ServiceStack.Text V3 implementation of an ISerializer to use with ArcGIS.PCL.
     </summary>
     <releaseNotes>
-      Now targets .NET 4.5
+      Added ExcludeTypeInfo = true to settings
     </releaseNotes>
     <language />
     <tags>ArcGIS PCL Json Serializer ServiceStack</tags>

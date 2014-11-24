@@ -18,6 +18,7 @@
         {
             ServiceStack.Text.JsConfig.EmitCamelCaseNames = true;
             ServiceStack.Text.JsConfig.IncludeTypeInfo = false;
+            ServiceStack.Text.JsConfig.ExcludeTypeInfo = true;
             ServiceStack.Text.JsConfig.ConvertObjectTypesIntoStringDictionary = true;
             ServiceStack.Text.JsConfig.IncludeNullValues = false;
         }

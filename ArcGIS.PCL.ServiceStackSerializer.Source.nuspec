@@ -3,7 +3,7 @@
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL.ServiceStackSerializer.Source</id>
     <version>@build.number@</version>
-    <title>ArcGIS Server Gateway ServiceStack.Text Serializer source code package</title>
+    <title>ArcGIS.PCL ServiceStack.Text Serializer source code package</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
@@ -18,7 +18,7 @@
       ServiceStack.Text source code implementation of an ISerializer to use with ArcGIS.PCL.
     </summary>
     <releaseNotes>
-      Initial release
+      Added ExcludeTypeInfo = true to settings
     </releaseNotes>
     <language />
     <tags>ArcGIS PCL Json Serializer ServiceStack</tags>
@@ -29,6 +29,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\serializers\ServiceStackSerializer.cs.pp" target="content\portable-net45+win81+wp81+MonoAndroid1+MonoTouch1" />
+    <file src="artifacts\build\serializers\ServiceStackSerializer.cs.pp" target="content\portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1" />
   </files>
 </package>
