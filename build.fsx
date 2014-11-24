@@ -145,7 +145,7 @@ Target "TestWindows" (fun _ ->
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 
-            ToolPath = (testRunnerDir @@ "xunit.console.clr4.exe")
+            ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
@@ -154,7 +154,7 @@ Target "TestMono" (fun _ ->
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 
-            ToolPath = (testRunnerDir @@ "xunit.console.clr4.exe")
+            ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
@@ -163,7 +163,7 @@ Target "TestAll" (fun _ ->
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 
-            ToolPath = (testRunnerDir @@ "xunit.console.clr4.exe")
+            ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 

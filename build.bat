@@ -5,8 +5,8 @@ cls
 
 .nuget\NuGet.exe install FAKE -OutputDirectory packages -ExcludeVersion
 
-.nuget\NuGet.exe install xunit.runners -OutputDirectory packages/FAKE -ExcludeVersion
+.nuget\NuGet.exe install xunit.runners -pre -OutputDirectory packages/FAKE -ExcludeVersion
 
-packages\FAKE\tools\FAKE.exe build.fsx NuGet
+packages\FAKE\tools\FAKE.exe build.fsx RunTests
 
 pause
