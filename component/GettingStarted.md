@@ -10,28 +10,13 @@ To call ArcGIS Server resources you can create a gateway. There are a mixture of
 ### ArcGIS Server gateway
 
 ```csharp
-
 // ArcGIS Server with non secure resources
 var gateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/");
-
-// ArcGIS Server with secure resources
-var secureGateway = new SecureArcGISServerGateway("http://serverapps10.esri.com/arcgis", "user1", "pass.word1");
-
-// ArcGIS Server with secure resources and token service at different location
-var otherSecureGateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/", tokenProvider: new TokenProvider("http://serverapps10.esri.com/arcgis", "user1", "pass.word1"));
-
-// ArcGIS Online either secure or non secure
-var arcgisOnlineGateway = new ArcGISOnlineGateway();
- 
-var secureArcGISOnlineGateway = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineTokenProvider("user", "pass"));
-
-var secureArcGISOnlineGatewayOAuth = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineAppLoginOAuthProvider("clientId", "clientSecret"));
 ```
 
 Once you have a gateway you can call operations on it, for example to query an endpoint
 
 ```csharp
-
 var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
 
 var resultPoint = await gateway.Query<Point>(queryPoint);

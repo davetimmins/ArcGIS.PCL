@@ -111,6 +111,10 @@ Target "BuildAll" (fun _ ->
       |> MSBuildRelease (buildLibsDir @@ "MonoAndroid1") "Build"
       |> Log "AppBuild-Output: "
 
+    !! "src/ArcGIS.ServiceModel.iOS/*.csproj"
+      |> MSBuildRelease (buildLibsDir @@ "MonoTouch1") "Build"
+      |> Log "AppBuild-Output: "
+
     !! "src/ArcGIS.ServiceModel.iOSUnified/*.csproj"
       |> MSBuildRelease (buildLibsDir @@ "Xamarin.iOS10") "Build"
       |> Log "AppBuild-Output: "

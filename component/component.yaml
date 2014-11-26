@@ -1,0 +1,35 @@
+%YAML 1.2
+---
+name: ArcGIS.PCL
+version: 5.0.1
+id: "arcgis.pcl"
+publisher: Dave Timmins
+publisher-url: http://davetimmins.com
+summary: Use ArcGIS Server REST types and resources without an official SDK. Also supports converting GeoJSON to and from ArcGIS Features.
+license: License.md
+details: Details.md
+getting-started: GettingStarted.md
+icons:
+  - icons/ArcGIS.PCL_128x128.png
+  - icons/ArcGIS.PCL_512x512.png
+libraries:
+  ios:
+    - ../artifacts/build/lib/MonoTouch1/ArcGIS.ServiceModel.dll
+    - ../artifacts/build/lib/MonoTouch1/ArcGIS.ServiceModel.iOS.dll
+    - ../artifacts/build/serializers/ArcGIS.ServiceModel.Serializers.JsonDotNet.dll
+  ios-unified:
+    - ../artifacts/build/lib/Xamarin.iOS10/ArcGIS.ServiceModel.dll
+    - ../artifacts/build/lib/Xamarin.iOS10/ArcGIS.ServiceModel.iOS.dll
+    - ../artifacts/build/serializers/ArcGIS.ServiceModel.Serializers.JsonDotNet.dll
+  android:
+    - ../artifacts/build/lib/MonoAndroid1/ArcGIS.ServiceModel.dll
+    - ../artifacts/build/lib/MonoAndroid1/ArcGIS.ServiceModel.Android.dll
+    - ../artifacts/build/serializers/ArcGIS.ServiceModel.Serializers.JsonDotNet.dll
+samples:
+  - name: "iOS Sample. Demonstrates calling a query and geocode ArcGIS Server service operation on iOS."
+    path: ../samples/ArcGIS.Portable.iOS/ArcGIS.Portable.iOS.sln
+  - name: "iOS unified Sample. Demonstrates calling a query and geocode ArcGIS Server service operation on iOS."
+    path: ../samples/ArcGIS.Portable.iOSUnified/ArcGIS.Portable.iOSUnified.sln
+  - name: "Android Sample. Demonstrates calling a query and geocode ArcGIS Server service operation on Android."
+    path: ../samples/ArcGIS.Portable.Android/ArcGIS.Portable.Android.sln
+...

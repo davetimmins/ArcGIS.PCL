@@ -92,13 +92,12 @@
     <MtouchArch>ARMv7</MtouchArch>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ArcGISGateway.cs" />
-    <Compile Include="GeocodeGateway.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MyViewController.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Default.png" />
@@ -106,21 +105,20 @@
     <BundleResource Include="Resources\Default-568h%402x.png" />
   </ItemGroup>
   <ItemGroup>
-    <XamarinComponentReference Include="json.net">
-      <Version>4.5.11</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="modernhttpclient">
-      <Version>1.2.2</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="ModernHttpClient.iOS">
-      <HintPath>Components\modernhttpclient-1.2.2\lib\ios\ModernHttpClient.iOS.dll</HintPath>
+    <Reference Include="ArcGIS.ServiceModel">
+      <HintPath>..\..\artifacts\build\lib\MonoTouch1\ArcGIS.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="ArcGIS.ServiceModel.iOS">
+      <HintPath>..\..\artifacts\build\lib\MonoTouch1\ArcGIS.ServiceModel.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="ArcGIS.ServiceModel.Serializers.JsonDotNet">
+      <HintPath>..\..\artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="ModernHttpClient">
+      <HintPath>packages\modernhttpclient.2.1.4\lib\MonoTouch\ModernHttpClient.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>Components\json.net-4.5.11\lib\ios\Newtonsoft.Json.dll</HintPath>
+      <HintPath>packages\Newtonsoft.Json.6.0.6\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http" />
@@ -128,15 +126,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
-    <Reference Include="ArcGIS.ServiceModel">
-      <HintPath>..\..\lib\ios\ArcGIS.ServiceModel.dll</HintPath>
-    </Reference>
-    <Reference Include="ArcGIS.ServiceModel.Serializers.JsonDotNet">
-      <HintPath>..\..\lib\ios\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="ArcGIS.ServiceModel.iOS">
-      <HintPath>..\..\lib\ios\ArcGIS.ServiceModel.iOS.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
 </Project>
