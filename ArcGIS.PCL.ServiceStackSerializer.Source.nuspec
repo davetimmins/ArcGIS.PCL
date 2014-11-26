@@ -29,6 +29,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\serializers\ServiceStackSerializer.cs.pp" target="content\portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1" />
+    <file src="artifacts\build\serializers\ServiceStackSerializer.cs.pp" target="content\App_Packages\ArcGIS.PCL.ServiceStackSerializer.Source.@build.number@" />
   </files>
 </package>
