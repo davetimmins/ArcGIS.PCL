@@ -18,7 +18,7 @@
       ServiceStack.Text source code implementation of an ISerializer to use with ArcGIS.PCL.
     </summary>
     <releaseNotes>
-      Added ExcludeTypeInfo = true to settings
+      Follow App_Packages convention for source code location
     </releaseNotes>
     <language />
     <tags>ArcGIS PCL Json Serializer ServiceStack</tags>

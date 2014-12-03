@@ -18,7 +18,7 @@
       Json.NET source code  implementation of an ISerializer to use with ArcGIS.PCL.
     </summary>
     <releaseNotes>
-      Initial release (marked as v2 for parity with binary package)
+      Follow App_Packages convention for source code location
     </releaseNotes>
     <language />
     <tags>ArcGIS PCL Json Serializer Json.NET</tags>

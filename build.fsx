@@ -197,7 +197,7 @@ Target "Pack" (fun _ ->
 
     NuGet (fun p ->
      {p with
-        Version = "2.0.2"
+        Version = "2.0.3"
         OutputPath = nupacksPath
         WorkingDir = currentDirectory
         Publish = false })
@@ -213,7 +213,7 @@ Target "Pack" (fun _ ->
 
     NuGet (fun p ->
      {p with
-        Version = "1.0.1"
+        Version = "1.0.2"
         OutputPath = nupacksPath
         WorkingDir = currentDirectory
         Publish = false })
