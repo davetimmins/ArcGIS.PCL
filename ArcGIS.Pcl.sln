@@ -25,14 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		src\ArcGIS.ServiceModel\TokenProvider.cs = src\ArcGIS.ServiceModel\TokenProvider.cs
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "component", "component", "{7EF5AAF8-AD6F-4871-BF54-935F768716D7}"
-	ProjectSection(SolutionItems) = preProject
-		component\Details.md = component\Details.md
-		component\GettingStarted.md = component\GettingStarted.md
-		component\License.md = component\License.md
-		component\Rakefile = component\Rakefile
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.NET", "src\ArcGIS.ServiceModel.NET\ArcGIS.ServiceModel.NET.csproj", "{EBA52C4D-2D08-4FE6-AA52-8118774B4362}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.Android", "src\ArcGIS.ServiceModel.Android\ArcGIS.ServiceModel.Android.csproj", "{45B4971C-48CF-4228-8543-AE0D3E278EFD}"
