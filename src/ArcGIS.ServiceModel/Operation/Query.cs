@@ -277,6 +277,27 @@ namespace ArcGIS.ServiceModel.Operation
         public int NumberOfResults { get; set; }
     }
 
+    /// <summary>
+    /// Perform a query that returns the count of features and the bounding extent
+    /// </summary>
+    [DataContract]
+    public class QueryForExtent : QueryForCount
+    {
+        public QueryForExtent(ArcGISServerEndpoint endpoint)
+            : base(endpoint)
+        { }
+
+        [DataMember(Name = "returnExtentOnly")]
+        public bool ReturnExtentOnly { get { return true; } }
+    }
+
+    [DataContract]
+    public class QueryForExtentResponse : QueryForCountResponse
+    {
+        [DataMember(Name = "extent")]
+        public Extent Extent { get; set; }
+    }
+
     public static class GeometryTypes
     {
         internal readonly static Dictionary<Type, Func<string>> TypeMap = new Dictionary<Type, Func<string>>

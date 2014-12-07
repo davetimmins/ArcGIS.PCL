@@ -125,6 +125,22 @@
         }
 
         /// <summary>
+        /// Call the extent operation for the query resource.
+        /// </summary>
+        /// <param name="queryOptions">Query filter parameters</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns>The number of results that match the query and the bounding extent</returns>
+        public virtual Task<QueryForExtentResponse> QueryForExtent(QueryForExtent queryOptions, CancellationToken ct)
+        {
+            return Get<QueryForExtentResponse, QueryForExtent>(queryOptions, ct);
+        }
+
+        public virtual Task<QueryForExtentResponse> QueryForExtent(QueryForExtent queryOptions)
+        {
+            return QueryForExtent(queryOptions, CancellationToken.None);
+        }
+
+        /// <summary>
         /// Call the object Ids query for the query resource
         /// </summary>
         /// <param name="queryOptions">Query filter parameters</param>
