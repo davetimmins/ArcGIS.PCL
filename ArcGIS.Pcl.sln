@@ -19,10 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		build.fsx = build.fsx
 		build.sh = build.sh
 		src\CommonAssemblyInfo.cs = src\CommonAssemblyInfo.cs
-		src\ArcGIS.ServiceModel\CryptoProviderFactory.cs = src\ArcGIS.ServiceModel\CryptoProviderFactory.cs
-		gateway.png = gateway.png
-		src\ArcGIS.ServiceModel\PortalGateway.cs = src\ArcGIS.ServiceModel\PortalGateway.cs
-		src\ArcGIS.ServiceModel\TokenProvider.cs = src\ArcGIS.ServiceModel\TokenProvider.cs
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel.NET", "src\ArcGIS.ServiceModel.NET\ArcGIS.ServiceModel.NET.csproj", "{EBA52C4D-2D08-4FE6-AA52-8118774B4362}"

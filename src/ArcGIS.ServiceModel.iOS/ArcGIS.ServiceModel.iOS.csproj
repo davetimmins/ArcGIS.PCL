@@ -34,11 +34,35 @@
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\ArcGIS.ServiceModel\ArcGISOnlineAppLoginOAuthProvider.cs">
+      <Link>ArcGISOnlineAppLoginOAuthProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\ArcGIS.ServiceModel\ArcGISOnlineFederatedTokenProvider.cs">
+      <Link>ArcGISOnlineFederatedTokenProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\ArcGIS.ServiceModel\ArcGISOnlineGateway.cs">
+      <Link>ArcGISOnlineGateway.cs</Link>
+    </Compile>
+    <Compile Include="..\ArcGIS.ServiceModel\ArcGISOnlineTokenProvider.cs">
+      <Link>ArcGISOnlineTokenProvider.cs</Link>
+    </Compile>
     <Compile Include="..\ArcGIS.ServiceModel\CryptoProviderFactory.cs">
       <Link>CryptoProviderFactory.cs</Link>
     </Compile>
+    <Compile Include="..\ArcGIS.ServiceModel\FederatedTokenProvider.cs">
+      <Link>FederatedTokenProvider.cs</Link>
+    </Compile>
     <Compile Include="..\ArcGIS.ServiceModel\PortalGateway.cs">
       <Link>PortalGateway.cs</Link>
+    </Compile>
+    <Compile Include="..\ArcGIS.ServiceModel\PortalGatewayBase.cs">
+      <Link>PortalGatewayBase.cs</Link>
+    </Compile>
+    <Compile Include="..\ArcGIS.ServiceModel\SecurePortalGateway.cs">
+      <Link>SecurePortalGateway.cs</Link>
+    </Compile>
+    <Compile Include="..\ArcGIS.ServiceModel\ServerFederatedWithPortalTokenProvider.cs">
+      <Link>ServerFederatedWithPortalTokenProvider.cs</Link>
     </Compile>
     <Compile Include="..\ArcGIS.ServiceModel\TokenProvider.cs">
       <Link>TokenProvider.cs</Link>
