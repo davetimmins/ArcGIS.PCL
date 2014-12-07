@@ -55,14 +55,14 @@ namespace ArcGIS.ServiceModel.Operation
         public List<long> ObjectIds { get; set; }
 
         /// <summary>
-        /// The list of object Ids to be queried. This list is a comma delimited list of field names. 
+        /// The list of object Ids to be queried. This list is a comma delimited list of field names.
         /// </summary>
         [DataMember(Name = "objectIds")]
         public string ObjectIdsValue { get { return ObjectIds == null || !ObjectIds.Any() ? "" : string.Join(",", ObjectIds); } }
 
 
         /// <summary>
-        /// The spatial reference of the input geometry. 
+        /// The spatial reference of the input geometry.
         /// </summary>
         [DataMember(Name = "inSR")]
         public SpatialReference InputSpatialReference
@@ -71,7 +71,7 @@ namespace ArcGIS.ServiceModel.Operation
         }
 
         /// <summary>
-        /// The spatial reference of the returned geometry. 
+        /// The spatial reference of the returned geometry.
         /// If not specified, the geometry is returned in the spatial reference of the input.
         /// </summary>
         [DataMember(Name = "outSR")]
@@ -86,9 +86,9 @@ namespace ArcGIS.ServiceModel.Operation
         public IGeometry Geometry { get; set; }
 
         /// <summary>
-        /// The type of geometry specified by the geometry parameter. 
+        /// The type of geometry specified by the geometry parameter.
         /// The geometry type can be an envelope, point, line, or polygon.
-        /// The default geometry type is "esriGeometryEnvelope". 
+        /// The default geometry type is "esriGeometryEnvelope".
         /// Values: esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | esriGeometryEnvelope
         /// </summary>
         /// <remarks>Default is esriGeometryEnvelope</remarks>
@@ -147,7 +147,7 @@ namespace ArcGIS.ServiceModel.Operation
         public int? MaxAllowableOffset { get; set; }
 
         /// <summary>
-        /// This option can be used to specify the number of decimal places in the response geometries returned by the query operation. 
+        /// This option can be used to specify the number of decimal places in the response geometries returned by the query operation.
         /// This applies to X and Y values only (not m or z values).
         /// </summary>
         [DataMember(Name = "geometryPrecision")]
@@ -178,6 +178,22 @@ namespace ArcGIS.ServiceModel.Operation
         /// This parameter applies only if supportsAdvancedQueries property of the layer is true.
         [DataMember(Name = "returnDistinctValues")]
         public bool ReturnDistinctValues { get; set; }
+
+        /// <summary>
+        ///  The names of the fields to order by.
+        /// </summary>
+        [IgnoreDataMember]
+        public List<string> OrderBy { get; set; }
+
+        /// <summary>
+        /// One or more field names on which the features/records need to be ordered.
+        /// Use ASC or DESC for ascending or descending, respectively, following every field to control the ordering.
+        /// Defaults to ASC (ascending order) if <ORDER> is unspecified.
+        /// </summary>
+        /// <remarks>Default is '*' (all fields)</remarks>
+        [DataMember(Name = "orderByFields")]
+        public string OrderByValue { get { return OrderBy == null || !OrderBy.Any() ? null : string.Join(",", OrderBy); } }
+
     }
 
     [DataContract]

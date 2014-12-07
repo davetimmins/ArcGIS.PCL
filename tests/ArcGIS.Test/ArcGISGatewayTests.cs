@@ -335,6 +335,31 @@ namespace ArcGIS.Test
             Assert.True(resultPolygon.Features.All(i => i.Attributes != null && i.Attributes.Count == 4));
         }
 
+        [Theory]
+        [InlineData("http://sampleserver6.arcgisonline.com/arcgis", "911CallsHotspot/MapServer/1", "INC_NO")]
+        public async Task QueryOrderByIsHonored(string rootUrl, string relativeUrl, string orderby)
+        {
+            var gateway = new PortalGateway(rootUrl);
+
+            var query = new Query(relativeUrl.AsEndpoint())
+            {
+                OrderBy = new List<string> { orderby },
+                ReturnGeometry = false
+            };
+            var result = await gateway.Query<Point>(query);
+
+            var queryDesc = new Query(relativeUrl.AsEndpoint())
+            {
+                OrderBy = new List<string> { orderby + " DESC" },
+                ReturnGeometry = false
+            };
+            var resultDesc = await gateway.Query<Point>(queryDesc);
+
+            Assert.True(result.Features.Any());
+            Assert.True(resultDesc.Features.Any());
+            Assert.NotEqual(result.Features, resultDesc.Features);
+        }
+
         [Fact]
         public async Task CanQueryForCount()
         {
