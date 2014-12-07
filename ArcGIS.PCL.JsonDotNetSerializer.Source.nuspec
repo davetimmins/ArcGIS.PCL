@@ -3,14 +3,14 @@
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL.JsonDotNetSerializer.Source</id>
     <version>@build.number@</version>
-    <title>ArcGIS Server Gateway Json.NET Serializer source code package</title>
+    <title>ArcGIS.PCL Json.NET Serializer source code package</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
     <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo_serializer_source.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-      Json.NET source code  implementation of an ISerializer to use with ArcGIS.PCL.
+      Json.NET source code implementation of an ISerializer to use with ArcGIS.PCL.
 
       To use just call JsonDotNetSerializer.Init().
     </description>
@@ -18,7 +18,7 @@
       Json.NET source code  implementation of an ISerializer to use with ArcGIS.PCL.
     </summary>
     <releaseNotes>
-      Initial release (marked as v2 for parity with binary package)
+      Follow App_Packages convention for source code location
     </releaseNotes>
     <language />
     <tags>ArcGIS PCL Json Serializer Json.NET</tags>
@@ -29,6 +29,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\serializers\JsonDotNetSerializer.cs.pp" target="content\portable-net45+win81+wp81+MonoAndroid1+MonoTouch1" />
+    <file src="artifacts\build\serializers\JsonDotNetSerializer.cs.pp" target="content\App_Packages\ArcGIS.PCL.JsonDotNetSerializer.Source.@build.number@" />
   </files>
 </package>

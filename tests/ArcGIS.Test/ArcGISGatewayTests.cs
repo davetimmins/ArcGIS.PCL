@@ -16,11 +16,11 @@ namespace ArcGIS.Test
 {
     public class ArcGISGateway : PortalGateway
     {
-        public ArcGISGateway(ISerializer serializer)
-            : this(@"http://sampleserver3.arcgisonline.com/ArcGIS/", serializer, null)
+        public ArcGISGateway(ISerializer serializer = null)
+            : this(@"http://sampleserver3.arcgisonline.com/ArcGIS/", null, serializer)
         { }
 
-        public ArcGISGateway(string root, ISerializer serializer, ITokenProvider tokenProvider)
+        public ArcGISGateway(string root, ITokenProvider tokenProvider, ISerializer serializer = null)
             : base(root, serializer, tokenProvider)
         {
         }
@@ -67,28 +67,20 @@ namespace ArcGIS.Test
 
     public class QueryGateway : PortalGateway
     {
-        public QueryGateway(ISerializer serializer)
+        public QueryGateway(ISerializer serializer = null)
             : base(@"http://services.arcgisonline.com/arcgis/", serializer)
         { }
     }
 
     public class ArcGISGatewayTests : TestsFixture
     {
-        ServiceStackSerializer _serviceStackSerializer;
-        JsonDotNetSerializer _jsonDotNetSerializer;
-
-        public ArcGISGatewayTests()
+        [Theory]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/", "/Earthquakes/EarthquakesFromLastSevenDays/MapServer")]
+        [InlineData("http://services.arcgisonline.co.nz/arcgis", "Generic/newzealand/MapServer")]
+        public async Task CanGetAnythingFromServer(string rootUrl, string relativeUrl)
         {
-            _serviceStackSerializer = new ServiceStackSerializer();
-            _jsonDotNetSerializer = new JsonDotNetSerializer();
-        }
-
-        [Fact]
-        public async Task CanGetAnythingFromServer()
-        {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
-
-            var endpoint = new ArcGISServerEndpoint("/Earthquakes/EarthquakesFromLastSevenDays/MapServer");
+            var gateway = new ArcGISGateway(rootUrl, null);
+            var endpoint = new ArcGISServerEndpoint(relativeUrl);
 
             var response = await gateway.GetAnything(endpoint);
 
@@ -99,11 +91,12 @@ namespace ArcGIS.Test
             Assert.True(response.ContainsKey("documentInfo"));
         }
 
-        [Fact]
-        public async Task CanPingServer()
+        [Theory]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
+        [InlineData("https://services.arcgisonline.co.nz/arcgis")]
+        public async Task CanPingServer(string rootUrl)
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
-
+            var gateway = new PortalGateway(rootUrl);
             var endpoint = new ArcGISServerEndpoint("/");
 
             var response = await gateway.Ping(endpoint);
@@ -111,10 +104,12 @@ namespace ArcGIS.Test
             Assert.Null(response.Error);
         }
 
-        [Fact]
-        public async Task CanDescribeSite()
+        [Theory]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
+        [InlineData("http://services.arcgisonline.co.nz/arcgis")]
+        public async Task CanDescribeSite(string rootUrl)
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new PortalGateway(rootUrl);
             var response = await gateway.DescribeSite();
 
             Assert.NotNull(response);
@@ -127,63 +122,74 @@ namespace ArcGIS.Test
             }
         }
 
-        [Fact]
-        public void RootUrlHasCorrectFormat()
+        [Theory]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
+        [InlineData("http://services.arcgisonline.co.nz/arcgis/rest/")]
+        [InlineData("https://services.arcgisonline.co.nz/arcgis/rest/")]
+        [InlineData("http://services.arcgisonline.co.nz/arcgis/rest")]
+        [InlineData("https://services.arcgisonline.co.nz/arcgis/rest")]
+        [InlineData("http://services.arcgisonline.co.nz/arcgis/")]
+        [InlineData("https://services.arcgisonline.co.nz/arcgis/")]
+        [InlineData("http://services.arcgisonline.co.nz/arcgis")]
+        [InlineData("https://services.arcgisonline.co.nz/arcgis")]
+        public void GatewayRootUrlHasCorrectFormat(string rootUrl)
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new PortalGateway(rootUrl);
             Assert.True(gateway.RootUrl.EndsWith("/"));
             Assert.True(gateway.RootUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) || gateway.RootUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase));
             Assert.False(gateway.RootUrl.ToLowerInvariant().Contains("/rest/services/"));
+        }
 
+        [Fact]
+        public void EmptyRootUrlThrowsArgumentNullException()
+        {
             Assert.Throws<ArgumentNullException>(() => "".AsRootUrl());
+        }
 
-            var rootUrl = "https://www.arcgis.com/arcgis".AsRootUrl();
-            Assert.Equal("https://www.arcgis.com/arcgis/", rootUrl);
+        [Theory]
+        [InlineData("http://www.arcgis.com/arcgis")]
+        [InlineData("http://www.arcgis.com/ArcGIS")]
+        [InlineData("http://www.arcgis.com/ArcGIS/")]
+        [InlineData("http://www.arcgis.com/ArcGIS/")]
+        [InlineData("http://www.arcgis.com/ArcGIS/rest/services")]
+        [InlineData("http://www.arcgis.com/ArcGIS/rest/services/")]
+        [InlineData("http://www.arcgis.com/ArcGIS/rest/services/rest/services")]
+        [InlineData("http://www.arcgis.com/ArcGIS/rest/services/rest/services/")]
+        [InlineData("http://www.arcgis.com/ArcGIS/admin")]
+        [InlineData("http://www.arcgis.com/ArcGIS/admin/")]
+        [InlineData("http://www.arcgis.com/ArcGIS/rest/admin/services")]
+        [InlineData("http://www.arcgis.com/ArcGIS/rest/admin/services/")]
+        [InlineData("http://www.arcgis.com/ArcGIS/rest/ADMIN/services/")]
+        public void HttpRootUrlHasCorrectFormat(string urlToTest)
+        {
+            var rootUrl = urlToTest.AsRootUrl();
+            Assert.Equal("http://www.arcgis.com/arcgis/", rootUrl, true);
+        }
 
-            rootUrl = "https://www.arcgis.com/ArcGIS".AsRootUrl();
-            Assert.Equal("https://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/".AsRootUrl();
-            Assert.NotEqual("http://www.arcgis.com/arcgis/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/rest/services".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/rest/services/".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/rest/services/rest/services".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/rest/services/rest/services/".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/admin".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/admin/".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/rest/admin/services".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/rest/admin/services/".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
-
-            rootUrl = "http://www.arcgis.com/ArcGIS/rest/ADMIN/services/".AsRootUrl();
-            Assert.Equal("http://www.arcgis.com/ArcGIS/", rootUrl);
+        [Theory]
+        [InlineData("https://www.arcgis.com/arcgis")]
+        [InlineData("https://www.arcgis.com/ArcGIS")]
+        [InlineData("https://www.arcgis.com/ArcGIS/")]
+        [InlineData("https://www.arcgis.com/ArcGIS/")]
+        [InlineData("https://www.arcgis.com/ArcGIS/rest/services")]
+        [InlineData("https://www.arcgis.com/ArcGIS/rest/services/")]
+        [InlineData("https://www.arcgis.com/ArcGIS/rest/services/rest/services")]
+        [InlineData("https://www.arcgis.com/ArcGIS/rest/services/rest/services/")]
+        [InlineData("https://www.arcgis.com/ArcGIS/admin")]
+        [InlineData("https://www.arcgis.com/ArcGIS/admin/")]
+        [InlineData("https://www.arcgis.com/ArcGIS/rest/admin/services")]
+        [InlineData("https://www.arcgis.com/ArcGIS/rest/admin/services/")]
+        [InlineData("https://www.arcgis.com/ArcGIS/rest/ADMIN/services/")]
+        public void HttpsRootUrlHasCorrectFormat(string urlToTest)
+        {
+            var rootUrl = urlToTest.AsRootUrl();
+            Assert.Equal("https://www.arcgis.com/arcgis/", rootUrl, true);
         }
 
         [Fact]
         public async Task GatewayDoesAutoPost()
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer) { IncludeHypermediaWithResponse = true };
+            var gateway = new ArcGISGateway() { IncludeHypermediaWithResponse = true };
 
             var longWhere = new StringBuilder("region = '");
             for (var i = 0; i < 3000; i++)
@@ -200,25 +206,28 @@ namespace ArcGIS.Test
             Assert.Equal("POST", result.Links.First().Method);
         }
 
-        [Fact]
-        public async Task QueryCanReturnFeatures()
+        [Theory]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS", "/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0")]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS", "Earthquakes/Since_1970/MapServer/0")]
+        public async Task QueryCanReturnPointFeatures(string rootUrl, string relativeUrl)
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new PortalGateway(rootUrl);
 
-            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
-            var result = await gateway.QueryAsPost<Point>(query);
+            var query = new Query(relativeUrl.AsEndpoint());
+            var result = await gateway.Query<Point>(query);
 
             Assert.NotNull(result);
             Assert.Null(result.Error);
             Assert.NotNull(result.SpatialReference);
             Assert.True(result.Features.Any());
             Assert.Null(result.Links);
+            Assert.True(result.Features.All(i => i.Geometry != null));
         }
 
         [Fact]
         public async Task QueryCanReturnDifferentGeometryTypes()
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new ArcGISGateway();
 
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { Where = "magnitude > 4.5" };
             var resultPoint = await gateway.QueryAsPost<Point>(queryPoint);
@@ -232,7 +241,7 @@ namespace ArcGIS.Test
             Assert.True(resultPolyline.Features.Any());
             Assert.True(resultPolyline.Features.All(i => i.Geometry != null));
 
-            gateway = new ArcGISGateway(_jsonDotNetSerializer);
+            gateway = new ArcGISGateway(new JsonDotNetSerializer());
 
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = new List<string> { "areasqkm" } };
             var resultPolygon = await gateway.QueryAsPost<Polygon>(queryPolygon);
@@ -244,7 +253,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task QueryCanReturnNoGeometry()
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new ArcGISGateway();
 
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { ReturnGeometry = false };
             var resultPoint = await gateway.Query<Point>(queryPoint);
@@ -257,13 +266,30 @@ namespace ArcGIS.Test
 
             Assert.True(resultPolyline.Features.Any());
             Assert.True(resultPolyline.Features.All(i => i.Geometry == null));
+        }
 
+        [Fact]
+        public async Task QueryCanUseWhereClause()
+        {
+            var gateway = new ArcGISGateway();
+
+            var queryPoint = new Query(@"Earthquakes/Since_1970/MapServer/0".AsEndpoint())
+            {
+                ReturnGeometry = false,
+                Where = "UPPER(Name) LIKE UPPER('New Zea%')"
+            };
+            queryPoint.OutFields.Add("Name");
+            var resultPoint = await gateway.Query<Point>(queryPoint);
+
+            Assert.True(resultPoint.Features.Any());
+            Assert.True(resultPoint.Features.All(i => i.Geometry == null));
+            Assert.True(resultPoint.Features.All(i => i.Attributes["Name"].ToString().StartsWithIgnoreCase("New Zea")));
         }
 
         [Fact]
         public async Task QueryObjectIdsAreHonored()
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new ArcGISGateway();
 
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { ReturnGeometry = false };
             var resultPoint = await gateway.Query<Point>(queryPoint);
@@ -285,11 +311,10 @@ namespace ArcGIS.Test
             Assert.False(queryPointByOID.ObjectIds.Except(resultPointByOID.Features.Select(f => f.ObjectID)).Any());
         }
 
-
         [Fact]
         public async Task QueryOutFieldsAreHonored()
         {
-            var gateway = new ArcGISGateway(_jsonDotNetSerializer);
+            var gateway = new ArcGISGateway();
 
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<string> { "lengthkm" }, ReturnGeometry = false };
             var resultPolyline = await gateway.Query<Polyline>(queryPolyline);
@@ -313,7 +338,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanQueryForCount()
         {
-            var gateway = new QueryGateway(_jsonDotNetSerializer);
+            var gateway = new QueryGateway();
 
             var query = new QueryForCount(@"/Specialty/Soil_Survey_Map/MapServer/2".AsEndpoint());
             var result = await gateway.QueryForCount(query);
@@ -326,7 +351,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanQueryForIds()
         {
-            var gateway = new QueryGateway(_jsonDotNetSerializer);
+            var gateway = new QueryGateway();
 
             var query = new QueryForIds(@"/Specialty/Soil_Survey_Map/MapServer/2".AsEndpoint());
             var result = await gateway.QueryForIds(query);
@@ -361,7 +386,7 @@ namespace ArcGIS.Test
             int countExtentResults = 0;
             int countPolygonResults = 0;
 
-            var gateway = new ArcGISGateway(_jsonDotNetSerializer);
+            var gateway = new ArcGISGateway(new JsonDotNetSerializer());
 
             var queryPointAllResults = new Query(serviceUrl.AsEndpoint());
 
@@ -421,7 +446,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task CanAddUpdateAndDelete()
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new ArcGISGateway();
 
             var feature = new Feature<Point>();
             feature.Attributes.Add("type", 0);
@@ -465,7 +490,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task FindCanReturnResultsAndGeometry()
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new ArcGISGateway();
 
             var find = new Find(@"/Network/USA/MapServer".AsEndpoint())
             {
@@ -484,7 +509,7 @@ namespace ArcGIS.Test
         [Fact]
         public async Task FindCanReturnResultsAndNoGeometry()
         {
-            var gateway = new ArcGISGateway(_serviceStackSerializer);
+            var gateway = new ArcGISGateway();
 
             var find = new Find(@"/Network/USA/MapServer".AsEndpoint())
             {

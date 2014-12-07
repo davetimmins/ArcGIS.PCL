@@ -3,7 +3,7 @@
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL</id>
     <version>@build.number@</version>
-    <title>ArcGIS Server Gateway</title>
+    <title>ArcGIS.PCL</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
@@ -86,7 +86,8 @@
       <group targetFramework="MonoTouch1">
         <dependency id="modernhttpclient" version="2.1.4" />
       </group>
-      <group targetFramework="portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1">
+      <group targetFramework="Xamarin.iOS10">
+        <dependency id="modernhttpclient" version="2.1.4" />
       </group>
     </dependencies>
   </metadata>

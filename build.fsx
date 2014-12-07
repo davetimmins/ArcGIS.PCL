@@ -15,8 +15,8 @@ let testDir = buildDir @@ "test"
 let packagesDir = buildDir @@ "packages"
 let nupacksPath = buildDir @@ "packs"
 let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runners" @@ "tools"
-let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.0.0"
-let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.0.0"
+let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.0.1"
+let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.0.1"
 
 CleanDirs [buildDir]
 
@@ -115,6 +115,10 @@ Target "BuildAll" (fun _ ->
       |> MSBuildRelease (buildLibsDir @@ "MonoTouch1") "Build"
       |> Log "AppBuild-Output: "
 
+    !! "src/ArcGIS.ServiceModel.iOSUnified/*.csproj"
+      |> MSBuildRelease (buildLibsDir @@ "Xamarin.iOS10") "Build"
+      |> Log "AppBuild-Output: "
+
     !! "src/ArcGIS.ServiceModel.NET/*.csproj"
       |> MSBuildRelease (buildLibsDir @@ "net45") "Build"
       |> Log "AppBuild-Output: "
@@ -145,7 +149,7 @@ Target "TestWindows" (fun _ ->
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 
-            ToolPath = (testRunnerDir @@ "xunit.console.clr4.exe")
+            ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
@@ -154,7 +158,7 @@ Target "TestMono" (fun _ ->
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 
-            ToolPath = (testRunnerDir @@ "xunit.console.clr4.exe")
+            ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
@@ -163,7 +167,7 @@ Target "TestAll" (fun _ ->
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 
-            ToolPath = (testRunnerDir @@ "xunit.console.clr4.exe")
+            ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
@@ -193,7 +197,7 @@ Target "Pack" (fun _ ->
 
     NuGet (fun p ->
      {p with
-        Version = "2.0.0"
+        Version = "2.0.3"
         OutputPath = nupacksPath
         WorkingDir = currentDirectory
         Publish = false })
@@ -201,7 +205,7 @@ Target "Pack" (fun _ ->
 
     NuGet (fun p ->
      {p with
-        Version = "2.0.0"
+        Version = "2.0.2"
         OutputPath = nupacksPath
         WorkingDir = currentDirectory
         Publish = false })
@@ -209,7 +213,7 @@ Target "Pack" (fun _ ->
 
     NuGet (fun p ->
      {p with
-        Version = "1.0.0"
+        Version = "1.0.2"
         OutputPath = nupacksPath
         WorkingDir = currentDirectory
         Publish = false })
@@ -217,7 +221,7 @@ Target "Pack" (fun _ ->
 
     NuGet (fun p ->
      {p with
-        Version = "1.0.0"
+        Version = "1.0.1"
         OutputPath = nupacksPath
         WorkingDir = currentDirectory
         Publish = false })

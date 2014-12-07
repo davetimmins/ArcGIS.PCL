@@ -1,0 +1,47 @@
+%YAML 1.2
+---
+name: ArcGIS.PCL
+version: 5.0.1
+id: ArcGIS.PCL
+publisher: Dave Timmins
+publisher-url: http://davetimmins.com
+summary: Use ArcGIS Server REST types and resources without an official SDK. You can also convert between ArcGIS Features and GeoJSON.
+license: License.md
+details: Details.md
+getting-started: GettingStarted.md
+no_build: true
+is_shell: true
+icons:
+  - icons/ArcGIS.PCL_128x128.png
+  - icons/ArcGIS.PCL_512x512.png
+libraries:
+  ios:
+    - ../artifacts/build/lib/MonoTouch1/ArcGIS.ServiceModel.dll
+    - ../artifacts/build/lib/MonoTouch1/ArcGIS.ServiceModel.iOS.dll
+    - ../artifacts/build/serializers/ArcGIS.ServiceModel.Serializers.JsonDotNet.dll
+  ios-unified:
+    - ../artifacts/build/lib/Xamarin.iOS10/ArcGIS.ServiceModel.dll
+    - ../artifacts/build/lib/Xamarin.iOS10/ArcGIS.ServiceModel.iOS.dll
+    - ../artifacts/build/serializers/ArcGIS.ServiceModel.Serializers.JsonDotNet.dll
+  android:
+    - ../artifacts/build/lib/MonoAndroid1/ArcGIS.ServiceModel.dll
+    - ../artifacts/build/lib/MonoAndroid1/ArcGIS.ServiceModel.Android.dll
+    - ../artifacts/build/serializers/ArcGIS.ServiceModel.Serializers.JsonDotNet.dll
+packages:
+  ios:
+    - modernhttpclient, Version=2.1.4
+    - Newtonsoft.Json, Version=6.0.6
+  ios-unified:
+    - modernhttpclient, Version=2.1.4
+    - Newtonsoft.Json, Version=6.0.6
+  android:
+    - modernhttpclient, Version=2.1.4
+    - Newtonsoft.Json, Version=6.0.6
+samples:
+  - name: "Demonstrates calling query and geocode ArcGIS Server operations."
+    path: ../samples/ArcGIS.Portable.iOS/ArcGIS.Portable.iOS.sln
+  - name: "Demonstrates calling query and geocode ArcGIS Server operations."
+    path: ../samples/ArcGIS.Portable.iOSUnified/ArcGIS.Portable.iOSUnified.sln
+  - name: "Demonstrates calling query and geocode ArcGIS Server operations."
+    path: ../samples/ArcGIS.Portable.Android/ArcGIS.Portable.Android.sln
+...

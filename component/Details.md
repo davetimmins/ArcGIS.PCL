@@ -1,6 +1,6 @@
 ﻿ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
-Available typed operations available are:
+Available operations available are:
 
  - `CheckGenerateToken` - create a token automatically via an `ITokenProvider`
  - `Query<T>` - query a layer by attribute and / or spatial filters
@@ -17,6 +17,14 @@ Available typed operations available are:
  - `DescribeSite` - returns a url for every service discovered
  - `Ping` - verify that the server can be accessed
 
+REST admin operations:
+
+  - `PublicKey` - admin operation to get public key used for encryption of token requests
+  - `ServiceStatus` - admin operation to get the configured and actual status of a service
+  - `ServiceReport` - admin operation to get the service report
+  - `StartService` - admin operation to start a service
+  - `StopService` - admin operation to stop a service
+
 In addition to these you can use it to convert between GeoJSON and ArcGIS JSON features.
 
 To get started with ArcGIS.PCL first create an ISerializer implementation. There is a Json.NET implementation packaged with the component that will be used by default if you initialise it
@@ -24,7 +32,6 @@ To get started with ArcGIS.PCL first create an ISerializer implementation. There
 ### Json.NET ISerializer initialisation
 
 ```csharp
-
 ArcGIS.ServiceModel.Serializers.JsonDotNetSerializer.Init();
 
 ```
@@ -34,36 +41,31 @@ To call ArcGIS Server resources you can create a gateway. You pass in the root u
 ### ArcGIS Server gateway
 
 ```csharp
-
 // ArcGIS Server with non secure resources
 var gateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/");
 
 // ArcGIS Server with secure resources
-var secureGateway = new SecureArcGISServerGateway("http://serverapps10.esri.com/arcgis", "user1", "pass.word1");
+var secureGateway = new SecurePortalGateway("http://serverapps10.esri.com/arcgis", "user1", "pass.word1");
 
 // ArcGIS Server with secure resources and token service at different location
 var otherSecureGateway = new PortalGateway("http://sampleserver3.arcgisonline.com/ArcGIS/", tokenProvider: new TokenProvider("http://serverapps10.esri.com/arcgis", "user1", "pass.word1"));
 
 // ArcGIS Online either secure or non secure
 var arcgisOnlineGateway = new ArcGISOnlineGateway();
- 
+
 var secureArcGISOnlineGateway = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineTokenProvider("user", "pass"));
 
 var secureArcGISOnlineGatewayOAuth = new ArcGISOnlineGateway(tokenProvider: new ArcGISOnlineAppLoginOAuthProvider("clientId", "clientSecret"));
-
 ```
 
 Once you have a gateway you can call operations on it, for example to query an endpoint
 
 ```csharp
-
 var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
 
 var resultPoint = await gateway.Query<Point>(queryPoint);
-
 ```
 
 ### Icon
 
 Icon made by [Freepik](http://www.freepik.com) from [www.flaticon.com](http://www.flaticon.com/free-icon/triangle-of-triangles_32915)
-   

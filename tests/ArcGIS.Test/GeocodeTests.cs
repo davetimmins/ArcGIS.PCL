@@ -1,30 +1,23 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel;
 using ArcGIS.ServiceModel.Operation;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
-using ArcGIS.ServiceModel.Serializers;
 
 namespace ArcGIS.Test
 {
-    public class GeocodeGateway : PortalGateway
-    {
-        public GeocodeGateway(ISerializer serializer)
-            : base("http://geocode.arcgis.com/arcgis", serializer, null)
-        { }
-    }
-
     public class GeocodeTests : TestsFixture
     {
-        [Fact]
-        public async Task CanGeocode()
+        [Theory]
+        [InlineData("http://geocode.arcgis.com/arcgis", "/World/GeocodeServer/", "100 Willis Street, Wellington", "NZL")]
+        public async Task CanGeocode(string rootUrl, string relativeUrl, string text, string sourceCountry = "")
         {
-            var gateway = new GeocodeGateway(new ServiceStackSerializer());
-            var geocode = new SingleInputGeocode("/World/GeocodeServer/".AsEndpoint())
+            var gateway = new PortalGateway(rootUrl);
+            var geocode = new SingleInputGeocode(relativeUrl.AsEndpoint())
             {
-                Text = "100 Willis Street, Wellington",
-                SourceCountry = "NZL"
+                Text = text,
+                SourceCountry = sourceCountry
             };
             var response = await gateway.Geocode(geocode);
 
@@ -37,13 +30,14 @@ namespace ArcGIS.Test
             Assert.NotNull(result.Feature.Geometry);
         }
 
-        [Fact]
-        public async Task CanSuggest()
+        [Theory]
+        [InlineData("http://geocode.arcgis.com/arcgis", "/World/GeocodeServer/", "100 Willis Street, Wellington")]
+        public async Task CanSuggest(string rootUrl, string relativeUrl, string text)
         {
-            var gateway = new GeocodeGateway(new ServiceStackSerializer());
-            var suggest = new SuggestGeocode("/World/GeocodeServer/".AsEndpoint())
+            var gateway = new PortalGateway(rootUrl);
+            var suggest = new SuggestGeocode(relativeUrl.AsEndpoint())
             {
-                Text = "100 Willis Street, Wellington"
+                Text = text
             };
             var response = await gateway.Suggest(suggest);
 
@@ -53,18 +47,19 @@ namespace ArcGIS.Test
             var result = response.Suggestions.First();
             Assert.True(!string.IsNullOrWhiteSpace(result.Text));
         }
-        
-        [Fact]
-        public async Task CanReverseGeocodePoint()
+
+        [Theory]
+        [InlineData("http://geocode.arcgis.com/arcgis", "/World/GeocodeServer/", 174.775505, -41.290893, 4326)]
+        public async Task CanReverseGeocodePoint(string rootUrl, string relativeUrl, double x, double y, int wkid)
         {
-            var gateway = new GeocodeGateway(new ServiceStackSerializer());
-            var reverseGeocode = new ReverseGeocode("/World/GeocodeServer/".AsEndpoint())
+            var gateway = new PortalGateway(rootUrl);
+            var reverseGeocode = new ReverseGeocode(relativeUrl.AsEndpoint())
             {
                 Location = new Point
                 {
-                    X = 174.775505,
-                    Y = -41.290893,
-                    SpatialReference = new SpatialReference { Wkid = SpatialReference.WGS84.LatestWkid }
+                    X = x,
+                    Y = y,
+                    SpatialReference = new SpatialReference { Wkid = wkid }
                 }
             };
             var response = await gateway.ReverseGeocode(reverseGeocode);
@@ -72,7 +67,6 @@ namespace ArcGIS.Test
             Assert.Null(response.Error);
             Assert.NotNull(response.Address);
             Assert.NotNull(response.Location);
-            Assert.Equal(response.Address.CountryCode, "NZL");
         }
     }
 }
