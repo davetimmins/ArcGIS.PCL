@@ -360,6 +360,23 @@ namespace ArcGIS.Test
             Assert.NotEqual(result.Features, resultDesc.Features);
         }
 
+        [Theory]
+        [InlineData("http://services.arcgis.com/hMYNkrKaydBeWRXE/arcgis", "TestReturnExtentOnly/FeatureServer/0")]
+        public async Task CanQueryExtent(string rootUrl, string relativeUrl)
+        {
+            var gateway = new PortalGateway(rootUrl);
+
+            var query = new QueryForExtent(relativeUrl.AsEndpoint());
+            var result = await gateway.QueryForExtent(query);
+
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.True(result.NumberOfResults > 0);
+            Assert.NotNull(result.Extent);
+            Assert.NotNull(result.Extent.SpatialReference);
+            Assert.NotNull(result.Extent.GetCenter());
+        }
+
         [Fact]
         public async Task CanQueryForCount()
         {
