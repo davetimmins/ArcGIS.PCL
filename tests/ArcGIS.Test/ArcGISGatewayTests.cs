@@ -377,6 +377,29 @@ namespace ArcGIS.Test
             Assert.NotNull(result.Extent.GetCenter());
         }
 
+        [Theory]
+        [InlineData("http://services.arcgis.com/hMYNkrKaydBeWRXE/arcgis", "TestReturnExtentOnly/FeatureServer/0", 1, 2)]
+        public async Task CanPagePointQuery(string rootUrl, string relativeUrl, int start, int numberToReturn)
+        {
+            var gateway = new PortalGateway(rootUrl);
+
+            var queryCount = new QueryForCount(relativeUrl.AsEndpoint());
+            var resultCount = await gateway.QueryForCount(queryCount);
+
+            Assert.NotNull(resultCount);
+            Assert.Null(resultCount.Error);
+            Assert.NotEqual(numberToReturn, resultCount.NumberOfResults);
+            Assert.True(numberToReturn < resultCount.NumberOfResults);
+
+            var query = new Query(relativeUrl.AsEndpoint()) { ResultOffset = start, ResultRecordCount = numberToReturn };
+            var result = await gateway.Query<Point>(query);
+
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.True(result.Features.Any());
+            Assert.Equal(numberToReturn, result.Features.Count());
+        }
+
         [Fact]
         public async Task CanQueryForCount()
         {
