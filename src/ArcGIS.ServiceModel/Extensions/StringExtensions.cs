@@ -1,12 +1,8 @@
-﻿using System;
-using System.Text;
-using ArcGIS.ServiceModel.Common;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Linq;
-
-namespace ArcGIS.ServiceModel
+﻿namespace ArcGIS.ServiceModel
 {
+    using ArcGIS.ServiceModel.Common;
+    using System;
+
     public static class StringExtensions
     {
         public static ArcGISServerEndpoint AsEndpoint(this string relativeUrl)
@@ -42,39 +38,9 @@ namespace ArcGIS.ServiceModel
             return rootUrl.Replace("/rest/services", "") + "/";
         }
 
-        public static Dictionary<string, string> ParseQueryString(this string queryString)
-        {
-            if (string.IsNullOrWhiteSpace(queryString)) return new Dictionary<string, string>();
-
-            // remove anything other than query string from url
-            if (queryString.Contains("?"))
-                queryString = queryString.Substring(queryString.IndexOf('?') + 1);
-
-            return Regex.Split(queryString, "&")
-                .Select(vp => Regex.Split(vp, "="))
-                .ToDictionary(singlePair => singlePair[0], singlePair => singlePair.Length == 2 ? singlePair[1] : string.Empty);
-        }
-
         public static string UrlEncode(this string text)
         {
-            if (string.IsNullOrEmpty(text)) return text;
-
-            var sb = new StringBuilder();
-
-            foreach (var charCode in Encoding.UTF8.GetBytes(text))
-            {
-                if (
-                    charCode >= 65 && charCode <= 90        // A-Z
-                    || charCode >= 97 && charCode <= 122    // a-z
-                    || charCode >= 48 && charCode <= 57     // 0-9
-                    || charCode >= 44 && charCode <= 46     // ,-.
-                    )
-                    sb.Append((char)charCode);
-                else
-                    sb.Append('%' + charCode.ToString("x2"));
-            }
-
-            return sb.ToString();
+            return string.IsNullOrWhiteSpace(text) ? text : Uri.EscapeDataString(text);
         }
 
         /// <summary>
