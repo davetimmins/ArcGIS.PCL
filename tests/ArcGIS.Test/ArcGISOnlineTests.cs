@@ -1,14 +1,4 @@
-﻿using ArcGIS.ServiceModel;
-using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Operation;
-using ArcGIS.ServiceModel.Serializers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace ArcGIS.Test
+﻿namespace ArcGIS.Test
 {
     public class ArcGISOnlineTests : TestsFixture
     {

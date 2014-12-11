@@ -1,12 +1,12 @@
-﻿using ArcGIS.ServiceModel;
-using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.Operation;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace ArcGIS.Test
+﻿namespace ArcGIS.Test.Integration
 {
+    using ArcGIS.ServiceModel;
+    using ArcGIS.ServiceModel.Common;
+    using ArcGIS.ServiceModel.Operation;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Xunit;
+
     public class GeocodeTests : TestsFixture
     {
         [Theory]

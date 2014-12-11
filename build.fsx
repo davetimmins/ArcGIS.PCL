@@ -143,7 +143,7 @@ Target "BuildAll" (fun _ ->
 //--------------------------------------------------------------------------------
 
 Target "TestWindows" (fun _ ->
-    !! (testDir + @"\*.Test.dll")
+    !! (testDir + @"\ArcGIS.Test*.dll")
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 
@@ -152,7 +152,7 @@ Target "TestWindows" (fun _ ->
 )
 
 Target "TestMono" (fun _ ->
-    !! (testDir + @"\*.Test.dll")
+    !! (testDir + @"\ArcGIS.Test*.dll")
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 
@@ -161,7 +161,7 @@ Target "TestMono" (fun _ ->
 )
 
 Target "TestAll" (fun _ ->
-    !! (testDir + @"\*.Test.dll")
+    !! (testDir + @"\ArcGIS.Test*.dll")
       |> xUnit (fun p -> 
         {p with 
             OutputDir = testDir 

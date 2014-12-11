@@ -1,12 +1,12 @@
-﻿using ArcGIS.ServiceModel;
-using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.GeoJson;
-using ServiceStack.Text;
-using System.Linq;
-using Xunit;
-
-namespace ArcGIS.Test
+﻿namespace ArcGIS.Test
 {
+    using ArcGIS.ServiceModel;
+    using ArcGIS.ServiceModel.Common;
+    using ArcGIS.ServiceModel.GeoJson;
+    using ServiceStack.Text;
+    using System.Linq;
+    using Xunit;
+
     public class GeoJSONTests : TestsFixture
     {
         [Fact]
