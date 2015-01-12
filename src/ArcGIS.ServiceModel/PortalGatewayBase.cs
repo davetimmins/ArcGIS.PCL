@@ -81,14 +81,9 @@
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>HTTP error if there is a problem with the request, otherwise an
         /// empty <see cref="IPortalResponse"/> object if successful otherwise the Error property is populated</returns>
-        public virtual Task<PortalResponse> Ping(IEndpoint endpoint, CancellationToken ct)
+        public virtual Task<PortalResponse> Ping(IEndpoint endpoint, CancellationToken ct = default(CancellationToken))
         {
             return Get<PortalResponse>(endpoint, ct);
-        }
-
-        public virtual Task<PortalResponse> Ping(IEndpoint endpoint)
-        {
-            return Ping(endpoint, CancellationToken.None);
         }
 
         /// <summary>
@@ -98,14 +93,9 @@
         /// <param name="queryOptions">Query filter parameters</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The matching features for the query</returns>
-        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions, CancellationToken ct) where T : IGeometry
+        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions, CancellationToken ct = default(CancellationToken)) where T : IGeometry
         {
             return Get<QueryResponse<T>, Query>(queryOptions, ct);
-        }
-
-        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions) where T : IGeometry
-        {
-            return Query<T>(queryOptions, CancellationToken.None);
         }
 
         /// <summary>
@@ -114,14 +104,9 @@
         /// <param name="queryOptions">Query filter parameters</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The number of results that match the query</returns>
-        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions, CancellationToken ct)
+        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions, CancellationToken ct = default(CancellationToken))
         {
             return Get<QueryForCountResponse, QueryForCount>(queryOptions, ct);
-        }
-
-        public virtual Task<QueryForCountResponse> QueryForCount(QueryForCount queryOptions)
-        {
-            return QueryForCount(queryOptions, CancellationToken.None);
         }
 
         /// <summary>
@@ -130,14 +115,9 @@
         /// <param name="queryOptions">Query filter parameters</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The number of results that match the query and the bounding extent</returns>
-        public virtual Task<QueryForExtentResponse> QueryForExtent(QueryForExtent queryOptions, CancellationToken ct)
+        public virtual Task<QueryForExtentResponse> QueryForExtent(QueryForExtent queryOptions, CancellationToken ct = default(CancellationToken))
         {
             return Get<QueryForExtentResponse, QueryForExtent>(queryOptions, ct);
-        }
-
-        public virtual Task<QueryForExtentResponse> QueryForExtent(QueryForExtent queryOptions)
-        {
-            return QueryForExtent(queryOptions, CancellationToken.None);
         }
 
         /// <summary>
@@ -146,14 +126,9 @@
         /// <param name="queryOptions">Query filter parameters</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The Object IDs for the features that match the query</returns>
-        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions, CancellationToken ct)
+        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions, CancellationToken ct = default(CancellationToken))
         {
             return Get<QueryForIdsResponse, QueryForIds>(queryOptions, ct);
-        }
-
-        public virtual Task<QueryForIdsResponse> QueryForIds(QueryForIds queryOptions)
-        {
-            return QueryForIds(queryOptions, CancellationToken.None);
         }
 
         /// <summary>
@@ -163,14 +138,9 @@
         /// <param name="edits">The edits to perform</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>A collection of add, update and delete results</returns>
-        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationToken ct) where T : IGeometry
+        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationToken ct = default(CancellationToken)) where T : IGeometry
         {
             return Post<ApplyEditsResponse, ApplyEdits<T>>(edits, ct);
-        }
-
-        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits) where T : IGeometry
-        {
-            return ApplyEdits<T>(edits, CancellationToken.None);
         }
 
         /// <summary>
@@ -181,7 +151,7 @@
         /// <param name="outputSpatialReference">The spatial reference you want the result set to be</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly projected geometries</returns>
-        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationToken ct) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationToken ct = default(CancellationToken)) where T : IGeometry
         {
             var op = new ProjectGeometry<T>(GeometryServiceEndpoint, features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, ct).ConfigureAwait(false);
@@ -193,11 +163,6 @@
             return result;
         }
 
-        public virtual Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference) where T : IGeometry
-        {
-            return Project<T>(features, outputSpatialReference, CancellationToken.None);
-        }
-
         /// <summary>
         /// Buffer the list of geometries passed in using the GeometryServer
         /// </summary>
@@ -207,7 +172,7 @@
         /// <param name="distance">Distance in meters to buffer the geometries by</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly buffered geometries</returns>
-        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationToken ct) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationToken ct = default(CancellationToken)) where T : IGeometry
         {
             var op = new BufferGeometry<T>(GeometryServiceEndpoint, features, spatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, ct).ConfigureAwait(false);
@@ -219,11 +184,6 @@
             return result;
         }
 
-        public virtual Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance) where T : IGeometry
-        {
-            return Buffer<T>(features, spatialReference, distance, CancellationToken.None);
-        }
-
         /// <summary>
         /// Simplify the list of geometries passed in using the GeometryServer. Simplify permanently alters the input geometry so that it becomes topologically consistent.
         /// </summary>
@@ -232,7 +192,7 @@
         /// <param name="spatialReference">The spatial reference of the geometries</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly simplified geometries</returns>
-        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationToken ct) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationToken ct = default(CancellationToken)) where T : IGeometry
         {
             var op = new SimplifyGeometry<T>(GeometryServiceEndpoint, features, spatialReference);
             var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, ct).ConfigureAwait(false);
@@ -242,11 +202,6 @@
             var result = features.UpdateGeometries<T>(simplified.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
             return result;
-        }
-
-        public virtual Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference) where T : IGeometry
-        {
-            return Simplify<T>(features, spatialReference, CancellationToken.None);
         }
 
         async Task<Token> CheckGenerateToken(CancellationToken ct)

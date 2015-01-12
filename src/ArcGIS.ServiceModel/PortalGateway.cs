@@ -22,7 +22,7 @@
         /// </summary>
         /// <param name="cts">Optional cancellation token to cancel pending request</param>
         /// <returns>An ArcGIS Server site hierarchy</returns>
-        public virtual async Task<SiteDescription> DescribeSite(CancellationToken ct)
+        public virtual async Task<SiteDescription> DescribeSite(CancellationToken ct = default(CancellationToken))
         {
             var result = new SiteDescription();
 
@@ -31,12 +31,7 @@
             return result;
         }
 
-        public virtual Task<SiteDescription> DescribeSite()
-        {
-            return DescribeSite(CancellationToken.None);
-        }
-
-        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint, CancellationToken ct)
+        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint, CancellationToken ct = default(CancellationToken))
         {
             SiteFolderDescription folderDescription = null;
             var result = new List<SiteFolderDescription>();
@@ -90,7 +85,7 @@
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <param name="path">The starting path (folder). If omitted then this will start at the root and get all sub folders too</param>
         /// <returns>All discovered services for the site</returns>
-        public virtual async Task<SiteReportResponse> SiteReport(CancellationToken ct, string path = "")
+        public virtual async Task<SiteReportResponse> SiteReport(string path = "", CancellationToken ct = default(CancellationToken))
         {
             var folders = new List<string>();
 
@@ -115,25 +110,15 @@
             return result;
         }
 
-        public virtual Task<SiteReportResponse> SiteReport(string path = "")
-        {
-            return SiteReport(CancellationToken.None, path);
-        }
-
         /// <summary>
         /// Returns the expected and actual status of a service
         /// </summary>
         /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The expected and actual status of the service</returns>
-        public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription, CancellationToken ct)
+        public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription, CancellationToken ct = default(CancellationToken))
         {
             return Get<ServiceStatusResponse>(new ServiceStatus(serviceDescription), ct);
-        }
-
-        public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription)
-        {
-            return ServiceStatus(serviceDescription, CancellationToken.None);
         }
 
         /// <summary>
@@ -142,14 +127,9 @@
         /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>Standard response object</returns>
-        public virtual Task<StartStopServiceResponse> StartService(ServiceDescription serviceDescription, CancellationToken ct)
+        public virtual Task<StartStopServiceResponse> StartService(ServiceDescription serviceDescription, CancellationToken ct = default(CancellationToken))
         {
             return Post<StartStopServiceResponse, StartService>(new StartService(serviceDescription), ct);
-        }
-
-        public virtual Task<StartStopServiceResponse> StartService(ServiceDescription serviceDescription)
-        {
-            return StartService(serviceDescription, CancellationToken.None);
         }
 
         /// <summary>
@@ -158,14 +138,9 @@
         /// <param name="serviceDescription">Service description usually generated from a previous call to DescribeSite</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>Standard response object</returns>
-        public virtual Task<StartStopServiceResponse> StopService(ServiceDescription serviceDescription, CancellationToken ct)
+        public virtual Task<StartStopServiceResponse> StopService(ServiceDescription serviceDescription, CancellationToken ct = default(CancellationToken))
         {
             return Post<StartStopServiceResponse, StopService>(new StopService(serviceDescription), ct);
-        }
-
-        public virtual Task<StartStopServiceResponse> StopService(ServiceDescription serviceDescription)
-        {
-            return StopService(serviceDescription, CancellationToken.None);
         }
 
         /// <summary>
@@ -174,14 +149,9 @@
         /// <param name="reverseGeocode"></param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns></returns>
-        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode, CancellationToken ct)
+        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode, CancellationToken ct = default(CancellationToken))
         {
             return Get<ReverseGeocodeResponse, ReverseGeocode>(reverseGeocode, ct);
-        }
-
-        public virtual Task<ReverseGeocodeResponse> ReverseGeocode(ReverseGeocode reverseGeocode)
-        {
-            return ReverseGeocode(reverseGeocode, CancellationToken.None);
         }
 
         /// <summary>
@@ -190,14 +160,9 @@
         /// <param name="geocode"></param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns></returns>
-        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode, CancellationToken ct)
+        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode, CancellationToken ct = default(CancellationToken))
         {
             return Get<SingleInputGeocodeResponse, SingleInputGeocode>(geocode, ct);
-        }
-
-        public virtual Task<SingleInputGeocodeResponse> Geocode(SingleInputGeocode geocode)
-        {
-            return Geocode(geocode, CancellationToken.None);
         }
 
         /// <summary>
@@ -206,14 +171,9 @@
         /// <param name="suggestGeocode"></param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns></returns>
-        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode, CancellationToken ct)
+        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode, CancellationToken ct = default(CancellationToken))
         {
             return Get<SuggestGeocodeResponse, SuggestGeocode>(suggestGeocode, ct);
-        }
-
-        public virtual Task<SuggestGeocodeResponse> Suggest(SuggestGeocode suggestGeocode)
-        {
-            return Suggest(suggestGeocode, CancellationToken.None);
         }
 
         /// <summary>
@@ -227,14 +187,9 @@
         /// <param name="findOptions"></param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns></returns>
-        public virtual Task<FindResponse> Find(Find findOptions, CancellationToken ct)
+        public virtual Task<FindResponse> Find(Find findOptions, CancellationToken ct = default(CancellationToken))
         {
             return Get<FindResponse, Find>(findOptions, ct);
-        }
-
-        public virtual Task<FindResponse> Find(Find findOptions)
-        {
-            return Find(findOptions, CancellationToken.None);
         }
     }
 }
