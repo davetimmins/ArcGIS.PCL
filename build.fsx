@@ -11,12 +11,13 @@ let tempDirectory = "./"
 let buildDir = tempDirectory @@ "artifacts"
 let buildLibsDir = buildDir @@ "build" @@ "lib"
 let buildSerializerLibsDir = buildDir @@ "build" @@ "serializers"
+let buildPortableDir = "portable-net45+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10"
 let testDir = buildDir @@ "test"
 let packagesDir = buildDir @@ "packages"
 let nupacksPath = buildDir @@ "packs"
 let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runners" @@ "tools"
-let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.0.1"
-let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.0.1"
+let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.1.0"
+let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.1.0"
 
 CleanDirs [buildDir]
 
@@ -40,7 +41,7 @@ Target "BuildWindows" (fun _ ->
          Attribute.InformationalVersion assemblyInformationalVersion]
 
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ buildPortableDir) "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.NET/*.csproj"
@@ -75,7 +76,7 @@ Target "BuildMono" (fun _ ->
          Attribute.InformationalVersion assemblyInformationalVersion]
 
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ buildPortableDir) "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.NET/*.csproj"
@@ -102,15 +103,15 @@ Target "BuildAll" (fun _ ->
          Attribute.InformationalVersion assemblyInformationalVersion]
 
     !! "src/ArcGIS.ServiceModel/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ buildPortableDir) "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.Android/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "MonoAndroid1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "MonoAndroid10") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.iOS/*.csproj"
-      |> MSBuildRelease (buildLibsDir @@ "MonoTouch1") "Build"
+      |> MSBuildRelease (buildLibsDir @@ "MonoTouch10") "Build"
       |> Log "AppBuild-Output: "
 
     !! "src/ArcGIS.ServiceModel.iOSUnified/*.csproj"
