@@ -204,7 +204,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// and resultRecordCount = 100, query results can return the results in the range of 1001 to 1100.
         /// </summary>
         [DataMember(Name = "resultOffset")]
-        public int ResultOffset { get; set; }
+        public int? ResultOffset { get; set; }
 
         /// <summary>
         /// This option was added at 10.3.
