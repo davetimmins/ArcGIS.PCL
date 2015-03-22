@@ -101,6 +101,26 @@ namespace ArcGIS.ServiceModel.Operation
         public ProjectGeometry(IEndpoint endpoint, List<Feature<T>> features, SpatialReference outputSpatialReference)
             : base(endpoint, features, outputSpatialReference, Operations.Project)
         { }
+
+        /// <summary>
+        /// The WKID or a JSON object specifying the geographic transformation (also known as datum transformation) to be applied to the 
+        /// projected geometries. 
+        /// Note that a transformation is needed only if the output spatial reference contains a different geographic coordinate system 
+        /// than the input spatial reference.
+        /// </summary>
+        [DataMember(Name = "transformation")]
+        public string Transformation { get; set; }
+
+        /// <summary>
+        /// A Boolean value indicating whether or not to transform forward. 
+        /// The forward or reverse direction of transformation is implied in the name of the transformation. 
+        /// If <c>Transformation</c> is specified, a value for the <c>TransformForward</c> parameter must also be specified. The default value is <c>false</c>.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [transform forward]; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember(Name = "transformForward")]
+        public bool TransformForward { get; set; }
     }
 
     [DataContract]
