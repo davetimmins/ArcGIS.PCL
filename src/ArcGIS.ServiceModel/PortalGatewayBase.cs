@@ -138,9 +138,11 @@
         /// <param name="edits">The edits to perform</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>A collection of add, update and delete results</returns>
-        public virtual Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationToken ct = default(CancellationToken)) where T : IGeometry
+        public virtual async Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationToken ct = default(CancellationToken)) where T : IGeometry
         {
-            return Post<ApplyEditsResponse, ApplyEdits<T>>(edits, ct);
+            var result = await Post<ApplyEditsResponse, ApplyEdits<T>>(edits, ct);
+            result.SetExpected(edits);
+            return result;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using ArcGIS.ServiceModel.Common;
 
@@ -53,6 +54,67 @@ namespace ArcGIS.ServiceModel.Operation
 
         [DataMember(Name = "deleteResults")]
         public List<ApplyEditResponse> Deletes { get; set; }
+
+        [IgnoreDataMember]
+        public int ExpectedAdds { get; private set; }
+
+        [IgnoreDataMember]
+        public int ActualAdds { get { return Adds == null ? 0 : Adds.Count; } }
+
+        [IgnoreDataMember]
+        public int ActualAddsThatSucceeded { get { return AddsSuccessful.Count(); } }
+
+        [IgnoreDataMember]
+        public int ExpectedUpdates { get; private set; }
+
+        [IgnoreDataMember]
+        public int ActualUpdates { get { return Updates == null ? 0 : Updates.Count; } }
+
+        [IgnoreDataMember]
+        public int ActualUpdatesThatSucceeded { get { return UpdatesSuccessful.Count(); } }
+
+        [IgnoreDataMember]
+        public int ExpectedDeletes { get; private set; }
+
+        [IgnoreDataMember]
+        public int ActualDeletes { get { return Deletes == null ? 0 : Deletes.Count; } }
+
+        [IgnoreDataMember]
+        public int ActualDeletesThatSucceeded { get { return DeletesSuccessful.Count(); } }
+
+        [IgnoreDataMember]
+        public IEnumerable<ApplyEditResponse> AddsSuccessful { get { return CheckResults(Adds, true); } }
+
+        [IgnoreDataMember]
+        public IEnumerable<ApplyEditResponse> AddsFailed { get { return CheckResults(Adds, false); } }
+
+        [IgnoreDataMember]
+        public IEnumerable<ApplyEditResponse> UpdatesSuccessful { get { return CheckResults(Updates, true); } }
+
+        [IgnoreDataMember]
+        public IEnumerable<ApplyEditResponse> UpdatesFailed { get { return CheckResults(Updates, false); } }
+
+        [IgnoreDataMember]
+        public IEnumerable<ApplyEditResponse> DeletesSuccessful { get { return CheckResults(Deletes, true); } }
+
+        [IgnoreDataMember]
+        public IEnumerable<ApplyEditResponse> DeletesFailed { get { return CheckResults(Deletes, false); } }
+
+        IEnumerable<ApplyEditResponse> CheckResults(List<ApplyEditResponse> results, bool success)
+        {
+            if (results == null || !results.Any()) return Enumerable.Empty<ApplyEditResponse>();
+
+            return results.Where(r => r.Success == success);
+        }
+
+        public void SetExpected<T>(ApplyEdits<T> operation) where T : IGeometry
+        {
+            if (operation == null) return;
+
+            ExpectedAdds = operation.Adds == null ? 0 : operation.Adds.Count;
+            ExpectedUpdates = operation.Updates == null ? 0 : operation.Updates.Count;
+            ExpectedDeletes = operation.Deletes == null ? 0 : operation.Deletes.Count;
+        }
     }
 
     /// <summary>

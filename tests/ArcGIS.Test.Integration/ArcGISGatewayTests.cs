@@ -453,6 +453,8 @@
 
             Assert.True(resultAdd.Adds.Any());
             Assert.True(resultAdd.Adds.First().Success);
+            Assert.Equal(resultAdd.ExpectedAdds, resultAdd.ActualAdds);
+            Assert.Equal(resultAdd.ActualAdds, resultAdd.ActualAddsThatSucceeded);
 
             var id = resultAdd.Adds.First().ObjectId;
 
@@ -467,6 +469,8 @@
 
             Assert.True(resultUpdate.Updates.Any());
             Assert.True(resultUpdate.Updates.First().Success);
+            Assert.Equal(resultUpdate.ExpectedUpdates, resultUpdate.ActualUpdates);
+            Assert.Equal(resultUpdate.ActualUpdates, resultUpdate.ActualUpdatesThatSucceeded);
             Assert.Equal(resultUpdate.Updates.First().ObjectId, id);
 
             var deletes = new ApplyEdits<Point>(@"Fire/Sheep/FeatureServer/0".AsEndpoint())
@@ -477,6 +481,8 @@
 
             Assert.True(resultDelete.Deletes.Any());
             Assert.True(resultDelete.Deletes.First().Success);
+            Assert.Equal(resultDelete.ExpectedDeletes, resultDelete.ActualDeletes);
+            Assert.Equal(resultDelete.ActualDeletes, resultDelete.ActualDeletesThatSucceeded);
             Assert.Equal(resultDelete.Deletes.First().ObjectId, id);
         }
 
