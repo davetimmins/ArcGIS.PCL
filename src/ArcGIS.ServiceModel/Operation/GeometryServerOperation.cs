@@ -153,6 +153,7 @@ namespace ArcGIS.ServiceModel.Operation
                (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation)
              : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation);
 
+            Features = features;
             if (features.Any())
             {
                 Geometries = new GeometryCollection<T> { Geometries = new List<T>(features.Select(f => f.Geometry)) };
@@ -162,6 +163,9 @@ namespace ArcGIS.ServiceModel.Operation
             }
             OutputSpatialReference = outputSpatialReference;
         }
+
+        [IgnoreDataMember]
+        public List<Feature<T>> Features { get; private set; }
 
         [DataMember(Name = "geometries")]
         public GeometryCollection<T> Geometries { get; protected set; }

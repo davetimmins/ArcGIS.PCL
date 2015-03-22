@@ -165,6 +165,17 @@
             return result;
         }
 
+        public virtual async Task<List<Feature<T>>> Project<T>(ProjectGeometry<T> operation, CancellationToken ct = default(CancellationToken)) where T : IGeometry
+        {
+            var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(operation, ct).ConfigureAwait(false);
+
+            if (ct.IsCancellationRequested) return null;
+
+            var result = operation.Features.UpdateGeometries<T>(projected.Geometries);
+            if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = operation.OutputSpatialReference;
+            return result;
+        }
+
         /// <summary>
         /// Buffer the list of geometries passed in using the GeometryServer
         /// </summary>
