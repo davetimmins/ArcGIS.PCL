@@ -15,7 +15,7 @@ let buildPortableDir = "portable-net45+win81+wpa81+MonoAndroid10+MonoTouch10+Xam
 let testDir = buildDir @@ "test"
 let packagesDir = buildDir @@ "packages"
 let nupacksPath = buildDir @@ "packs"
-let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runners" @@ "tools"
+let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runner.console" @@ "tools"
 let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.1.0"
 let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.1.0"
 

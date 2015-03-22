@@ -125,6 +125,9 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class Suggestion
     {
+        [DataMember(Name = "isCollection")]
+        public bool IsCollection { get; set; }
+
         [DataMember(Name = "text")]
         public string Text { get; set; }
 

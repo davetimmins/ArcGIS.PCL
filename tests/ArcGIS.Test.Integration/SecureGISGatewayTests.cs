@@ -16,7 +16,7 @@
         }
 
         [Theory]
-        [InlineData("http://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
+        [InlineData("https://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
         public async Task CanGenerateToken(string rootUrl, string username, string password)
         {
             var tokenProvider = new TokenProvider(rootUrl, username, password);
@@ -30,7 +30,7 @@
         }
 
         [Theory]
-        [InlineData("http://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
+        [InlineData("https://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
         public async Task CanDescribeSecureSite(string rootUrl, string username, string password)
         {
             var gateway = new SecurePortalGateway(rootUrl, username, password);
@@ -48,20 +48,19 @@
         }
 
         [Theory]
-        [InlineData("http://serverapps10.esri.com/arcgis", "Oil/MapServer")]
+        [InlineData("https://serverapps10.esri.com/arcgis", "Oil/MapServer")]
         public async Task CannotAccessSecureResourceWithoutToken(string rootUrl, string relativeUrl)
         {
             var gateway = new PortalGateway(rootUrl);
             var endpoint = new ArcGISServerEndpoint(relativeUrl);
 
-            var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Ping(endpoint));
-
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => gateway.Ping(endpoint));
             Assert.NotNull(exception);
             Assert.Contains("Unauthorized access", exception.Message);
         }
 
         [Theory]
-        [InlineData("http://serverapps10.esri.com/arcgis", "user1", "pass.word1", "Oil/MapServer")]
+        [InlineData("https://serverapps10.esri.com/arcgis", "user1", "pass.word1", "Oil/MapServer")]
         public async Task InvalidTokenReported(string rootUrl, string username, string password, string relativeUrl)
         {
             var tokenProvider = new TokenProvider(rootUrl, username, password);
@@ -81,28 +80,9 @@
                 Token = token.Value
             };
 
-            var exception = await ThrowsAsync<InvalidOperationException>(async () => await gateway.Query<Point>(query));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => gateway.Query<Point>(query));
             Assert.NotNull(exception);
             Assert.Contains("Invalid token", exception.Message);
-        }
-
-        public static async Task<TException> ThrowsAsync<TException>(Func<Task> func) where TException : Exception
-        {
-            var expected = typeof(TException);
-            Type actual = null;
-            TException result = null;
-            try
-            {
-                await func();
-            }
-            catch (TException e)
-            {
-                actual = e.GetType();
-                result = e;
-            }
-
-            Assert.Equal(expected, actual);
-            return result;
         }
     }
 }
