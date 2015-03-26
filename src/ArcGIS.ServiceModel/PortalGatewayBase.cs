@@ -34,7 +34,7 @@
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
             Serializer = serializer ?? SerializerFactory.Get();
-            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+            Guard.AgainstNullArgument("Serializer", Serializer);
             _httpClient = HttpClientFactory.Get();
         }
 

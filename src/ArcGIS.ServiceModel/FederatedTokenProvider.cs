@@ -25,10 +25,10 @@
         {
             Guard.AgainstNullArgument("tokenProvider", tokenProvider);
             if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
-            Guard.AgainstNullArgument("serverUrl", serverUrl);
+            if (string.IsNullOrWhiteSpace(serverUrl)) throw new ArgumentNullException("serverUrl", "serverUrl is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
-            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+            Guard.AgainstNullArgument("Serializer", Serializer);
 
             RootUrl = rootUrl.AsRootUrl();
             _httpClient = HttpClientFactory.Get();

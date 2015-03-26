@@ -31,11 +31,11 @@
         public TokenProvider(string rootUrl, string username, string password, ISerializer serializer = null, string referer = "", ICryptoProvider cryptoProvider = null)
         {
             if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
-            Guard.AgainstNullArgument("username", username);
-            Guard.AgainstNullArgument("password", password);
+            if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username", "username is null.");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password", "password is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
-            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+            Guard.AgainstNullArgument("Serializer", Serializer);
             RootUrl = rootUrl.AsRootUrl();
             CryptoProvider = cryptoProvider ?? CryptoProviderFactory.Get();
             _httpClient = HttpClientFactory.Get();

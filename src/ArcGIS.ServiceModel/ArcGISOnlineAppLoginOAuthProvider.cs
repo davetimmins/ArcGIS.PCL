@@ -23,11 +23,12 @@
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public ArcGISOnlineAppLoginOAuthProvider(string clientId, string clientSecret, ISerializer serializer = null)
         {
-            Guard.AgainstNullArgument("clientId", clientId);
-            Guard.AgainstNullArgument("clientSecret", clientSecret);
+            if (string.IsNullOrWhiteSpace(clientId)) throw new ArgumentNullException("clientId", "clientId is null.");
+            if (string.IsNullOrWhiteSpace(clientSecret)) throw new ArgumentNullException("clientSecret", "clientSecret is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
-            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+            Guard.AgainstNullArgument("Serializer", Serializer);
+
             OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
             _httpClient = HttpClientFactory.Get();
         }
