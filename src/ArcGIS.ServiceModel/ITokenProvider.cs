@@ -1,5 +1,4 @@
 ﻿using ArcGIS.ServiceModel.Operation;
-using System;
 using System.Threading.Tasks;
 
 namespace ArcGIS.ServiceModel

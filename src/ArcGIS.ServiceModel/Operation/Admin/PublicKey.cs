@@ -1,5 +1,4 @@
 ﻿using ArcGIS.ServiceModel.Common;
-using System;
 using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation.Admin
@@ -9,7 +8,7 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     {
         public PublicKey()
         {
-            Endpoint = new ArcGISServerAdminEndpoint(Operations.PublicKey); 
+            Endpoint = new ArcGISServerAdminEndpoint(Operations.PublicKey);
         }
     }
 

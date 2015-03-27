@@ -1,5 +1,4 @@
 ﻿using ArcGIS.ServiceModel.Common;
-using System;
 using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation.Admin
@@ -27,7 +26,7 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     [DataContract]
     public class StartStopServiceResponse : PortalResponse
     {
-        [DataMember(Name="status")]
+        [DataMember(Name = "status")]
         public string Status { get; set; }
     }
 }

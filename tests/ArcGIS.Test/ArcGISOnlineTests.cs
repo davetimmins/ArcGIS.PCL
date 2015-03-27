@@ -16,7 +16,7 @@
         //    Assert.NotEmpty(hostedServices.Results);
         //    Assert.False(hostedServices.Results.All(s => string.IsNullOrWhiteSpace(s.Id)));
         //}
-        
+
         //[Fact]
         //public async Task OAuthTokenCanBeGenerated()
         //{
