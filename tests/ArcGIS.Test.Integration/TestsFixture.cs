@@ -2,6 +2,7 @@
 {
     using ArcGIS.ServiceModel;
     using ArcGIS.ServiceModel.Serializers;
+    using Serilog;
     using System;
     using System.Net;
     using System.Net.Http;
@@ -25,6 +26,11 @@
 
                 return httpClient;
             });
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.ColoredConsole()
+                .CreateLogger();
         }
 
         public void Dispose()

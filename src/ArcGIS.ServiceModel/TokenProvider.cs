@@ -1,5 +1,6 @@
 ﻿namespace ArcGIS.ServiceModel
 {
+    using ArcGIS.ServiceModel.Logging;
     using ArcGIS.ServiceModel.Operation;
     using ArcGIS.ServiceModel.Operation.Admin;
     using System;
@@ -18,6 +19,7 @@
         Token _token;
         PublicKeyResponse _publicKey;
         protected bool CanAccessPublicKeyEndpoint = true;
+        protected static readonly ILog Logger = LogProvider.For<TokenProvider>();
 
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Server
@@ -41,6 +43,8 @@
             _httpClient = HttpClientFactory.Get();
             TokenRequest = new GenerateToken(username, password) { Referer = referer };
             UserName = username;
+
+            Logger.DebugFormat("Created new token provider for {0}", RootUrl);
         }
 
         ~TokenProvider()
@@ -82,7 +86,9 @@
             Uri referer;
             bool validReferrerUrl = Uri.TryCreate(TokenRequest.Referer, UriKind.Absolute, out referer);
             if (!validReferrerUrl)
+            {
                 throw new HttpRequestException(string.Format("Not a valid url for referrer: {0}", TokenRequest.Referer));
+            }
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
 
@@ -108,12 +114,16 @@
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
+            {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
+            }
+            Logger.DebugFormat("Token request {0}", uri.AbsoluteUri);
 
             if (CryptoProvider != null && _publicKey == null && CanAccessPublicKeyEndpoint)
             {
                 var publicKey = new PublicKey();
                 var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGateway.AsRequestQueryString(Serializer, publicKey);
+                Logger.DebugFormat("Encrypted token request {0}", encryptionInfoEndpoint);
 
                 string publicKeyResultString = null;
                 try
@@ -123,12 +133,14 @@
                     response.EnsureSuccessStatusCode();
                     publicKeyResultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException tce)
                 {
-                    return null;
+                    Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                    return default(Token);
                 }
-                catch (HttpRequestException)
+                catch (HttpRequestException hex)
                 {
+                    Logger.ErrorException("Token request exception (exception swallowed)", hex);
                     CanAccessPublicKeyEndpoint = false;
                 }
 
@@ -137,7 +149,10 @@
                 if (CanAccessPublicKeyEndpoint)
                 {
                     _publicKey = Serializer.AsPortalResponse<PublicKeyResponse>(publicKeyResultString);
-                    if (_publicKey.Error != null) throw new InvalidOperationException(_publicKey.Error.ToString());
+                    if (_publicKey.Error != null)
+                    {
+                        throw new InvalidOperationException(_publicKey.Error.ToString());
+                    }
 
                     TokenRequest = CryptoProvider.Encrypt(TokenRequest, _publicKey.Exponent, _publicKey.Modulus);
                 }
@@ -156,16 +171,23 @@
 
                 resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
-                return null;
+                Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                return default(Token);
             }
 
             var result = Serializer.AsPortalResponse<Token>(resultString);
 
-            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
+            if (result.Error != null)
+            {
+                throw new InvalidOperationException(result.Error.ToString());
+            }
 
-            if (!string.IsNullOrWhiteSpace(TokenRequest.Referer)) result.Referer = TokenRequest.Referer;
+            if (!string.IsNullOrWhiteSpace(TokenRequest.Referer))
+            {
+                result.Referer = TokenRequest.Referer;
+            }
 
             _token = result;
             return _token;

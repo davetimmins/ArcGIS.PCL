@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 [assembly: NeutralResourcesLanguage("en")]
 [assembly: ComVisible(false)]
 
-[assembly: InternalsVisibleTo("ArcGIS.Test")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.Android")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.iOS")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.iOSUnified")]

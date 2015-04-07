@@ -1,5 +1,6 @@
 ﻿namespace ArcGIS.ServiceModel
 {
+    using ArcGIS.ServiceModel.Logging;
     using ArcGIS.ServiceModel.Operation;
     using System;
     using System.Linq;
@@ -12,6 +13,7 @@
         HttpClient _httpClient;
         protected readonly GenerateFederatedToken TokenRequest;
         Token _token;
+        protected static readonly ILog Logger = LogProvider.For<FederatedTokenProvider>();
 
         /// <summary>
         /// Create a token provider to authenticate against an ArcGIS Server that is federated
@@ -33,6 +35,8 @@
             RootUrl = rootUrl.AsRootUrl();
             _httpClient = HttpClientFactory.Get();
             TokenRequest = new GenerateFederatedToken(serverUrl, tokenProvider) { Referer = referer };
+
+            Logger.DebugFormat("Created new token provider for {0}", RootUrl);
         }
 
         ~FederatedTokenProvider()
@@ -86,6 +90,7 @@
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
+            Logger.DebugFormat("Token request {0}", uri.AbsoluteUri);
 
             string resultString = string.Empty;
             try
@@ -95,14 +100,18 @@
 
                 resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
-                return null;
+                Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                return default(Token);
             }
 
             var result = Serializer.AsPortalResponse<Token>(resultString);
 
-            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
+            if (result.Error != null)
+            {
+                throw new InvalidOperationException(result.Error.ToString());
+            }
 
             _token = result;
             return _token;

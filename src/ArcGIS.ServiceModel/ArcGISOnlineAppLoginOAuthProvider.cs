@@ -1,5 +1,6 @@
 ﻿namespace ArcGIS.ServiceModel
 {
+    using ArcGIS.ServiceModel.Logging;
     using ArcGIS.ServiceModel.Operation;
     using System;
     using System.Net.Http;
@@ -14,6 +15,7 @@
         HttpClient _httpClient;
         protected readonly GenerateOAuthToken OAuthRequest;
         Token _token;
+        protected static readonly ILog Logger = LogProvider.For<ArcGISOnlineAppLoginOAuthProvider>();
 
         /// <summary>
         /// Create an OAuth token provider to authenticate against ArcGIS Online
@@ -31,6 +33,8 @@
 
             OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
             _httpClient = HttpClientFactory.Get();
+
+            Logger.DebugFormat("Created new token provider for {0}", RootUrl);
         }
 
         ~ArcGISOnlineAppLoginOAuthProvider()
@@ -88,14 +92,18 @@
 
                 resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
-                return null;
+                Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                return default(Token);
             }
 
             var result = Serializer.AsPortalResponse<OAuthToken>(resultString);
 
-            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
+            if (result.Error != null)
+            {
+                throw new InvalidOperationException(result.Error.ToString());
+            }
 
             _token = result.AsToken();
             return _token;

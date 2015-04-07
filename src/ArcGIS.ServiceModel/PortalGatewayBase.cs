@@ -1,6 +1,7 @@
 ﻿namespace ArcGIS.ServiceModel
 {
     using ArcGIS.ServiceModel.Common;
+    using ArcGIS.ServiceModel.Logging;
     using ArcGIS.ServiceModel.Operation;
     using System;
     using System.Collections.Generic;
@@ -20,6 +21,7 @@
         protected const string GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
         HttpClient _httpClient;
         protected IEndpoint GeometryServiceIEndpoint;
+        protected static readonly ILog Logger = LogProvider.For<PortalGatewayBase>();
 
         /// <summary>
         /// Create an ArcGIS Server gateway to access secure resources
@@ -36,6 +38,8 @@
             Serializer = serializer ?? SerializerFactory.Get();
             Guard.AgainstNullArgument("Serializer", Serializer);
             _httpClient = HttpClientFactory.Get();
+
+            Logger.DebugFormat("Created new gateway for {0}", RootUrl);
         }
 
         ~PortalGatewayBase()
@@ -234,7 +238,9 @@
             Uri referer;
             bool validReferrerUrl = Uri.TryCreate(referrer, UriKind.Absolute, out referer);
             if (!validReferrerUrl)
+            {
                 throw new HttpRequestException(string.Format("Not a valid url for referrer: {0}", referrer));
+            }
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
 
@@ -247,8 +253,9 @@
             var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
             if (url.Length > 2000)
+            {
                 return Post<T, TRequest>(requestObject, ct);
-
+            }
             return Get<T>(url, ct);
         }
 
@@ -277,7 +284,10 @@
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
+            {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
+            }
+            Logger.DebugFormat("GET {0}", uri.AbsoluteUri);
 
             _httpClient.CancelPendingRequests();
 
@@ -289,13 +299,17 @@
 
                 resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
+                Logger.ErrorException("GET cancelled (exception swallowed)", tce);
                 return default(T);
             }
 
             var result = Serializer.AsPortalResponse<T>(resultString);
-            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
+            if (result.Error != null)
+            {
+                throw new InvalidOperationException(result.Error.ToString());
+            }
 
             if (IncludeHypermediaWithResponse) result.Links = new List<Link> { new Link(uri.AbsoluteUri) };
             return result;
@@ -329,8 +343,9 @@
             {
                 content = new FormUrlEncodedContent(parameters);
             }
-            catch (FormatException)
+            catch (FormatException fex)
             {
+                Logger.ErrorException("POST format exception (exception swallowed)", fex);
                 var tempContent = new MultipartFormDataContent();
                 foreach (var keyValuePair in parameters)
                 {
@@ -343,7 +358,10 @@
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
+            {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
+            }
+            Logger.DebugFormat("POST {0}", uri.AbsoluteUri);
 
             string resultString = string.Empty;
             try
@@ -353,13 +371,17 @@
 
                 resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
+                Logger.ErrorException("POST cancelled (exception swallowed)", tce);
                 return default(T);
             }
 
             var result = Serializer.AsPortalResponse<T>(resultString);
-            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
+            if (result.Error != null)
+            {
+                throw new InvalidOperationException(result.Error.ToString());
+            }
 
             if (IncludeHypermediaWithResponse) result.Links = new List<Link> { new Link(uri.AbsoluteUri, requestObject) };
             return result;
