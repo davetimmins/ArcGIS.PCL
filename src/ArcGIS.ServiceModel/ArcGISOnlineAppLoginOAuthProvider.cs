@@ -15,7 +15,7 @@
         HttpClient _httpClient;
         protected readonly GenerateOAuthToken OAuthRequest;
         Token _token;
-        protected static readonly ILog Logger = LogProvider.For<ArcGISOnlineAppLoginOAuthProvider>();
+        static readonly ILog Logger = LogProvider.For<ArcGISOnlineAppLoginOAuthProvider>();
 
         /// <summary>
         /// Create an OAuth token provider to authenticate against ArcGIS Online

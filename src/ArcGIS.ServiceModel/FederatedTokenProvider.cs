@@ -13,7 +13,7 @@
         HttpClient _httpClient;
         protected readonly GenerateFederatedToken TokenRequest;
         Token _token;
-        protected static readonly ILog Logger = LogProvider.For<FederatedTokenProvider>();
+        static readonly ILog Logger = LogProvider.For<FederatedTokenProvider>();
 
         /// <summary>
         /// Create a token provider to authenticate against an ArcGIS Server that is federated

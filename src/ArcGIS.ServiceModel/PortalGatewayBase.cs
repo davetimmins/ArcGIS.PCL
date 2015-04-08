@@ -21,7 +21,7 @@
         protected const string GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
         HttpClient _httpClient;
         protected IEndpoint GeometryServiceIEndpoint;
-        protected static readonly ILog Logger = LogProvider.For<PortalGatewayBase>();
+        static readonly ILog Logger = LogProvider.For<PortalGatewayBase>();
 
         /// <summary>
         /// Create an ArcGIS Server gateway to access secure resources

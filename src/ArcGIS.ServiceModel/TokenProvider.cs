@@ -19,7 +19,7 @@
         Token _token;
         PublicKeyResponse _publicKey;
         protected bool CanAccessPublicKeyEndpoint = true;
-        protected static readonly ILog Logger = LogProvider.For<TokenProvider>();
+        static readonly ILog Logger = LogProvider.For<TokenProvider>();
 
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Server
