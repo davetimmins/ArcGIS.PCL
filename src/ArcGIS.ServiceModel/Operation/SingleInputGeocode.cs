@@ -1,7 +1,6 @@
-﻿using System;
+﻿using ArcGIS.ServiceModel.Common;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ArcGIS.ServiceModel.Common;
 
 namespace ArcGIS.ServiceModel.Operation
 {
@@ -125,6 +124,9 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class Suggestion
     {
+        [DataMember(Name = "isCollection")]
+        public bool IsCollection { get; set; }
+
         [DataMember(Name = "text")]
         public string Text { get; set; }
 

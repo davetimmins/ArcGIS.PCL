@@ -1,5 +1,4 @@
-﻿using System;
-using ArcGIS.ServiceModel.Common;
+﻿using ArcGIS.ServiceModel.Common;
 
 namespace ArcGIS.ServiceModel.Operation
 {

@@ -1,12 +1,12 @@
-﻿using ArcGIS.ServiceModel;
-using ArcGIS.ServiceModel.Common;
-using ArcGIS.ServiceModel.GeoJson;
-using ServiceStack.Text;
-using System.Linq;
-using Xunit;
-
-namespace ArcGIS.Test
+﻿namespace ArcGIS.Test
 {
+    using ArcGIS.ServiceModel;
+    using ArcGIS.ServiceModel.Common;
+    using ArcGIS.ServiceModel.GeoJson;
+    using ServiceStack.Text;
+    using System.Linq;
+    using Xunit;
+
     public class GeoJSONTests : TestsFixture
     {
         [Fact]
@@ -44,9 +44,9 @@ namespace ArcGIS.Test
 
             var polygonData2 = "{ \"type\": \"Polygon\", \"coordinates\": [ [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ], [ [100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ] ] }";
             Convert<GeoJsonPolygon, Polygon>(start + polygonData2 + end);
-            
+
             Convert<GeoJsonPolygon, Polyline>(start + polygonData2.Replace("Polygon", "MultiLineString") + end);
-            
+
             var multiPolygonData = "{ \"type\": \"Polygon\", \"coordinates\": [ [[[102.0, 2.0], [103.0, 2.0], [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]], [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }";
 
             Convert<GeoJsonMultiPolygon, Polygon>(start + multiPolygonData + end);

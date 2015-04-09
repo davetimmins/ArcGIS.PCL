@@ -1,6 +1,5 @@
-﻿using System;
+﻿using ArcGIS.ServiceModel.Common;
 using System.Runtime.Serialization;
-using ArcGIS.ServiceModel.Common;
 
 namespace ArcGIS.ServiceModel.Operation
 {
@@ -25,6 +24,16 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         [DataMember(Name = "distance")]
         public double? Distance { get; set; }
+
+        /// <summary>
+        /// Specifies whether the results of the operation will be persisted. 
+        /// The default value is false, which indicates the results of the operation can't be stored, but they can be temporarily displayed on a map for instance. 
+        /// If you store the results, in a database for example, you need to set this parameter to true.
+        /// Applications are contractually prohibited from storing the results of geocoding transactions 
+        /// unless they make the request by passing the forStorage parameter with a value of true and the token parameter with a valid ArcGIS Online token. 
+        /// </summary>
+        [DataMember(Name="forStorage")]
+        public bool? ForStorage { get; set; }
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Runtime.Serialization;
-using ArcGIS.ServiceModel.Common;
 
 namespace ArcGIS.ServiceModel.Operation
 {

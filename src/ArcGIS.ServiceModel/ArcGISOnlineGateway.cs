@@ -34,7 +34,7 @@
         /// <param name="username">User whose content to search for, if not specified then the user
         /// from the <see cref="ITokenProvider" />  for this gateway will be used.</param>
         /// <returns>The discovered hosted feature services</returns>
-        public Task<SearchHostedFeatureServicesResponse> DescribeSite(CancellationToken ct, string username = "")
+        public Task<SearchHostedFeatureServicesResponse> DescribeSite(CancellationToken ct = default(CancellationToken), string username = "")
         {
             if (string.IsNullOrWhiteSpace(username) && TokenProvider != null)
                 username = TokenProvider.UserName;
@@ -43,11 +43,6 @@
                 ? new SearchHostedFeatureServices()
                 : new SearchHostedFeatureServices(username);
             return Get<SearchHostedFeatureServicesResponse, SearchHostedFeatureServices>(search, ct);
-        }
-
-        public Task<SearchHostedFeatureServicesResponse> DescribeSite(string username = "")
-        {
-            return DescribeSite(CancellationToken.None, username);
         }
     }
 }

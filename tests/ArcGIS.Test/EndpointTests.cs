@@ -1,10 +1,10 @@
-﻿using ArcGIS.ServiceModel;
-using ArcGIS.ServiceModel.Common;
-using System;
-using Xunit;
-
-namespace ArcGIS.Test
+﻿namespace ArcGIS.Test
 {
+    using ArcGIS.ServiceModel;
+    using ArcGIS.ServiceModel.Common;
+    using System;
+    using Xunit;
+
     public class EndpointTests : TestsFixture
     {
         [Theory]

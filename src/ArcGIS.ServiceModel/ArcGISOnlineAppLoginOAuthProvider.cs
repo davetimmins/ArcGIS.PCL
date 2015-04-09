@@ -1,5 +1,6 @@
 ﻿namespace ArcGIS.ServiceModel
 {
+    using ArcGIS.ServiceModel.Logging;
     using ArcGIS.ServiceModel.Operation;
     using System;
     using System.Net.Http;
@@ -14,6 +15,7 @@
         HttpClient _httpClient;
         protected readonly GenerateOAuthToken OAuthRequest;
         Token _token;
+        static readonly ILog Logger = LogProvider.For<ArcGISOnlineAppLoginOAuthProvider>();
 
         /// <summary>
         /// Create an OAuth token provider to authenticate against ArcGIS Online
@@ -23,13 +25,16 @@
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public ArcGISOnlineAppLoginOAuthProvider(string clientId, string clientSecret, ISerializer serializer = null)
         {
-            Guard.AgainstNullArgument("clientId", clientId);
-            Guard.AgainstNullArgument("clientSecret", clientSecret);
+            if (string.IsNullOrWhiteSpace(clientId)) throw new ArgumentNullException("clientId", "clientId is null.");
+            if (string.IsNullOrWhiteSpace(clientSecret)) throw new ArgumentNullException("clientSecret", "clientSecret is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
-            if (Serializer == null) throw new ArgumentNullException("serializer", "Serializer has not been set.");
+            Guard.AgainstNullArgument("Serializer", Serializer);
+
             OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
             _httpClient = HttpClientFactory.Get();
+
+            Logger.DebugFormat("Created new token provider for {0}", RootUrl);
         }
 
         ~ArcGISOnlineAppLoginOAuthProvider()
@@ -87,14 +92,18 @@
 
                 resultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
-                return null;
+                Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                return default(Token);
             }
 
             var result = Serializer.AsPortalResponse<OAuthToken>(resultString);
 
-            if (result.Error != null) throw new InvalidOperationException(result.Error.ToString());
+            if (result.Error != null)
+            {
+                throw new InvalidOperationException(result.Error.ToString());
+            }
 
             _token = result.AsToken();
             return _token;

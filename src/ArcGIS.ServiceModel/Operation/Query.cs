@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
-using ArcGIS.ServiceModel.Common;
 
 namespace ArcGIS.ServiceModel.Operation
 {
@@ -41,8 +41,8 @@ namespace ArcGIS.ServiceModel.Operation
         public List<string> OutFields { get; set; }
 
         /// <summary>
-        /// The list of fields to be included in the returned resultset. This list is a comma delimited list of field names. 
-        /// If you specify the shape field in the list of return fields, it is ignored. To request geometry, set returnGeometry to true. 
+        /// The list of fields to be included in the returned resultset. This list is a comma delimited list of field names.
+        /// If you specify the shape field in the list of return fields, it is ignored. To request geometry, set returnGeometry to true.
         /// </summary>
         /// <remarks>Default is '*' (all fields)</remarks>
         [DataMember(Name = "outFields")]
@@ -55,14 +55,14 @@ namespace ArcGIS.ServiceModel.Operation
         public List<long> ObjectIds { get; set; }
 
         /// <summary>
-        /// The list of object Ids to be queried. This list is a comma delimited list of field names. 
+        /// The list of object Ids to be queried. This list is a comma delimited list of field names.
         /// </summary>
         [DataMember(Name = "objectIds")]
-        public string ObjectIdsValue { get { return ObjectIds == null || !ObjectIds.Any() ? "" : string.Join(",", ObjectIds); } }
+        public string ObjectIdsValue { get { return ObjectIds == null || !ObjectIds.Any() ? null : string.Join(",", ObjectIds); } }
 
 
         /// <summary>
-        /// The spatial reference of the input geometry. 
+        /// The spatial reference of the input geometry.
         /// </summary>
         [DataMember(Name = "inSR")]
         public SpatialReference InputSpatialReference
@@ -71,7 +71,7 @@ namespace ArcGIS.ServiceModel.Operation
         }
 
         /// <summary>
-        /// The spatial reference of the returned geometry. 
+        /// The spatial reference of the returned geometry.
         /// If not specified, the geometry is returned in the spatial reference of the input.
         /// </summary>
         [DataMember(Name = "outSR")]
@@ -86,9 +86,9 @@ namespace ArcGIS.ServiceModel.Operation
         public IGeometry Geometry { get; set; }
 
         /// <summary>
-        /// The type of geometry specified by the geometry parameter. 
+        /// The type of geometry specified by the geometry parameter.
         /// The geometry type can be an envelope, point, line, or polygon.
-        /// The default geometry type is "esriGeometryEnvelope". 
+        /// The default geometry type is "esriGeometryEnvelope".
         /// Values: esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | esriGeometryEnvelope
         /// </summary>
         /// <remarks>Default is esriGeometryEnvelope</remarks>
@@ -134,7 +134,7 @@ namespace ArcGIS.ServiceModel.Operation
         {
             get
             {
-                return (From == null) ? string.Empty : string.Format("{0},{1}",
+                return (From == null) ? null : string.Format("{0},{1}",
                   From.Value.ToUnixTime(),
                   (To ?? From.Value).ToUnixTime());
             }
@@ -147,7 +147,7 @@ namespace ArcGIS.ServiceModel.Operation
         public int? MaxAllowableOffset { get; set; }
 
         /// <summary>
-        /// This option can be used to specify the number of decimal places in the response geometries returned by the query operation. 
+        /// This option can be used to specify the number of decimal places in the response geometries returned by the query operation.
         /// This applies to X and Y values only (not m or z values).
         /// </summary>
         [DataMember(Name = "geometryPrecision")]
@@ -174,10 +174,48 @@ namespace ArcGIS.ServiceModel.Operation
         public string GdbVersion { get; set; }
 
         /// <summary>
-        /// If true, returns distinct values based on the fields specified in outFields. 
+        /// If true, returns distinct values based on the fields specified in outFields.
         /// This parameter applies only if supportsAdvancedQueries property of the layer is true.
         [DataMember(Name = "returnDistinctValues")]
         public bool ReturnDistinctValues { get; set; }
+
+        /// <summary>
+        ///  The names of the fields to order by.
+        /// </summary>
+        [IgnoreDataMember]
+        public List<string> OrderBy { get; set; }
+
+        /// <summary>
+        /// One or more field names on which the features/records need to be ordered.
+        /// Use ASC or DESC for ascending or descending, respectively, following every field to control the ordering.
+        /// Defaults to ASC (ascending order) if <ORDER> is unspecified.
+        /// </summary>
+        /// <remarks>Default is '*' (all fields)</remarks>
+        [DataMember(Name = "orderByFields")]
+        public string OrderByValue { get { return OrderBy == null || !OrderBy.Any() ? null : string.Join(",", OrderBy); } }
+
+        /// <summary>
+        /// This option was added at 10.3.
+        /// Description: This option can be used for fetching query results by skipping the specified number of records and
+        /// starts from the next record (i.e., resultOffset + 1th). The default is 0.
+        /// This parameter only applies if supportsPagination is true.
+        /// You can use this option to fetch records that are beyond maxRecordCount.
+        /// For example, if maxRecordCountis 1000, you can get the next 100 records by setting resultOffset=1000
+        /// and resultRecordCount = 100, query results can return the results in the range of 1001 to 1100.
+        /// </summary>
+        [DataMember(Name = "resultOffset")]
+        public int? ResultOffset { get; set; }
+
+        /// <summary>
+        /// This option was added at 10.3.
+        /// Description: This option can be used for fetching query results up to the resultRecordCount specified.
+        /// When resultOffset is specified but this parameter is not, map service defaults it to maxRecordCount.
+        /// The maximum value for this parameter is the value of the layer's maxRecordCount property.
+        /// This parameter only applies if supportsPagination is true.
+        /// Example: resultRecordCount=10 to fetch up to 10 records
+        /// </summary>
+        [DataMember(Name = "resultRecordCount")]
+        public int? ResultRecordCount { get; set; }
     }
 
     [DataContract]
@@ -237,6 +275,27 @@ namespace ArcGIS.ServiceModel.Operation
     {
         [DataMember(Name = "count")]
         public int NumberOfResults { get; set; }
+    }
+
+    /// <summary>
+    /// Perform a query that returns the count of features and the bounding extent
+    /// </summary>
+    [DataContract]
+    public class QueryForExtent : QueryForCount
+    {
+        public QueryForExtent(ArcGISServerEndpoint endpoint)
+            : base(endpoint)
+        { }
+
+        [DataMember(Name = "returnExtentOnly")]
+        public bool ReturnExtentOnly { get { return true; } }
+    }
+
+    [DataContract]
+    public class QueryForExtentResponse : QueryForCountResponse
+    {
+        [DataMember(Name = "extent")]
+        public Extent Extent { get; set; }
     }
 
     public static class GeometryTypes

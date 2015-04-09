@@ -98,5 +98,5 @@ namespace ArcGIS.ServiceModel.Common
             var other = obj as Feature<T>;
             return other != null && Equals(other);
         }
-    }   
+    }
 }

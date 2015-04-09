@@ -1,0 +1,6 @@
+# http://www.appveyor.com/docs/appveyor-yml
+
+version: "{build}"
+
+build_script:
+  - build.bat
