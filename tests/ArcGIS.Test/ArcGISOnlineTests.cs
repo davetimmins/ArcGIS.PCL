@@ -1,6 +1,8 @@
 ﻿namespace ArcGIS.Test
 {
-    public class ArcGISOnlineTests : TestsFixture
+    using Xunit;
+
+    public class ArcGISOnlineTests : IClassFixture<TestsFixture>
     {
         //[Fact]
         //public async Task CanSearchForHostedFeatureServices()

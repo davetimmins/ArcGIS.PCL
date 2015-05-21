@@ -7,7 +7,7 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class SecureGISGatewayTests : TestsFixture
+    public class SecureGISGatewayTests : IClassFixture<TestsFixture>
     {
         [Fact]
         public void TokenIsExpiredHasCorrectValue()

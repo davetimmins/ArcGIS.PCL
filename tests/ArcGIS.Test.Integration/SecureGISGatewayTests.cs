@@ -7,11 +7,13 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
+    using Xunit.Abstractions;
 
-    public class SecureGISGatewayTests : TestsFixture
+    public class SecureGISGatewayTests : IClassFixture<IntegrationTestFixture>
     {
-        public SecureGISGatewayTests()
+        public SecureGISGatewayTests(IntegrationTestFixture fixture, ITestOutputHelper output)
         {
+            fixture.SetTestOutputHelper(output);
             CryptoProviderFactory.Disabled = true;
         }
 
@@ -20,8 +22,10 @@
         public async Task CanGenerateToken(string rootUrl, string username, string password)
         {
             var tokenProvider = new TokenProvider(rootUrl, username, password);
-
-            var token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
+            var token = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return tokenProvider.CheckGenerateToken(CancellationToken.None);
+            });
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);
@@ -35,14 +39,20 @@
         {
             var gateway = new SecurePortalGateway(rootUrl, username, password);
 
-            var response = await gateway.DescribeSite();
+            var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.DescribeSite();
+            });
 
             Assert.NotNull(response);
             Assert.True(response.Version > 0);
 
             foreach (var resource in response.ArcGISServerEndpoints)
             {
-                var ping = await gateway.Ping(resource);
+                var ping = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+                {
+                    return gateway.Ping(resource);
+                });
                 Assert.Null(ping.Error);
             }
         }
@@ -67,7 +77,10 @@
             var gateway = new PortalGateway(rootUrl, tokenProvider: tokenProvider);
             var endpoint = new ArcGISServerEndpoint(relativeUrl);
 
-            var token = await tokenProvider.CheckGenerateToken(CancellationToken.None);
+            var token = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return tokenProvider.CheckGenerateToken(CancellationToken.None);
+            });
 
             Assert.NotNull(token);
             Assert.NotNull(token.Value);

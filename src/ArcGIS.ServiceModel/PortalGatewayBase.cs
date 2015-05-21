@@ -252,7 +252,7 @@
 
             var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
-            if (url.Length > 2000)
+            if (url.Length > 2047)
             {
                 return Post<T, TRequest>(requestObject, ct);
             }
@@ -301,7 +301,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.ErrorException("GET cancelled (exception swallowed)", tce);
+                Logger.WarnException("GET cancelled (exception swallowed)", tce);
                 return default(T);
             }
 
@@ -345,7 +345,7 @@
             }
             catch (FormatException fex)
             {
-                Logger.ErrorException("POST format exception (exception swallowed)", fex);
+                Logger.WarnException("POST format exception (exception swallowed)", fex);
                 var tempContent = new MultipartFormDataContent();
                 foreach (var keyValuePair in parameters)
                 {
@@ -373,7 +373,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.ErrorException("POST cancelled (exception swallowed)", tce);
+                Logger.WarnException("POST cancelled (exception swallowed)", tce);
                 return default(T);
             }
 

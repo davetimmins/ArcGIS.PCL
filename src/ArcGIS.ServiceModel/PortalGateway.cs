@@ -73,6 +73,7 @@
             if (folderDescription.Folders != null)
                 foreach (var folder in folderDescription.Folders)
                 {
+                    if (ct.IsCancellationRequested) return result;
                     result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), ct).ConfigureAwait(false));
                 }
 

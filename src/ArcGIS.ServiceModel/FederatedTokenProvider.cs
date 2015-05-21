@@ -102,7 +102,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                Logger.WarnException("Token request cancelled (exception swallowed)", tce);
                 return default(Token);
             }
 

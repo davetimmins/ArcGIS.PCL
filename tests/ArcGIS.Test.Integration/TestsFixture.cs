@@ -2,15 +2,27 @@
 {
     using ArcGIS.ServiceModel;
     using ArcGIS.ServiceModel.Serializers;
+    using Polly;
     using Serilog;
+    using Serilog.Configuration;
+    using Serilog.Core;
+    using Serilog.Events;
+    using Serilog.Formatting;
+    using Serilog.Formatting.Display;
     using System;
+    using System.IO;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using Xunit;
+    using Xunit.Abstractions;
 
-    public class TestsFixture : IDisposable
+    public class IntegrationTestFixture : IDisposable
     {
-        public TestsFixture()
+        public static Policy TestPolicy { get; private set; }
+        IDisposable _logCapture;
+
+        static IntegrationTestFixture()
         {
             JsonDotNetSerializer.Init();
 
@@ -27,15 +39,26 @@
                 return httpClient;
             });
 
+            TestPolicy = Policy
+                .Handle<InvalidOperationException>()
+                .Or<HttpRequestException>()
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.ColoredConsole()
+                .WriteTo.ColoredConsole(restrictedToMinimumLevel: LogEventLevel.Warning)
+                .WriteTo.XunitTestOutput()
                 .CreateLogger();
+        }
+
+        public void SetTestOutputHelper(ITestOutputHelper output)
+        {
+            _logCapture = XUnitTestOutputSink.Capture(output);
         }
 
         public void Dispose()
         {
-            // Do "global" teardown here; Only called once.
+            _logCapture.Dispose();
         }
     }
 }

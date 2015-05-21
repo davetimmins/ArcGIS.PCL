@@ -4,7 +4,7 @@
     using System;
     using Xunit;
 
-    public class ArcGISGatewayTests : TestsFixture
+    public class ArcGISGatewayTests : IClassFixture<TestsFixture>
     {
         [Theory]
         [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]

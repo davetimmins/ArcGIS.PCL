@@ -97,7 +97,7 @@
         /// Generates a token using the username and password set for this provider.
         /// </summary>
         /// <returns>The generated token or null if not applicable</returns>
-        /// <remarks>This sets the Token property for the provider. It will be auto appended to 
+        /// <remarks>This sets the Token property for the provider. It will be auto appended to
         /// any requests sent through the gateway used by this provider.</remarks>
         public async Task<Token> CheckGenerateToken(CancellationToken ct)
         {
@@ -135,12 +135,12 @@
                 }
                 catch (TaskCanceledException tce)
                 {
-                    Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                    Logger.WarnException("Token request cancelled (exception swallowed)", tce);
                     return default(Token);
                 }
                 catch (HttpRequestException hex)
                 {
-                    Logger.ErrorException("Token request exception (exception swallowed)", hex);
+                    Logger.WarnException("Token request exception (exception swallowed)", hex);
                     CanAccessPublicKeyEndpoint = false;
                 }
 
@@ -173,7 +173,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                Logger.WarnException("Token request cancelled (exception swallowed)", tce);
                 return default(Token);
             }
 
