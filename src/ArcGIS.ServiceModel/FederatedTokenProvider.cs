@@ -8,12 +8,15 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// ArcGIS Server token provider for a federated server
+    /// </summary>
     public class FederatedTokenProvider : ITokenProvider, IDisposable
     {
         HttpClient _httpClient;
         protected readonly GenerateFederatedToken TokenRequest;
         Token _token;
-        static readonly ILog Logger = LogProvider.For<FederatedTokenProvider>();
+        readonly ILog _logger;
 
         /// <summary>
         /// Create a token provider to authenticate against an ArcGIS Server that is federated
@@ -24,6 +27,10 @@
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="referer">Referer url to use for the token generation. For federated servers this will be the portal rootUrl</param>
         public FederatedTokenProvider(ITokenProvider tokenProvider, string rootUrl, string serverUrl, ISerializer serializer = null, string referer = null)
+            : this(() => LogProvider.For<FederatedTokenProvider>(), tokenProvider, rootUrl, serverUrl, serializer, referer)
+        { }
+
+        internal FederatedTokenProvider(Func<ILog> log, ITokenProvider tokenProvider, string rootUrl, string serverUrl, ISerializer serializer = null, string referer = null)
         {
             Guard.AgainstNullArgument("tokenProvider", tokenProvider);
             if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
@@ -36,7 +43,8 @@
             _httpClient = HttpClientFactory.Get();
             TokenRequest = new GenerateFederatedToken(serverUrl, tokenProvider) { Referer = referer };
 
-            Logger.DebugFormat("Created new token provider for {0}", RootUrl);
+            _logger = log() ?? LogProvider.For<FederatedTokenProvider>();
+            _logger.DebugFormat("Created new token provider for {0}", RootUrl);
         }
 
         ~FederatedTokenProvider()
@@ -90,7 +98,7 @@
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
             if (!validUrl)
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
-            Logger.DebugFormat("Token request {0}", uri.AbsoluteUri);
+            _logger.DebugFormat("Token request {0}", uri.AbsoluteUri);
 
             string resultString = string.Empty;
             try
@@ -102,7 +110,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.WarnException("Token request cancelled (exception swallowed)", tce);
+                _logger.WarnException("Token request cancelled (exception swallowed)", tce);
                 return default(Token);
             }
 
