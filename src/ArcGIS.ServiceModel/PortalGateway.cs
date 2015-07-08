@@ -20,7 +20,7 @@
         /// <summary>
         /// Recursively parses an ArcGIS Server site and discovers the resources available
         /// </summary>
-        /// <param name="cts">Optional cancellation token to cancel pending request</param>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>An ArcGIS Server site hierarchy</returns>
         public virtual async Task<SiteDescription> DescribeSite(CancellationToken ct = default(CancellationToken))
         {

@@ -127,7 +127,7 @@
             if (CryptoProvider != null && _publicKey == null && CanAccessPublicKeyEndpoint)
             {
                 var publicKey = new PublicKey();
-                var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGateway.AsRequestQueryString(Serializer, publicKey);
+                var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGatewayBase.AsRequestQueryString(Serializer, publicKey);
                 _logger.DebugFormat("Encrypted token request {0}", encryptionInfoEndpoint);
 
                 string publicKeyResultString = null;
