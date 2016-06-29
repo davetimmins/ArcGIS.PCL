@@ -1,8 +1,8 @@
 ﻿namespace ArcGIS.ServiceModel
 {
-    using ArcGIS.ServiceModel.Logging;
-    using ArcGIS.ServiceModel.Operation;
-    using ArcGIS.ServiceModel.Operation.Admin;
+    using Logging;
+    using Operation;
+    using Operation.Admin;
     using System;
     using System.Linq;
     using System.Net.Http;
@@ -36,9 +36,9 @@
 
         internal TokenProvider(Func<ILog> log, string rootUrl, string username, string password, ISerializer serializer = null, string referer = "", ICryptoProvider cryptoProvider = null)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
-            if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username", "username is null.");
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password", "password is null.");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException(nameof(rootUrl), "rootUrl is null.");
+            if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException(nameof(username), "username is null.");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password), "password is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
             Guard.AgainstNullArgument("Serializer", Serializer);
@@ -104,7 +104,7 @@
         /// <returns>The generated token or null if not applicable</returns>
         /// <remarks>This sets the Token property for the provider. It will be auto appended to
         /// any requests sent through the gateway used by this provider.</remarks>
-        public async Task<Token> CheckGenerateToken(CancellationToken ct)
+        public async Task<Token> CheckGenerateToken(CancellationToken ct = default(CancellationToken))
         {
             if (TokenRequest == null) return null;
 

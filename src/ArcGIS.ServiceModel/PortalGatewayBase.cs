@@ -96,6 +96,16 @@
         }
 
         /// <summary>
+        /// Request the server information
+        /// </summary>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns>Information about the server configuration (version, authentication settings etc.)</returns>
+        public virtual Task<ServerInfoResponse> Info(CancellationToken ct = default(CancellationToken))
+        {
+            return Get<ServerInfoResponse>(new ServerInfo(), ct);
+        }
+
+        /// <summary>
         /// Call the query operation
         /// </summary>
         /// <typeparam name="T">The geometry type for the result set</typeparam>

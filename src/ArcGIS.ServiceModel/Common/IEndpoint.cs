@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace ArcGIS.ServiceModel.Common
+﻿namespace ArcGIS.ServiceModel.Common
 {
+    using System;
+
     /// <summary>
     /// Represents a REST endpoint
     /// </summary>
@@ -31,7 +31,7 @@ namespace ArcGIS.ServiceModel.Common
         /// <param name="relativePath">Path of the endpoint relative to the root url of the ArcGIS Server</param>
         public ArcGISServerEndpoint(string relativePath)
         {
-            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath", "relativePath is null.");
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException(nameof(relativePath), "relativePath is null.");
 
             Uri uri;
             if (!Uri.TryCreate(relativePath, UriKind.RelativeOrAbsolute, out uri))
@@ -56,7 +56,7 @@ namespace ArcGIS.ServiceModel.Common
 
         public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException(nameof(rootUrl), "rootUrl is null.");
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl
                        : RelativeUrl;
@@ -74,7 +74,7 @@ namespace ArcGIS.ServiceModel.Common
         /// <param name="relativePath">Path of the endpoint relative to the root url of the ArcGIS Server</param>
         public ArcGISServerAdminEndpoint(string relativePath)
         {
-            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath", "relativePath is null.");
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException(nameof(relativePath), "relativePath is null.");
 
             Uri uri;
             if (!Uri.TryCreate(relativePath, UriKind.RelativeOrAbsolute, out uri))
@@ -99,7 +99,7 @@ namespace ArcGIS.ServiceModel.Common
 
         public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException(nameof(rootUrl), "rootUrl is null.");
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl
                        : RelativeUrl;
@@ -114,7 +114,7 @@ namespace ArcGIS.ServiceModel.Common
         /// <param name="relativePath">Path of the endpoint relative to the root url of ArcGIS Online / Portal</param>
         public ArcGISOnlineEndpoint(string relativePath)
         {
-            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException("relativePath", "relativePath is null.");
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentNullException(nameof(relativePath), "relativePath is null.");
 
             Uri uri;
             if (!Uri.TryCreate(relativePath, UriKind.RelativeOrAbsolute, out uri))
@@ -139,7 +139,7 @@ namespace ArcGIS.ServiceModel.Common
 
         public string BuildAbsoluteUrl(string rootUrl)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException(nameof(rootUrl), "rootUrl is null.");
 
             return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
                        ? rootUrl + RelativeUrl

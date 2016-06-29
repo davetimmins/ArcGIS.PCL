@@ -35,6 +35,28 @@
 
         [Theory]
         [InlineData("https://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
+        public async Task CanUseServerInfoToGenerateToken(string rootUrl, string username, string password)
+        {
+            var gateway = new PortalGateway(rootUrl);
+            var serverInfo = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.Info();
+            });
+
+            var tokenProvider = new TokenProvider(serverInfo.AuthenticationInfo.TokenServicesUrl, username, password);
+            var token = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return tokenProvider.CheckGenerateToken(CancellationToken.None);
+            });
+
+            Assert.NotNull(token);
+            Assert.NotNull(token.Value);
+            Assert.False(token.IsExpired);
+            Assert.Null(token.Error);
+        }
+
+        [Theory]
+        [InlineData("https://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
         public async Task CanDescribeSecureSite(string rootUrl, string username, string password)
         {
             var gateway = new SecurePortalGateway(rootUrl, username, password);

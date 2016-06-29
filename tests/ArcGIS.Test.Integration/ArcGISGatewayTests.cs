@@ -109,6 +109,25 @@
 
         [Theory]
         [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
+        [InlineData("https://services.arcgisonline.co.nz/arcgis")]
+        [InlineData("https://services.arcgisonline.com/arcgis")]
+        public async Task CanGetServerInfo(string rootUrl)
+        {
+            var gateway = new PortalGateway(rootUrl);
+
+            var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.Info();
+            });
+
+            Assert.Null(response.Error);
+            Assert.NotNull(response.CurrentVersion);
+            Assert.True(response.CurrentVersion > 9.0);
+            Assert.NotNull(response.AuthenticationInfo);
+        }
+
+        [Theory]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
         [InlineData("http://services.arcgisonline.co.nz/arcgis")]
         public async Task CanDescribeSite(string rootUrl)
         {

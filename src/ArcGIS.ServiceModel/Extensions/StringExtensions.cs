@@ -1,6 +1,6 @@
 ﻿namespace ArcGIS.ServiceModel
 {
-    using ArcGIS.ServiceModel.Common;
+    using Common;
     using System;
 
     public static class StringExtensions
@@ -27,7 +27,11 @@
 
         public static string AsRootUrl(this string rootUrl)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
+            if (string.IsNullOrWhiteSpace(rootUrl))
+            {
+                throw new ArgumentNullException(nameof(rootUrl), "rootUrl is null.");
+            }
+
             rootUrl = rootUrl.TrimEnd('/');
             if (rootUrl.IndexOf("/rest/admin/services", StringComparison.OrdinalIgnoreCase) > -1)
                 rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/admin/services", StringComparison.OrdinalIgnoreCase));
@@ -35,6 +39,9 @@
                 rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/rest/services", StringComparison.OrdinalIgnoreCase));
             if (rootUrl.IndexOf("/admin", StringComparison.OrdinalIgnoreCase) > -1)
                 rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/admin", StringComparison.OrdinalIgnoreCase));
+            if (rootUrl.IndexOf("/tokens", StringComparison.OrdinalIgnoreCase) > -1)
+                rootUrl = rootUrl.Substring(0, rootUrl.IndexOf("/tokens", StringComparison.OrdinalIgnoreCase));
+
             return rootUrl.Replace("/rest/services", "") + "/";
         }
 
