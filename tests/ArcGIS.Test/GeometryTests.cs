@@ -4,7 +4,7 @@ using Xunit;
 
 namespace ArcGIS.Test
 {
-    public class GeometryTests : TestsFixture
+    public class GeometryTests : IClassFixture<TestsFixture>
     {
         [Fact]
         public void FeaturesAreTheSame()

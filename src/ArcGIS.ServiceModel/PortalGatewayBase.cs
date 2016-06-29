@@ -21,7 +21,7 @@
         protected const string GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
         HttpClient _httpClient;
         protected IEndpoint GeometryServiceIEndpoint;
-        static readonly ILog Logger = LogProvider.For<PortalGatewayBase>();
+        readonly ILog _logger;
 
         /// <summary>
         /// Create an ArcGIS Server gateway to access secure resources
@@ -30,6 +30,10 @@
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
         public PortalGatewayBase(string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+            : this(() => LogProvider.For<PortalGatewayBase>(), rootUrl, serializer, tokenProvider)
+        { }
+
+        internal PortalGatewayBase(Func<ILog> log, string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
         {
             if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
 
@@ -39,7 +43,8 @@
             Guard.AgainstNullArgument("Serializer", Serializer);
             _httpClient = HttpClientFactory.Get();
 
-            Logger.DebugFormat("Created new gateway for {0}", RootUrl);
+            _logger = log() ?? LogProvider.For<PortalGatewayBase>();
+            _logger.DebugFormat("Created new gateway for {0}", RootUrl);
         }
 
         ~PortalGatewayBase()
@@ -88,6 +93,16 @@
         public virtual Task<PortalResponse> Ping(IEndpoint endpoint, CancellationToken ct = default(CancellationToken))
         {
             return Get<PortalResponse>(endpoint, ct);
+        }
+
+        /// <summary>
+        /// Request the server information
+        /// </summary>
+        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <returns>Information about the server configuration (version, authentication settings etc.)</returns>
+        public virtual Task<ServerInfoResponse> Info(CancellationToken ct = default(CancellationToken))
+        {
+            return Get<ServerInfoResponse>(new ServerInfo(), ct);
         }
 
         /// <summary>
@@ -252,7 +267,7 @@
 
             var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
-            if (url.Length > 2000)
+            if (url.Length > 2047)
             {
                 return Post<T, TRequest>(requestObject, ct);
             }
@@ -287,7 +302,7 @@
             {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
             }
-            Logger.DebugFormat("GET {0}", uri.AbsoluteUri);
+            _logger.DebugFormat("GET {0}", uri.AbsoluteUri);
 
             _httpClient.CancelPendingRequests();
 
@@ -301,7 +316,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.ErrorException("GET cancelled (exception swallowed)", tce);
+                _logger.WarnException("GET cancelled (exception swallowed)", tce);
                 return default(T);
             }
 
@@ -345,7 +360,7 @@
             }
             catch (FormatException fex)
             {
-                Logger.ErrorException("POST format exception (exception swallowed)", fex);
+                _logger.WarnException("POST format exception (exception swallowed)", fex);
                 var tempContent = new MultipartFormDataContent();
                 foreach (var keyValuePair in parameters)
                 {
@@ -361,7 +376,7 @@
             {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
             }
-            Logger.DebugFormat("POST {0}", uri.AbsoluteUri);
+            _logger.DebugFormat("POST {0}", uri.AbsoluteUri);
 
             string resultString = string.Empty;
             try
@@ -373,7 +388,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.ErrorException("POST cancelled (exception swallowed)", tce);
+                _logger.WarnException("POST cancelled (exception swallowed)", tce);
                 return default(T);
             }
 

@@ -14,3 +14,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.NET")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.WinStore")]
 [assembly: InternalsVisibleTo("ArcGIS.ServiceModel.WP")]
+[assembly: InternalsVisibleTo("ArcGIS.Test.Integration")]

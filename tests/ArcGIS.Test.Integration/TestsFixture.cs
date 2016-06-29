@@ -1,17 +1,25 @@
 ﻿namespace ArcGIS.Test.Integration
 {
-    using ArcGIS.ServiceModel;
-    using ArcGIS.ServiceModel.Serializers;
+    using Polly;
     using Serilog;
+    using Serilog.Events;
+    using ServiceModel;
+    using ServiceModel.Serializers;
     using System;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using Xunit.Abstractions;
 
-    public class TestsFixture : IDisposable
+    public class IntegrationTestFixture : IDisposable
     {
-        public TestsFixture()
+        public static Policy TestPolicy { get; private set; }
+        IDisposable _logCapture;
+
+        static IntegrationTestFixture()
         {
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
             JsonDotNetSerializer.Init();
 
             HttpClientFactory.Get = (() =>
@@ -27,15 +35,26 @@
                 return httpClient;
             });
 
+            TestPolicy = Policy
+                .Handle<InvalidOperationException>()
+                .Or<HttpRequestException>()
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.ColoredConsole()
+                .WriteTo.ColoredConsole(restrictedToMinimumLevel: LogEventLevel.Warning)
+                .WriteTo.XunitTestOutput()
                 .CreateLogger();
+        }
+
+        public void SetTestOutputHelper(ITestOutputHelper output)
+        {
+            _logCapture = XUnitTestOutputSink.Capture(output);
         }
 
         public void Dispose()
         {
-            // Do "global" teardown here; Only called once.
+            _logCapture.Dispose();
         }
     }
 }

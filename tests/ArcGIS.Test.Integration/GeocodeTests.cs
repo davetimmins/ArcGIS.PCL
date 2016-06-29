@@ -6,9 +6,15 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Xunit;
+    using Xunit.Abstractions;
 
-    public class GeocodeTests : TestsFixture
+    public class GeocodeTests : IClassFixture<IntegrationTestFixture>
     {
+        public GeocodeTests(IntegrationTestFixture fixture, ITestOutputHelper output)
+        {
+            fixture.SetTestOutputHelper(output);
+        }
+
         [Theory]
         [InlineData("http://geocode.arcgis.com/arcgis", "/World/GeocodeServer/", "100 Willis Street, Wellington", "NZL")]
         public async Task CanGeocode(string rootUrl, string relativeUrl, string text, string sourceCountry = "")
@@ -19,7 +25,10 @@
                 Text = text,
                 SourceCountry = sourceCountry
             };
-            var response = await gateway.Geocode(geocode);
+            var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.Geocode(geocode);
+            });
 
             Assert.Null(response.Error);
             Assert.NotNull(response.SpatialReference);
@@ -39,7 +48,10 @@
             {
                 Text = text
             };
-            var response = await gateway.Suggest(suggest);
+            var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.Suggest(suggest);
+            });
 
             Assert.Null(response.Error);
             Assert.NotNull(response.Suggestions);
@@ -62,7 +74,10 @@
                     SpatialReference = new SpatialReference { Wkid = wkid }
                 }
             };
-            var response = await gateway.ReverseGeocode(reverseGeocode);
+            var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.ReverseGeocode(reverseGeocode);
+            });
 
             Assert.Null(response.Error);
             Assert.NotNull(response.Address);

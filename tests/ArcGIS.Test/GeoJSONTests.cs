@@ -7,7 +7,7 @@
     using System.Linq;
     using Xunit;
 
-    public class GeoJSONTests : TestsFixture
+    public class GeoJSONTests : IClassFixture<TestsFixture>
     {
         [Fact]
         public void CanDeserialize()

@@ -28,6 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <DocumentationFile>bin\Debug\ArcGIS.ServiceModel.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -70,6 +71,7 @@
     <Compile Include="Operation\Query.cs" />
     <Compile Include="Operation\ReverseGeocode.cs" />
     <Compile Include="Operation\SearchHostedFeatureServices.cs" />
+    <Compile Include="Operation\ServerInfo.cs" />
     <Compile Include="Operation\SingleInputGeocode.cs" />
     <Compile Include="Operation\SiteDescription.cs" />
     <Compile Include="Operation\Token.cs" />

@@ -1,8 +1,8 @@
 ﻿namespace ArcGIS.ServiceModel
 {
-    using ArcGIS.ServiceModel.Logging;
-    using ArcGIS.ServiceModel.Operation;
-    using ArcGIS.ServiceModel.Operation.Admin;
+    using Logging;
+    using Operation;
+    using Operation.Admin;
     using System;
     using System.Linq;
     using System.Net.Http;
@@ -19,7 +19,7 @@
         Token _token;
         PublicKeyResponse _publicKey;
         protected bool CanAccessPublicKeyEndpoint = true;
-        static readonly ILog Logger = LogProvider.For<TokenProvider>();
+        readonly ILog _logger;
 
         /// <summary>
         /// Create a token provider to authenticate against ArcGIS Server
@@ -31,10 +31,14 @@
         /// <param name="referer">Referer url to use for the token generation</param>
         /// <param name="cryptoProvider">Used to encrypt the token reuqest. If not set it will use the default from CryptoProviderFactory</param>
         public TokenProvider(string rootUrl, string username, string password, ISerializer serializer = null, string referer = "", ICryptoProvider cryptoProvider = null)
+            : this (() => LogProvider.For<TokenProvider>(), rootUrl, username, password, serializer, referer, cryptoProvider)
+        { }
+
+        internal TokenProvider(Func<ILog> log, string rootUrl, string username, string password, ISerializer serializer = null, string referer = "", ICryptoProvider cryptoProvider = null)
         {
-            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
-            if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException("username", "username is null.");
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password", "password is null.");
+            if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException(nameof(rootUrl), "rootUrl is null.");
+            if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException(nameof(username), "username is null.");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password), "password is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
             Guard.AgainstNullArgument("Serializer", Serializer);
@@ -44,7 +48,8 @@
             TokenRequest = new GenerateToken(username, password) { Referer = referer };
             UserName = username;
 
-            Logger.DebugFormat("Created new token provider for {0}", RootUrl);
+            _logger = log() ?? LogProvider.For<TokenProvider>();
+            _logger.DebugFormat("Created new token provider for {0}", RootUrl);
         }
 
         ~TokenProvider()
@@ -97,9 +102,9 @@
         /// Generates a token using the username and password set for this provider.
         /// </summary>
         /// <returns>The generated token or null if not applicable</returns>
-        /// <remarks>This sets the Token property for the provider. It will be auto appended to 
+        /// <remarks>This sets the Token property for the provider. It will be auto appended to
         /// any requests sent through the gateway used by this provider.</remarks>
-        public async Task<Token> CheckGenerateToken(CancellationToken ct)
+        public async Task<Token> CheckGenerateToken(CancellationToken ct = default(CancellationToken))
         {
             if (TokenRequest == null) return null;
 
@@ -117,13 +122,13 @@
             {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
             }
-            Logger.DebugFormat("Token request {0}", uri.AbsoluteUri);
+            _logger.DebugFormat("Token request {0}", uri.AbsoluteUri);
 
             if (CryptoProvider != null && _publicKey == null && CanAccessPublicKeyEndpoint)
             {
                 var publicKey = new PublicKey();
-                var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGateway.AsRequestQueryString(Serializer, publicKey);
-                Logger.DebugFormat("Encrypted token request {0}", encryptionInfoEndpoint);
+                var encryptionInfoEndpoint = publicKey.BuildAbsoluteUrl(RootUrl) + PortalGatewayBase.AsRequestQueryString(Serializer, publicKey);
+                _logger.DebugFormat("Encrypted token request {0}", encryptionInfoEndpoint);
 
                 string publicKeyResultString = null;
                 try
@@ -135,12 +140,12 @@
                 }
                 catch (TaskCanceledException tce)
                 {
-                    Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                    _logger.WarnException("Token request cancelled (exception swallowed)", tce);
                     return default(Token);
                 }
                 catch (HttpRequestException hex)
                 {
-                    Logger.ErrorException("Token request exception (exception swallowed)", hex);
+                    _logger.WarnException("Token request exception (exception swallowed)", hex);
                     CanAccessPublicKeyEndpoint = false;
                 }
 
@@ -173,7 +178,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                _logger.WarnException("Token request cancelled (exception swallowed)", tce);
                 return default(Token);
             }
 

@@ -9,7 +9,7 @@ namespace ArcGIS.Test
 {
     public class TestsFixture : IDisposable
     {
-        public TestsFixture()
+        static TestsFixture()
         {
             ServiceStackSerializer.Init();
 

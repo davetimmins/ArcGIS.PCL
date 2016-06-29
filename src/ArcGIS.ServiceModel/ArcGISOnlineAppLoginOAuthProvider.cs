@@ -15,7 +15,7 @@
         HttpClient _httpClient;
         protected readonly GenerateOAuthToken OAuthRequest;
         Token _token;
-        static readonly ILog Logger = LogProvider.For<ArcGISOnlineAppLoginOAuthProvider>();
+        readonly ILog _logger;
 
         /// <summary>
         /// Create an OAuth token provider to authenticate against ArcGIS Online
@@ -24,6 +24,10 @@
         /// <param name="clientSecret">The Client Secret from your API access section of your application from developers.arcgis.com</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         public ArcGISOnlineAppLoginOAuthProvider(string clientId, string clientSecret, ISerializer serializer = null)
+            : this(() => LogProvider.For<ArcGISOnlineAppLoginOAuthProvider>(), clientId, clientSecret, serializer)
+        { }
+
+        internal ArcGISOnlineAppLoginOAuthProvider(Func<ILog> log, string clientId, string clientSecret, ISerializer serializer = null)
         {
             if (string.IsNullOrWhiteSpace(clientId)) throw new ArgumentNullException("clientId", "clientId is null.");
             if (string.IsNullOrWhiteSpace(clientSecret)) throw new ArgumentNullException("clientSecret", "clientSecret is null.");
@@ -34,7 +38,8 @@
             OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
             _httpClient = HttpClientFactory.Get();
 
-            Logger.DebugFormat("Created new token provider for {0}", RootUrl);
+            _logger = log() ?? LogProvider.For<ArcGISOnlineAppLoginOAuthProvider>();
+            _logger.DebugFormat("Created new token provider for {0}", RootUrl);
         }
 
         ~ArcGISOnlineAppLoginOAuthProvider()
@@ -94,7 +99,7 @@
             }
             catch (TaskCanceledException tce)
             {
-                Logger.ErrorException("Token request cancelled (exception swallowed)", tce);
+                _logger.WarnException("Token request cancelled (exception swallowed)", tce);
                 return default(Token);
             }
 
