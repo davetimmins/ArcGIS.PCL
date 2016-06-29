@@ -16,8 +16,8 @@ let testDir = buildDir @@ "test"
 let packagesDir = buildDir @@ "packages"
 let nupacksPath = buildDir @@ "packs"
 let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runner.console" @@ "tools"
-let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.1.0"
-let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.1.0"
+let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.2.0"
+let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.2.0"
 
 CleanDirs [buildDir]
 
@@ -145,27 +145,27 @@ Target "BuildAll" (fun _ ->
 
 Target "TestWindows" (fun _ ->
     !! (testDir + @"\ArcGIS.Test*.dll")
-      |> xUnit (fun p -> 
-        {p with 
-            OutputDir = testDir 
+      |> xUnit (fun p ->
+        {p with
+            OutputDir = testDir
             ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
 Target "TestMono" (fun _ ->
     !! (testDir + @"\ArcGIS.Test*.dll")
-      |> xUnit (fun p -> 
-        {p with 
-            OutputDir = testDir 
+      |> xUnit (fun p ->
+        {p with
+            OutputDir = testDir
             ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
 Target "TestAll" (fun _ ->
     !! (testDir + @"\ArcGIS.Test*.dll")
-      |> xUnit (fun p -> 
-        {p with 
-            OutputDir = testDir 
+      |> xUnit (fun p ->
+        {p with
+            OutputDir = testDir
             ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
