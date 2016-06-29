@@ -1,20 +1,14 @@
 ﻿namespace ArcGIS.Test.Integration
 {
-    using ArcGIS.ServiceModel;
-    using ArcGIS.ServiceModel.Serializers;
     using Polly;
     using Serilog;
-    using Serilog.Configuration;
-    using Serilog.Core;
     using Serilog.Events;
-    using Serilog.Formatting;
-    using Serilog.Formatting.Display;
+    using ServiceModel;
+    using ServiceModel.Serializers;
     using System;
-    using System.IO;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using Xunit;
     using Xunit.Abstractions;
 
     public class IntegrationTestFixture : IDisposable
@@ -24,6 +18,8 @@
 
         static IntegrationTestFixture()
         {
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
             JsonDotNetSerializer.Init();
 
             HttpClientFactory.Get = (() =>
