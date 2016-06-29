@@ -49,25 +49,35 @@
       Works with .NET for Windows Store apps, .NET framework 4.5, Windows Phone 8.1, Xamarin Android and Xamarin iOS. (PCL Profile 111)
     </summary>
     <releaseNotes>
-      Support for Unified iOS projects
-      Added OrderBy parameter to Query operation.
-      Added paging support to Query operation.
-      Added QueryForExtent operation.
-      Added datum transformation to Project operation.
-      Improved apply edits response to include some helper properties to check how many edits of each type succeeded and failed.
-      Added LibLog for logging. If you configure a log provider for DEBUG logging then you will see the log output.
-      Added support to Geocode operations for ForStorage property - Thanks Josh Berke https://github.com/jberke
+      Added SiteReport admin operation
+      Added StartService admin operation
+      Added StopService admin operation
+      Added hypermedia self links to responses if enabled using PortalGateway IncludeHypermediaWithResponse flag
+      Added ObjectID and GlobalID getters to Feature
+      Added new ITokenProvider types for generating tokens for services when federated with Portal for ArcGIS or ArcGIS Online
+      Better error messages for ApplyEdits
+
+      Updated NuGet package references
+
+      Breaking changes:
+
+      > added Links property to IPortalResponse interface
+      > change all ObjectID types to long (was int)
+      > Target Windows 8.1 for Windows Store library
+      > Target WP 8.1 for Windows Phone library
+      > Removed .NET 4 support
+      > Rename SecureArcGISServerGateway to SecurePortalGateway
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
     <dependencies>
+      <group targetFramework="wpa81">
+        <dependency id="Microsoft.Net.Http" version="2.2.28" />
+      </group>
       <group targetFramework="net45">
         <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
       <group targetFramework="win81">
-        <dependency id="Microsoft.Net.Http" version="2.2.28" />
-      </group>
-      <group targetFramework="wpa81">
         <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
       <group targetFramework="MonoAndroid1">
