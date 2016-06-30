@@ -4,9 +4,9 @@
 
 [![Build status](https://travis-ci.org/davetimmins/ArcGIS.PCL.svg?branch=master)](https://travis-ci.org/davetimmins/ArcGIS.PCL) [![Build status](https://ci.appveyor.com/api/projects/status/6kquae4fokkeuxg1?svg=true)](https://ci.appveyor.com/project/davetimmins/arcgis-pcl) 
 
-[![NuGet Status](http://img.shields.io/nuget/v/ArcGIS.PCL.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![Xamarin Status](http://img.shields.io/badge/Xamarin-5.0.3-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl) [![GitHub Status](https://img.shields.io/github/release/davetimmins/ArcGIS.PCL.svg?style=flat)](https://github.com/davetimmins/ArcGIS.PCL/releases)
+[![NuGet Status](http://img.shields.io/nuget/v/ArcGIS.PCL.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/) [![GitHub Status](https://img.shields.io/github/release/davetimmins/ArcGIS.PCL.svg?style=flat)](https://github.com/davetimmins/ArcGIS.PCL/releases)
 
-[![NuGet Downloads](https://img.shields.io/nuget/dt/ArcGIS.PCL.svg?style=flat)](https://www.nuget.org/packages/ArcGIS.PCL/)
+[![Xamarin Status](http://img.shields.io/badge/Xamarin-5.0.3-blue.svg?style=flat)](https://components.xamarin.com/view/arcgis.pcl) (no longer updated, just use the NuGet package instead)
 
 Use ArcGIS Server REST resources without an official SDK.
 
