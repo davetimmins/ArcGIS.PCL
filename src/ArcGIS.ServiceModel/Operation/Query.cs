@@ -221,11 +221,55 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class QueryResponse<T> : PortalResponse where T : IGeometry
     {
+        public QueryResponse()
+        {
+            FieldAliases = new Dictionary<string, string>();
+        }
+
+        [DataMember(Name = "displayFieldName")]
+        public string DisplayFieldName { get; set; }
+
         [DataMember(Name = "features")]
         public IEnumerable<Feature<T>> Features { get; set; }
 
         [DataMember(Name = "spatialReference")]
         public SpatialReference SpatialReference { get; set; }
+
+        [DataMember(Name = "fieldAliases")]
+        public Dictionary<string, string> FieldAliases { get; set; }
+
+        [DataMember(Name = "fields")]
+        public IEnumerable<Field> Fields { get; set; }
+
+        [DataMember(Name = "exceededTransferLimit")]
+        public bool? ExceededTransferLimit { get; set; }
+
+        [IgnoreDataMember]
+        public string DisplayFieldNameAlias
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(DisplayFieldName) || FieldAliases == null || !FieldAliases.Any() || !FieldAliases.ContainsKey(DisplayFieldName)
+                    ? string.Empty
+                    : FieldAliases[DisplayFieldName];
+            }
+        }
+    }
+
+    [DataContract]
+    public class Field
+    {
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
+
+        [DataMember(Name = "alias")]
+        public string Alias { get; set; }
+
+        [DataMember(Name = "length")]
+        public int? Length { get; set; }
     }
 
     /// <summary>
