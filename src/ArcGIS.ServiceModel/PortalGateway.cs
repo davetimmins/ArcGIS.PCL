@@ -4,6 +4,7 @@
     using ArcGIS.ServiceModel.Operation;
     using ArcGIS.ServiceModel.Operation.Admin;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -78,6 +79,53 @@
                 }
 
             return result;
+        }
+
+        /// <summary>
+        /// Return the service description details for the matched services in the site description
+        /// </summary>
+        /// <param name="siteDescription"></param>
+        /// <param name="ct">An optional cancellation token</param>
+        /// <returns>A collection of service description details</returns>
+        public virtual Task<List<ServiceDescriptionDetailsResponse>> DescribeServices(SiteDescription siteDescription, CancellationToken ct = default(CancellationToken))
+        {
+            Guard.AgainstNullArgument(nameof(siteDescription), siteDescription);
+            Guard.AgainstNullArgumentProperty(nameof(siteDescription), nameof(siteDescription.Services) , siteDescription.Services);
+
+            return DescribeServices(siteDescription.Services.ToList(), ct);
+        }
+
+        /// <summary>
+        /// Return the service description details for the matched services
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="ct">An optional cancellation token</param>
+        /// <returns>A collection of service description details</returns>
+        public virtual async Task<List<ServiceDescriptionDetailsResponse>> DescribeServices(List<ServiceDescription> services, CancellationToken ct = default(CancellationToken))
+        {
+            Guard.AgainstNullArgument(nameof(services), services);
+
+            var result = new List<ServiceDescriptionDetailsResponse>();
+
+            foreach (var serviceDescription in services)
+            {
+                result.Add(await DescribeService(serviceDescription.ArcGISServerEndpoint, ct).ConfigureAwait(false));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        ///  Return the service description details for the requested endpoint
+        /// </summary>
+        /// <param name="serviceEndpoint"></param>
+        /// <param name="ct">An optional cancellation token</param>
+        /// <returns>The service description details</returns>
+        public virtual Task<ServiceDescriptionDetailsResponse> DescribeService(IEndpoint serviceEndpoint, CancellationToken ct = default(CancellationToken))
+        {
+            Guard.AgainstNullArgument(nameof(serviceEndpoint), serviceEndpoint);
+
+            return Get<ServiceDescriptionDetailsResponse>(new ServiceDescriptionDetails(serviceEndpoint), ct);
         }
 
         /// <summary>

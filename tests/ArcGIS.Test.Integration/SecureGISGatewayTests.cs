@@ -80,6 +80,32 @@
         }
 
         [Theory]
+        [InlineData("https://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
+        public async Task CanDescribeSecureSiteServices(string rootUrl, string username, string password)
+        {
+            var gateway = new SecurePortalGateway(rootUrl, username, password);
+            var siteResponse = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.DescribeSite();
+            });
+
+            Assert.NotNull(siteResponse);
+            Assert.True(siteResponse.Version > 0);
+
+            var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.DescribeServices(siteResponse);
+            });
+
+            foreach (var serviceDescription in response)
+            {
+                Assert.NotNull(serviceDescription);
+                Assert.Null(serviceDescription.Error);
+                Assert.NotNull(serviceDescription.ServiceDescription);
+            }
+        }
+
+        [Theory]
         [InlineData("https://serverapps10.esri.com/arcgis", "Oil/MapServer")]
         public async Task CannotAccessSecureResourceWithoutToken(string rootUrl, string relativeUrl)
         {

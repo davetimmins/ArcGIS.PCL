@@ -150,6 +150,33 @@
             }
         }
 
+        [Theory]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
+        [InlineData("http://services.arcgisonline.co.nz/arcgis")]
+        public async Task CanDescribeSiteServices(string rootUrl)
+        {
+            var gateway = new PortalGateway(rootUrl);
+            var siteResponse = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.DescribeSite();
+            });
+
+            Assert.NotNull(siteResponse);
+            Assert.True(siteResponse.Version > 0);
+
+            var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.DescribeServices(siteResponse);
+            });
+
+            foreach (var serviceDescription in response)
+            {
+                Assert.NotNull(serviceDescription);
+                Assert.Null(serviceDescription.Error);
+                Assert.NotNull(serviceDescription.ServiceDescription);
+            }
+        }
+
         [Fact]
         public async Task GatewayDoesAutoPost()
         {
