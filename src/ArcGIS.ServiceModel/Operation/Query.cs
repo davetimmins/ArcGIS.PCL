@@ -221,11 +221,55 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class QueryResponse<T> : PortalResponse where T : IGeometry
     {
+        public QueryResponse()
+        {
+            FieldAliases = new Dictionary<string, string>();
+        }
+
+        [DataMember(Name = "displayFieldName")]
+        public string DisplayFieldName { get; set; }
+
         [DataMember(Name = "features")]
         public IEnumerable<Feature<T>> Features { get; set; }
 
         [DataMember(Name = "spatialReference")]
         public SpatialReference SpatialReference { get; set; }
+
+        [DataMember(Name = "fieldAliases")]
+        public Dictionary<string, string> FieldAliases { get; set; }
+
+        [DataMember(Name = "fields")]
+        public IEnumerable<Field> Fields { get; set; }
+
+        [DataMember(Name = "exceededTransferLimit")]
+        public bool? ExceededTransferLimit { get; set; }
+
+        [IgnoreDataMember]
+        public string DisplayFieldNameAlias
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(DisplayFieldName) || FieldAliases == null || !FieldAliases.Any() || !FieldAliases.ContainsKey(DisplayFieldName)
+                    ? string.Empty
+                    : FieldAliases[DisplayFieldName];
+            }
+        }
+    }
+
+    [DataContract]
+    public class Field
+    {
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
+
+        [DataMember(Name = "alias")]
+        public string Alias { get; set; }
+
+        [DataMember(Name = "length")]
+        public int? Length { get; set; }
     }
 
     /// <summary>
@@ -327,5 +371,26 @@ namespace ArcGIS.ServiceModel.Operation
         public const string Touches = "esriSpatialRelTouches";
         public const string Within = "esriSpatialRelWithin";
         public const string Relation = "esriSpatialRelRelation";
+    }
+
+    public static class FieldDataTypes
+    {
+        public readonly static Dictionary<Type, Func<string>> FieldDataTypeMap = new Dictionary<Type, Func<string>>
+        {
+            { typeof(string), () => FieldDataTypes.EsriString },
+            { typeof(int), () => FieldDataTypes.EsriInteger },
+            { typeof(short), () => FieldDataTypes.EsriInteger },
+            { typeof(long), () => FieldDataTypes.EsriInteger },
+            { typeof(decimal), () => FieldDataTypes.EsriDouble },
+            { typeof(double), () => FieldDataTypes.EsriDouble },
+            { typeof(float), () => FieldDataTypes.EsriDouble },
+            { typeof(DateTime), () => FieldDataTypes.EsriDate },
+            { typeof(bool), () => FieldDataTypes.EsriString }
+        };
+
+        public const string EsriString = "esriFieldTypeString";
+        public const string EsriInteger = "esriFieldTypeInteger";
+        public const string EsriDouble = "esriFieldTypeDouble";
+        public const string EsriDate = "esriFieldTypeDate";
     }
 }
