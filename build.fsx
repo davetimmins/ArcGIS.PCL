@@ -5,6 +5,7 @@ open Fake
 open Fake.AssemblyInfoFile
 open Fake.FileUtils
 open Fake.FileHelper
+open Fake.Testing.XUnit2
 
 // Properties
 let tempDirectory = "./"
@@ -145,27 +146,27 @@ Target "BuildAll" (fun _ ->
 
 Target "TestWindows" (fun _ ->
     !! (testDir + @"\ArcGIS.Test*.dll")
-      |> xUnit (fun p ->
+      |> xUnit2 (fun p ->
         {p with
-            OutputDir = testDir
+            WorkingDir = Some testDir
             ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
 Target "TestMono" (fun _ ->
     !! (testDir + @"\ArcGIS.Test*.dll")
-      |> xUnit (fun p ->
+      |> xUnit2 (fun p ->
         {p with
-            OutputDir = testDir
+            WorkingDir = Some testDir
             ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )
 
 Target "TestAll" (fun _ ->
     !! (testDir + @"\ArcGIS.Test*.dll")
-      |> xUnit (fun p ->
+      |> xUnit2 (fun p ->
         {p with
-            OutputDir = testDir
+            WorkingDir = Some testDir
             ToolPath = (testRunnerDir @@ "xunit.console.exe")
             TimeOut = System.TimeSpan.FromMinutes 5.0   })
 )

@@ -58,6 +58,7 @@ dist/
 lib/
 artifacts/
 Backup/
+.fake/
 
 #nodejs
 node_modules/
