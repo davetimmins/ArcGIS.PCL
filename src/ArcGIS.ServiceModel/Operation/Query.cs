@@ -379,8 +379,8 @@ namespace ArcGIS.ServiceModel.Operation
         {
             { typeof(string), () => FieldDataTypes.EsriString },
             { typeof(int), () => FieldDataTypes.EsriInteger },
-            { typeof(Int16), () => FieldDataTypes.EsriInteger },
-            { typeof(Int64), () => FieldDataTypes.EsriInteger },
+            { typeof(short), () => FieldDataTypes.EsriInteger },
+            { typeof(long), () => FieldDataTypes.EsriInteger },
             { typeof(decimal), () => FieldDataTypes.EsriDouble },
             { typeof(double), () => FieldDataTypes.EsriDouble },
             { typeof(float), () => FieldDataTypes.EsriDouble },
