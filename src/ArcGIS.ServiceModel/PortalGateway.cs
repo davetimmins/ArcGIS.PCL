@@ -3,6 +3,7 @@
     using ArcGIS.ServiceModel.Common;
     using ArcGIS.ServiceModel.Operation;
     using ArcGIS.ServiceModel.Operation.Admin;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -14,8 +15,8 @@
     /// </summary>
     public class PortalGateway : PortalGatewayBase
     {
-        public PortalGateway(string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
-            : base(rootUrl, serializer, tokenProvider)
+        public PortalGateway(string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null, Func<HttpClient> httpClientFunc = null)
+            : base(rootUrl, serializer, tokenProvider, httpClientFunc)
         { }
 
         /// <summary>
