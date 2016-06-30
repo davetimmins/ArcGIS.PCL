@@ -372,4 +372,25 @@ namespace ArcGIS.ServiceModel.Operation
         public const string Within = "esriSpatialRelWithin";
         public const string Relation = "esriSpatialRelRelation";
     }
+
+    public static class FieldDataTypes
+    {
+        public readonly static Dictionary<Type, Func<string>> FieldDataTypeMap = new Dictionary<Type, Func<string>>
+        {
+            { typeof(string), () => FieldDataTypes.EsriString },
+            { typeof(int), () => FieldDataTypes.EsriInteger },
+            { typeof(Int16), () => FieldDataTypes.EsriInteger },
+            { typeof(Int64), () => FieldDataTypes.EsriInteger },
+            { typeof(decimal), () => FieldDataTypes.EsriDouble },
+            { typeof(double), () => FieldDataTypes.EsriDouble },
+            { typeof(float), () => FieldDataTypes.EsriDouble },
+            { typeof(DateTime), () => FieldDataTypes.EsriDate },
+            { typeof(bool), () => FieldDataTypes.EsriString }
+        };
+
+        public const string EsriString = "esriFieldTypeString";
+        public const string EsriInteger = "esriFieldTypeInteger";
+        public const string EsriDouble = "esriFieldTypeDouble";
+        public const string EsriDate = "esriFieldTypeDate";
+    }
 }
