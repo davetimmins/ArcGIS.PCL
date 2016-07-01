@@ -130,6 +130,19 @@
         }
 
         /// <summary>
+        /// Return the layer description details for the requested endpoint
+        /// </summary>
+        /// <param name="layerEndpoint"></param>
+        /// <param name="ct"></param>
+        /// <returns>The layer description details</returns>
+        public virtual Task<ServiceLayerDescriptionResponse> DescribeLayer(IEndpoint layerEndpoint, CancellationToken ct = default(CancellationToken))
+        {
+            Guard.AgainstNullArgument(nameof(layerEndpoint), layerEndpoint);
+
+            return Get<ServiceLayerDescriptionResponse>(new ServiceLayerDescription(layerEndpoint), ct);
+        }
+
+        /// <summary>
         /// Admin operation used to get all services for the ArcGIS Server and their reports
         /// </summary>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>

@@ -177,6 +177,23 @@
             }
         }
 
+        [Theory]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/", "Petroleum/KSWells/MapServer/0")]
+        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/", "Petroleum/KSWells/MapServer/1")]
+        [InlineData("http://services.arcgisonline.co.nz/arcgis", "Canvas/Light/MapServer/0")]
+        public async Task CanDescribeLayer(string rootUrl, string layerUrl)
+        {
+            var gateway = new PortalGateway(rootUrl);
+            var layerResponse = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.DescribeLayer(layerUrl.AsEndpoint());
+            });
+
+            Assert.NotNull(layerResponse);
+            Assert.Null(layerResponse.Error);
+            Assert.NotNull(layerResponse.GeometryType);
+        }
+
         [Fact]
         public async Task GatewayDoesAutoPost()
         {
