@@ -3,6 +3,7 @@
     using ArcGIS.ServiceModel.Common;
     using ArcGIS.ServiceModel.Operation;
     using ArcGIS.ServiceModel.Operation.Admin;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -14,8 +15,8 @@
     /// </summary>
     public class PortalGateway : PortalGatewayBase
     {
-        public PortalGateway(string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
-            : base(rootUrl, serializer, tokenProvider)
+        public PortalGateway(string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null, Func<HttpClient> httpClientFunc = null)
+            : base(rootUrl, serializer, tokenProvider, httpClientFunc)
         { }
 
         /// <summary>
@@ -126,6 +127,19 @@
             Guard.AgainstNullArgument(nameof(serviceEndpoint), serviceEndpoint);
 
             return Get<ServiceDescriptionDetailsResponse>(new ServiceDescriptionDetails(serviceEndpoint), ct);
+        }
+
+        /// <summary>
+        /// Return the layer description details for the requested endpoint
+        /// </summary>
+        /// <param name="layerEndpoint"></param>
+        /// <param name="ct"></param>
+        /// <returns>The layer description details</returns>
+        public virtual Task<ServiceLayerDescriptionResponse> DescribeLayer(IEndpoint layerEndpoint, CancellationToken ct = default(CancellationToken))
+        {
+            Guard.AgainstNullArgument(nameof(layerEndpoint), layerEndpoint);
+
+            return Get<ServiceLayerDescriptionResponse>(new ServiceLayerDescription(layerEndpoint), ct);
         }
 
         /// <summary>

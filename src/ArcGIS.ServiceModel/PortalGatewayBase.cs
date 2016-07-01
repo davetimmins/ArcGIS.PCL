@@ -1,8 +1,8 @@
 ﻿namespace ArcGIS.ServiceModel
 {
-    using ArcGIS.ServiceModel.Common;
-    using ArcGIS.ServiceModel.Logging;
-    using ArcGIS.ServiceModel.Operation;
+    using Common;
+    using Logging;
+    using Operation;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -16,7 +16,7 @@
     /// </summary>
     public class PortalGatewayBase : IPortalGateway, IDisposable
     {
-        internal const string AGOPortalUrl = "http://www.arcgis.com/sharing/rest/";
+        internal const string AGOPortalUrl = "https://www.arcgis.com/sharing/rest/";
         protected const string GeometryServerUrlRelative = "/Utilities/Geometry/GeometryServer";
         protected const string GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
         HttpClient _httpClient;
@@ -29,11 +29,12 @@
         /// <param name="rootUrl">Made up of scheme://host:port/site</param>
         /// <param name="serializer">Used to (de)serialize requests and responses</param>
         /// <param name="tokenProvider">Provide access to a token for secure resources</param>
-        public PortalGatewayBase(string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
-            : this(() => LogProvider.For<PortalGatewayBase>(), rootUrl, serializer, tokenProvider)
+        /// <param name="httpClientFunc">Function that resolves to a HTTP client used to send requests</param>
+        public PortalGatewayBase(string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null, Func<HttpClient> httpClientFunc = null)
+            : this(() => LogProvider.For<PortalGatewayBase>(), rootUrl, serializer, tokenProvider, httpClientFunc)
         { }
 
-        internal PortalGatewayBase(Func<ILog> log, string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null)
+        internal PortalGatewayBase(Func<ILog> log, string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null, Func<HttpClient> httpClientFunc = null)
         {
             if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
 
@@ -41,7 +42,8 @@
             TokenProvider = tokenProvider;
             Serializer = serializer ?? SerializerFactory.Get();
             Guard.AgainstNullArgument("Serializer", Serializer);
-            _httpClient = HttpClientFactory.Get();
+            var httpFunc = httpClientFunc ?? HttpClientFactory.Get;
+            _httpClient = httpFunc();
 
             _logger = log() ?? LogProvider.For<PortalGatewayBase>();
             _logger.DebugFormat("Created new gateway for {0}", RootUrl);

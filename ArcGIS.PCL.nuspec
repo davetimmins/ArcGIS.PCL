@@ -28,6 +28,9 @@
       > Buffer&lt;T&gt; - buffers geometries by the distance requested
       > DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hosted feature services for a user
       > Ping - verify that the server can be accessed
+      > Info - return the server information such as version and token authentication settings
+      > DescribeServices - return service information (name, sublayers etc.)
+      > DescribeLayer - return layer information
 
       REST admin operations:
 
@@ -49,24 +52,7 @@
       Works with .NET for Windows Store apps, .NET framework 4.5, Windows Phone 8.1, Xamarin Android and Xamarin iOS. (PCL Profile 111)
     </summary>
     <releaseNotes>
-      Added SiteReport admin operation
-      Added StartService admin operation
-      Added StopService admin operation
-      Added hypermedia self links to responses if enabled using PortalGateway IncludeHypermediaWithResponse flag
-      Added ObjectID and GlobalID getters to Feature
-      Added new ITokenProvider types for generating tokens for services when federated with Portal for ArcGIS or ArcGIS Online
-      Better error messages for ApplyEdits
-
-      Updated NuGet package references
-
-      Breaking changes:
-
-      > added Links property to IPortalResponse interface
-      > change all ObjectID types to long (was int)
-      > Target Windows 8.1 for Windows Store library
-      > Target WP 8.1 for Windows Phone library
-      > Removed .NET 4 support
-      > Rename SecureArcGISServerGateway to SecurePortalGateway
+      Added DescribeLayer operation
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
@@ -80,16 +66,16 @@
       <group targetFramework="win81">
         <dependency id="Microsoft.Net.Http" version="2.2.28" />
       </group>
-      <group targetFramework="MonoAndroid1">
+      <group targetFramework="monoandroid1">
         <dependency id="modernhttpclient" version="2.4.1" />
       </group>
       <group targetFramework="MonoTouch1">
         <dependency id="modernhttpclient" version="2.4.1" />
       </group>
-      <group targetFramework="Xamarin.iOS10">
+      <group targetFramework="xamarin.ios10">
         <dependency id="modernhttpclient" version="2.4.1" />
       </group>
-      <group targetFramework="portable-net45+win81+wpa81+MonoAndroid1+MonoTouch1+Xamarin.iOS10">
+      <group targetFramework="portable-net45+win81+wpa81+monoandroid1+xamarin.ios10">
       </group>
     </dependencies>
   </metadata>
