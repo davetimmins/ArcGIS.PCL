@@ -123,6 +123,9 @@
 
         [DataMember(Name = "isDataVersioned")]
         public bool? IsDataVersioned { get; set; }
+
+        [DataMember(Name = "fields")]
+        public IEnumerable<Field> Fields { get; set; }
     }
 
     [DataContract]
