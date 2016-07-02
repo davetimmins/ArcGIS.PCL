@@ -52,7 +52,8 @@
       Works with .NET for Windows Store apps, .NET framework 4.5, Windows Phone 8.1, Xamarin Android and Xamarin iOS. (PCL Profile 111)
     </summary>
     <releaseNotes>
-      Added DescribeLayer operation
+      Added HttpRequestTimeout to gateway
+      Fixed bug in DescribeSite for some invalid responses
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
