@@ -67,6 +67,18 @@
                 });
                 return result;
             }
+            catch (Exception ex)
+            {
+                result.Add(new SiteFolderDescription
+                {
+                    Error = new ArcGISError
+                    {
+                        Message = "Exception for Get SiteFolderDescription at path " + endpoint.RelativeUrl,
+                        Details = new[] { ex.ToString() }
+                    }
+                });
+                return result;
+            }
             if (ct.IsCancellationRequested) return result;
 
             folderDescription.Path = endpoint.RelativeUrl;

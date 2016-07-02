@@ -32,7 +32,7 @@ namespace ArcGIS.ServiceModel.Operation
         {
             get
             {
-                foreach (var description in Resources)
+                foreach (var description in Resources.Where(r => r.Error == null))
                 {
                     foreach (var service in description.Services)
                     {

@@ -86,6 +86,19 @@
         }
 
         /// <summary>
+        /// Set the timespan until the web requests timesout
+        /// </summary>
+        public TimeSpan HttpRequestTimeout
+        {
+            get { return _httpClient.Timeout; }
+            set { if (_httpClient != null)
+                {
+                    _httpClient.Timeout = value;
+                }
+            }
+        }
+
+        /// <summary>
         /// Pings the endpoint specified
         /// </summary>
         /// <param name="endpoint"></param>
