@@ -72,6 +72,8 @@
             GC.SuppressFinalize(this);
         }
 
+        public bool CancelPendingRequests { get; set; }
+
         public bool IncludeHypermediaWithResponse { get; set; }
 
         public string RootUrl { get; private set; }
@@ -319,7 +321,10 @@
             }
             _logger.DebugFormat("GET {0}", uri.AbsoluteUri);
 
-            _httpClient.CancelPendingRequests();
+            if (CancelPendingRequests)
+            {
+                _httpClient.CancelPendingRequests();
+            }
 
             string resultString = string.Empty;
             try
@@ -383,7 +388,11 @@
                 }
                 content = tempContent;
             }
-            _httpClient.CancelPendingRequests();
+
+            if (CancelPendingRequests)
+            {
+                _httpClient.CancelPendingRequests();
+            }
 
             Uri uri;
             bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);

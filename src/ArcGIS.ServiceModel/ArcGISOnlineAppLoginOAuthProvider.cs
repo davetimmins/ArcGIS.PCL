@@ -71,6 +71,8 @@
             get { return "https://www.arcgis.com/sharing/oauth2/token"; }
         }
 
+        public bool CancelPendingRequests { get; set; }
+
         public string UserName { get { return null; } }
 
         public ISerializer Serializer { get; private set; }
@@ -87,7 +89,10 @@
 
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(OAuthRequest));
 
-            _httpClient.CancelPendingRequests();
+            if (CancelPendingRequests)
+            {
+                _httpClient.CancelPendingRequests();
+            }
 
             string resultString = string.Empty;
             try
