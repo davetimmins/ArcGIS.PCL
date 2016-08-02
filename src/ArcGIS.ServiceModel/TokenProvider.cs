@@ -76,6 +76,8 @@
             GC.SuppressFinalize(this);
         }
 
+        public bool CancelPendingRequests { get; set; }
+
         public ICryptoProvider CryptoProvider { get; private set; }
 
         public string RootUrl { get; private set; }
@@ -133,7 +135,10 @@
                 string publicKeyResultString = null;
                 try
                 {
-                    _httpClient.CancelPendingRequests();
+                    if (CancelPendingRequests)
+                    {
+                        _httpClient.CancelPendingRequests();
+                    }
                     HttpResponseMessage response = await _httpClient.GetAsync(encryptionInfoEndpoint, ct).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
                     publicKeyResultString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -166,7 +171,10 @@
             if (ct.IsCancellationRequested) return null;
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
 
-            _httpClient.CancelPendingRequests();
+            if (CancelPendingRequests)
+            {
+                _httpClient.CancelPendingRequests();
+            }
 
             string resultString = string.Empty;
             try

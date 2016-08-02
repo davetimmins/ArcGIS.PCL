@@ -560,7 +560,7 @@
             countExtentResults = resultPointExtentResults.Features.Count();
             countPolygonResults = resultPointPolygonResults.Features.Count();
 
-            Assert.Equal(resultPointExtentResults.SpatialReference.Wkid, queryPointExtentResults.OutputSpatialReference.LatestWkid);
+            Assert.Equal(resultPointExtentResults.SpatialReference.Wkid, queryPointExtentResults.OutputSpatialReference.Wkid);
             Assert.True(countAllResults > countExtentResults);
             Assert.True(countPolygonResults == countExtentResults);
         }

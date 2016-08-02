@@ -75,6 +75,8 @@
 
         public ICryptoProvider CryptoProvider { get { return null; } }
 
+        public bool CancelPendingRequests { get; set; }
+
         public string RootUrl { get; private set; }
 
         public string UserName { get { return null; } }
@@ -91,7 +93,10 @@
 
             HttpContent content = new FormUrlEncodedContent(Serializer.AsDictionary(TokenRequest));
 
-            _httpClient.CancelPendingRequests();
+            if (CancelPendingRequests)
+            {
+                _httpClient.CancelPendingRequests();
+            }
 
             var url = TokenRequest.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
             Uri uri;
