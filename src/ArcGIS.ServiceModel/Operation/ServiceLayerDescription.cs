@@ -24,16 +24,7 @@
 
     [DataContract]
     public class ServiceLayerDescriptionResponse : PortalResponse
-    {
-        readonly static Dictionary<string, Func<Type>> TypeMap = new Dictionary<string, Func<Type>>
-        {
-            { GeometryTypes.Point, () => typeof(Point) },
-            { GeometryTypes.MultiPoint, () => typeof(MultiPoint) },
-            { GeometryTypes.Envelope, () => typeof(Extent) },
-            { GeometryTypes.Polygon, () => typeof(Polygon) },
-            { GeometryTypes.Polyline, () => typeof(Polyline) }
-        };
-
+    {       
         [DataMember(Name = "currentVersion")]
         public double CurrentVersion { get; set; }
 
@@ -59,7 +50,7 @@
         public string GeometryTypeString { get; set; }
 
         [IgnoreDataMember]
-        public Type GeometryType { get { return TypeMap[GeometryTypeString](); } }
+        public Type GeometryType { get { return GeometryTypes.ToTypeMap[GeometryTypeString](); } }
 
         [DataMember(Name = "copyrightText")]
         public string CopyrightText { get; set; }
