@@ -229,6 +229,18 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "displayFieldName")]
         public string DisplayFieldName { get; set; }
 
+        [DataMember(Name = "objectIdFieldName")]
+        public string ObjectIdFieldName { get; set; }
+
+        [DataMember(Name = "globalIdFieldName")]
+        public string GlobalIdFieldName { get; set; }
+
+        [DataMember(Name = "geometryType")]
+        public string GeometryTypeString { get; set; }
+
+        [IgnoreDataMember]
+        public Type GeometryType { get { return GeometryTypes.ToTypeMap[GeometryTypeString](); } }
+
         [DataMember(Name = "features")]
         public IEnumerable<Feature<T>> Features { get; set; }
 
@@ -345,13 +357,22 @@ namespace ArcGIS.ServiceModel.Operation
     public static class GeometryTypes
     {
         internal readonly static Dictionary<Type, Func<string>> TypeMap = new Dictionary<Type, Func<string>>
-            {
-                { typeof(Point), () => GeometryTypes.Point },
-                { typeof(MultiPoint), () => GeometryTypes.MultiPoint },
-                { typeof(Extent), () => GeometryTypes.Envelope },
-                { typeof(Polygon), () => GeometryTypes.Polygon },
-                { typeof(Polyline), () => GeometryTypes.Polyline }
-            };
+        {
+            { typeof(Point), () => GeometryTypes.Point },
+            { typeof(MultiPoint), () => GeometryTypes.MultiPoint },
+            { typeof(Extent), () => GeometryTypes.Envelope },
+            { typeof(Polygon), () => GeometryTypes.Polygon },
+            { typeof(Polyline), () => GeometryTypes.Polyline }
+        };
+
+        internal readonly static Dictionary<string, Func<Type>> ToTypeMap = new Dictionary<string, Func<Type>>
+        {
+            { GeometryTypes.Point, () => typeof(Point) },
+            { GeometryTypes.MultiPoint, () => typeof(MultiPoint) },
+            { GeometryTypes.Envelope, () => typeof(Extent) },
+            { GeometryTypes.Polygon, () => typeof(Polygon) },
+            { GeometryTypes.Polyline, () => typeof(Polyline) }
+        };
 
         public const string Point = "esriGeometryPoint";
         public const string MultiPoint = "esriGeometryMultipoint";
