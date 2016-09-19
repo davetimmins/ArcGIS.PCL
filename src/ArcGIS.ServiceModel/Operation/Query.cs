@@ -67,7 +67,7 @@ namespace ArcGIS.ServiceModel.Operation
         [DataMember(Name = "inSR")]
         public SpatialReference InputSpatialReference
         {
-            get { return Geometry == null ? null : Geometry.SpatialReference ?? SpatialReference.WGS84; }
+            get { return Geometry == null ? null : Geometry.SpatialReference ?? null; }
         }
 
         /// <summary>
