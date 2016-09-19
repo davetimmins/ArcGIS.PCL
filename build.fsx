@@ -17,8 +17,8 @@ let testDir = buildDir @@ "test"
 let packagesDir = buildDir @@ "packages"
 let nupacksPath = buildDir @@ "packs"
 let testRunnerDir = currentDirectory @@ "packages" @@ "FAKE" @@ "xunit.runner.console" @@ "tools"
-let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.7.0"
-let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.7.0"
+let assemblyVersion = getBuildParamOrDefault "assemblyVersion" "5.8.0"
+let assemblyInformationalVersion = getBuildParamOrDefault "assemblyInformationalVersion" "5.8.0"
 
 CleanDirs [buildDir]
 
