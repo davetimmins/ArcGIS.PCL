@@ -46,7 +46,7 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public ReverseGeocode(ArcGISServerEndpoint endpoint)
         {
-            Guard.AgainstNullArgument("endpoint", endpoint);
+            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
             Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ReverseGeocode);
 
             Distance = 100;

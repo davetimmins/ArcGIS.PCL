@@ -8,7 +8,7 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     {
         public StartService(ServiceDescription serviceDescription)
         {
-            Guard.AgainstNullArgument("serviceDescription", serviceDescription);
+            LiteGuard.Guard.AgainstNullArgument("serviceDescription", serviceDescription);
             Endpoint = new ArcGISServerAdminEndpoint(string.Format(Operations.StartService, serviceDescription.Name, serviceDescription.Type));
         }
     }
@@ -18,7 +18,7 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     {
         public StopService(ServiceDescription serviceDescription)
         {
-            Guard.AgainstNullArgument("serviceDescription", serviceDescription);
+            LiteGuard.Guard.AgainstNullArgument("serviceDescription", serviceDescription);
             Endpoint = new ArcGISServerAdminEndpoint(string.Format(Operations.StopService, serviceDescription.Name, serviceDescription.Type));
         }
     }

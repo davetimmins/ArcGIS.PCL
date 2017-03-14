@@ -19,9 +19,9 @@ namespace ArcGIS.ServiceModel
     {
         public Operation.GenerateToken Encrypt(Operation.GenerateToken tokenRequest, byte[] exponent, byte[] modulus)
         {
-            Guard.AgainstNullArgument("tokenRequest", tokenRequest);
-            Guard.AgainstNullArgument("exponent", exponent);
-            Guard.AgainstNullArgument("modulus", modulus);
+            LiteGuard.Guard.AgainstNullArgument("tokenRequest", tokenRequest);
+            LiteGuard.Guard.AgainstNullArgument("exponent", exponent);
+            LiteGuard.Guard.AgainstNullArgument("modulus", modulus);
 
             using (var rsa = new System.Security.Cryptography.RSACryptoServiceProvider(512))
             {

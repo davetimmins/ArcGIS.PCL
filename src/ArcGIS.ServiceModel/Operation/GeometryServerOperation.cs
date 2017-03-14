@@ -17,7 +17,7 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public SimplifyGeometry(IEndpoint endpoint, List<Feature<T>> features = null, SpatialReference spatialReference = null)
         {
-            Guard.AgainstNullArgument("endpoint", endpoint);
+            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
             Endpoint = (endpoint is AbsoluteEndpoint) ?
                (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify)
              : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify);
@@ -145,7 +145,7 @@ namespace ArcGIS.ServiceModel.Operation
             SpatialReference outputSpatialReference,
             string operation)
         {
-            Guard.AgainstNullArgument("endpoint", endpoint);
+            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
             Endpoint = (endpoint is AbsoluteEndpoint) ?
                (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation)
              : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation);

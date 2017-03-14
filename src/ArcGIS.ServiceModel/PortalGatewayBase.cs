@@ -41,7 +41,7 @@
             RootUrl = rootUrl.AsRootUrl();
             TokenProvider = tokenProvider;
             Serializer = serializer ?? SerializerFactory.Get();
-            Guard.AgainstNullArgument("Serializer", Serializer);
+            LiteGuard.Guard.AgainstNullArgument("Serializer", Serializer);
             var httpFunc = httpClientFunc ?? HttpClientFactory.Get;
             _httpClient = httpFunc();
 
@@ -280,7 +280,7 @@
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            Guard.AgainstNullArgument("requestObject", requestObject);
+            LiteGuard.Guard.AgainstNullArgument("requestObject", requestObject);
 
             var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
@@ -293,14 +293,14 @@
 
         protected Task<T> Get<T>(IEndpoint endpoint, CancellationToken ct) where T : IPortalResponse
         {
-            Guard.AgainstNullArgument("endpoint", endpoint);
+            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
 
             return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), ct);
         }
 
         protected async Task<T> Get<T>(string url, CancellationToken ct) where T : IPortalResponse
         {
-            Guard.AgainstNullArgument("url", url);
+            LiteGuard.Guard.AgainstNullArgument("url", url);
 
             var token = await CheckGenerateToken(ct).ConfigureAwait(false);
             if (ct.IsCancellationRequested) return default(T);
@@ -354,7 +354,7 @@
             where TRequest : CommonParameters, IEndpoint
             where T : IPortalResponse
         {
-            Guard.AgainstNullArgument("requestObject", requestObject);
+            LiteGuard.Guard.AgainstNullArgument("requestObject", requestObject);
 
             var endpoint = requestObject;
             var parameters = Serializer.AsDictionary(requestObject);
@@ -428,8 +428,8 @@
 
         internal static string AsRequestQueryString<T>(ISerializer serializer, T objectToConvert) where T : CommonParameters
         {
-            Guard.AgainstNullArgument("serializer", serializer);
-            Guard.AgainstNullArgument("objectToConvert", objectToConvert);
+            LiteGuard.Guard.AgainstNullArgument("serializer", serializer);
+            LiteGuard.Guard.AgainstNullArgument("objectToConvert", objectToConvert);
 
             var dictionary = serializer.AsDictionary(objectToConvert);
 

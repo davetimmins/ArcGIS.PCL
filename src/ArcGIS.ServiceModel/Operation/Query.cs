@@ -18,7 +18,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// <param name="endpoint">Resource to apply the query against</param>
         public Query(ArcGISServerEndpoint endpoint)
         {
-            Guard.AgainstNullArgument("endpoint", endpoint);
+            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
             Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Query);
 
             Where = "1=1";

@@ -11,7 +11,7 @@ namespace ArcGIS.Test
     {
         static TestsFixture()
         {
-            ServiceStackSerializer.Init();
+            JsonDotNetSerializer.Init();
 
             HttpClientFactory.Get = (() =>
             {

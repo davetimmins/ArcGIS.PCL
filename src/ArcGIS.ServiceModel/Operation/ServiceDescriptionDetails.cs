@@ -17,7 +17,7 @@
         /// <param name="serviceDescription">A <see cref="ServiceDescription"/> from a previous call to DescribeSite</param>
         public ServiceDescriptionDetails(ServiceDescription serviceDescription)
         {
-            Guard.AgainstNullArgument(nameof(serviceDescription), serviceDescription);
+            LiteGuard.Guard.AgainstNullArgument(nameof(serviceDescription), serviceDescription);
 
             Endpoint = serviceDescription.ArcGISServerEndpoint;
         }

@@ -4,7 +4,8 @@
     using ArcGIS.ServiceModel.Common;
     using ArcGIS.ServiceModel.Operation;
     using ArcGIS.ServiceModel.Serializers;
-    using ServiceStack.Text;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -50,13 +51,13 @@
 
             foreach (var result in response.Results.Where(r => r.Geometry != null))
             {
-                result.Geometry = JsonSerializer.DeserializeFromString(result.Geometry.SerializeToString(), TypeMap[result.GeometryType]());
+                result.Geometry = JsonConvert.DeserializeObject(result.Geometry.ToString(), TypeMap[result.GeometryType]());
             }
             return response;
         }
     }
 
-    public class AgsObject : JsonObject, IPortalResponse
+    public class AgsObject : JObject, IPortalResponse
     {
         [DataMember(Name = "error")]
         public ArcGISError Error { get; set; }
@@ -77,7 +78,7 @@
         [InlineData("http://services.arcgisonline.co.nz/arcgis", "Generic/newzealand/MapServer")]
         public async Task CanGetAnythingFromServer(string rootUrl, string relativeUrl)
         {
-            var gateway = new ArcGISGateway(rootUrl, null, new ServiceStackSerializer());
+            var gateway = new ArcGISGateway(rootUrl, null, null);
             var endpoint = new ArcGISServerEndpoint(relativeUrl);
             var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
@@ -85,10 +86,10 @@
             });
 
             Assert.Null(response.Error);
-            Assert.True(response.ContainsKey("capabilities"));
-            Assert.True(response.ContainsKey("mapName"));
-            Assert.True(response.ContainsKey("layers"));
-            Assert.True(response.ContainsKey("documentInfo"));
+            Assert.NotNull(response.SelectToken("capabilities"));
+            Assert.NotNull(response.SelectToken("mapName"));
+            Assert.NotNull(response.SelectToken("layers"));
+            Assert.NotNull(response.SelectToken("documentInfo"));
         }
 
         [Theory]
@@ -315,7 +316,7 @@
 
             Assert.True(resultPoint.Features.Any());
             Assert.True(resultPoint.Features.All(i => i.Geometry == null));
-            Assert.True(resultPoint.Features.All(i => i.Attributes["Name"].ToString().StartsWithIgnoreCase("New Zea")));
+            Assert.True(resultPoint.Features.All(i => i.Attributes["Name"].ToString().StartsWith("New Zea", StringComparison.OrdinalIgnoreCase)));
         }
 
         [Fact]

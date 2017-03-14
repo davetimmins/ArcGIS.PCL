@@ -32,12 +32,12 @@
 
         internal FederatedTokenProvider(Func<ILog> log, ITokenProvider tokenProvider, string rootUrl, string serverUrl, ISerializer serializer = null, string referer = null)
         {
-            Guard.AgainstNullArgument("tokenProvider", tokenProvider);
+            LiteGuard.Guard.AgainstNullArgument("tokenProvider", tokenProvider);
             if (string.IsNullOrWhiteSpace(rootUrl)) throw new ArgumentNullException("rootUrl", "rootUrl is null.");
             if (string.IsNullOrWhiteSpace(serverUrl)) throw new ArgumentNullException("serverUrl", "serverUrl is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
-            Guard.AgainstNullArgument("Serializer", Serializer);
+            LiteGuard.Guard.AgainstNullArgument("Serializer", Serializer);
 
             RootUrl = rootUrl.AsRootUrl();
             _httpClient = HttpClientFactory.Get();

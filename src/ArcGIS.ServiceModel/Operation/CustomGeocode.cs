@@ -12,7 +12,7 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public SingleInputCustomGeocode(ArcGISServerEndpoint endpoint)
         {
-            Guard.AgainstNullArgument("endpoint", endpoint);
+            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
             Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputCustomGeocode);
         }
 

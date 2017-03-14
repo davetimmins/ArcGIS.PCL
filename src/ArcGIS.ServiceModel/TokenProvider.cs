@@ -41,7 +41,7 @@
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password), "password is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
-            Guard.AgainstNullArgument("Serializer", Serializer);
+            LiteGuard.Guard.AgainstNullArgument("Serializer", Serializer);
             RootUrl = rootUrl.AsRootUrl();
             CryptoProvider = cryptoProvider ?? CryptoProviderFactory.Get();
             _httpClient = HttpClientFactory.Get();

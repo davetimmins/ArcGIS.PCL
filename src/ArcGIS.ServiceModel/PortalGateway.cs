@@ -102,8 +102,8 @@
         /// <returns>A collection of service description details</returns>
         public virtual Task<List<ServiceDescriptionDetailsResponse>> DescribeServices(SiteDescription siteDescription, CancellationToken ct = default(CancellationToken))
         {
-            Guard.AgainstNullArgument(nameof(siteDescription), siteDescription);
-            Guard.AgainstNullArgumentProperty(nameof(siteDescription), nameof(siteDescription.Services) , siteDescription.Services);
+            LiteGuard.Guard.AgainstNullArgument(nameof(siteDescription), siteDescription);
+            LiteGuard.Guard.AgainstNullArgumentProperty(nameof(siteDescription), nameof(siteDescription.Services) , siteDescription.Services);
 
             return DescribeServices(siteDescription.Services.ToList(), ct);
         }
@@ -116,7 +116,7 @@
         /// <returns>A collection of service description details</returns>
         public virtual async Task<List<ServiceDescriptionDetailsResponse>> DescribeServices(List<ServiceDescription> services, CancellationToken ct = default(CancellationToken))
         {
-            Guard.AgainstNullArgument(nameof(services), services);
+            LiteGuard.Guard.AgainstNullArgument(nameof(services), services);
 
             var result = new List<ServiceDescriptionDetailsResponse>();
 
@@ -136,7 +136,7 @@
         /// <returns>The service description details</returns>
         public virtual Task<ServiceDescriptionDetailsResponse> DescribeService(IEndpoint serviceEndpoint, CancellationToken ct = default(CancellationToken))
         {
-            Guard.AgainstNullArgument(nameof(serviceEndpoint), serviceEndpoint);
+            LiteGuard.Guard.AgainstNullArgument(nameof(serviceEndpoint), serviceEndpoint);
 
             return Get<ServiceDescriptionDetailsResponse>(new ServiceDescriptionDetails(serviceEndpoint), ct);
         }
@@ -149,7 +149,7 @@
         /// <returns>The layer description details</returns>
         public virtual Task<ServiceLayerDescriptionResponse> DescribeLayer(IEndpoint layerEndpoint, CancellationToken ct = default(CancellationToken))
         {
-            Guard.AgainstNullArgument(nameof(layerEndpoint), layerEndpoint);
+            LiteGuard.Guard.AgainstNullArgument(nameof(layerEndpoint), layerEndpoint);
 
             return Get<ServiceLayerDescriptionResponse>(new ServiceLayerDescription(layerEndpoint), ct);
         }

@@ -68,8 +68,8 @@ namespace ArcGIS.ServiceModel.Operation
 
         public void Encrypt(string username, string password, string expiration = "", string client = "", string referer = "")
         {
-            Guard.AgainstNullArgument("username", username);
-            Guard.AgainstNullArgument("password", password);
+            LiteGuard.Guard.AgainstNullArgument("username", username);
+            LiteGuard.Guard.AgainstNullArgument("password", password);
             Username = username;
             Password = password;
             if (!string.IsNullOrWhiteSpace(expiration)) _expiration = expiration;

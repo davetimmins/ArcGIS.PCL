@@ -1,93 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BD6D09F4-FCD7-4894-971B-87E6294393BC}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArcGIS.ServiceModel</RootNamespace>
+    <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>ArcGIS.ServiceModel</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <ProductVersion>12.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
+    <PackageId>ArcGIS.ServiceModel</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;LIBLOG_PORTABLE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <DocumentationFile>bin\Debug\ArcGIS.ServiceModel.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;LIBLOG_PORTABLE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="App_Packages\LibLog.4.2\LibLog.cs" />
-    <Compile Include="Common\Feature.cs" />
-    <Compile Include="Common\IEndpoint.cs" />
-    <Compile Include="Common\IGeometry.cs" />
-    <Compile Include="Extensions\ByteExtensions.cs" />
-    <Compile Include="Extensions\DateTimeExtensions.cs" />
-    <Compile Include="Extensions\FeatureCollectionExtensions.cs" />
-    <Compile Include="Extensions\GeometryExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="GeoJson\FeatureCollection.cs" />
-    <Compile Include="Guard.cs" />
-    <Compile Include="ICryptoProvider.cs" />
-    <Compile Include="IPortalGateway.cs" />
-    <Compile Include="ISerializer.cs" />
-    <Compile Include="ITokenProvider.cs" />
-    <Compile Include="Operation\Admin\ServiceReport.cs" />
-    <Compile Include="Operation\Admin\ServiceStatus.cs" />
-    <Compile Include="Operation\Admin\StartStop.cs" />
-    <Compile Include="Operation\ApplyEdits.cs" />
-    <Compile Include="Operation\ArcGISServerOperation.cs" />
-    <Compile Include="Operation\CommonParameters.cs" />
-    <Compile Include="Operation\CustomGeocode.cs" />
-    <Compile Include="Operation\Find.cs" />
-    <Compile Include="Operation\GeometryServerOperation.cs" />
-    <Compile Include="Operation\PortalResponse.cs" />
-    <Compile Include="Operation\Admin\PublicKey.cs" />
-    <Compile Include="Operation\Query.cs" />
-    <Compile Include="Operation\ReverseGeocode.cs" />
-    <Compile Include="Operation\SearchHostedFeatureServices.cs" />
-    <Compile Include="Operation\ServerInfo.cs" />
-    <Compile Include="Operation\ServiceDescriptionDetails.cs" />
-    <Compile Include="Operation\ServiceLayerDescription.cs" />
-    <Compile Include="Operation\SingleInputGeocode.cs" />
-    <Compile Include="Operation\SiteDescription.cs" />
-    <Compile Include="Operation\Token.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="App.config" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="LibLog" Version="4.2.6" />
+    <PackageReference Include="LiteGuard" Version="1.1.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
+    <PackageReference Include="Microsoft.NETCore.Portable.Compatibility" Version="1.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

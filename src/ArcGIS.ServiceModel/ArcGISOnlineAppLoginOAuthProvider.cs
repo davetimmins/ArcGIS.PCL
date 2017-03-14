@@ -33,7 +33,7 @@
             if (string.IsNullOrWhiteSpace(clientSecret)) throw new ArgumentNullException("clientSecret", "clientSecret is null.");
 
             Serializer = serializer ?? SerializerFactory.Get();
-            Guard.AgainstNullArgument("Serializer", Serializer);
+            //LiteGuard.Guard.AgainstNullArgument<ISerializer>(nameof(Serializer), Serializer);
 
             OAuthRequest = new GenerateOAuthToken(clientId, clientSecret);
             _httpClient = HttpClientFactory.Get();
