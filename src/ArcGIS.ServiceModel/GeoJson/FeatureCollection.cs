@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace ArcGIS.ServiceModel.GeoJson
 {
     [DataContract]
-    public class FeatureCollection<TGeometry> where TGeometry : IGeoJsonGeometry
+    public class FeatureCollection<TGeometry> where TGeometry : IGeoJsonGeometry<TGeometry>
     {
         [DataMember(Name = "type")]
         public string Type { get; set; }
@@ -49,7 +49,7 @@ namespace ArcGIS.ServiceModel.GeoJson
     }
 
     [DataContract]
-    public class GeoJsonFeature<TGeometry> where TGeometry : IGeoJsonGeometry
+    public class GeoJsonFeature<TGeometry> where TGeometry : IGeoJsonGeometry<TGeometry>
     {
         [DataMember(Name = "id")]
         public object Id { get; set; }
@@ -68,7 +68,7 @@ namespace ArcGIS.ServiceModel.GeoJson
     }
 
     [DataContract]
-    public class GeoJsonPoint : IGeoJsonGeometry
+    public class GeoJsonPoint : IGeoJsonGeometry<Point>
     {
         [DataMember(Name = "type")]
         public string Type { get; set; }
@@ -76,7 +76,7 @@ namespace ArcGIS.ServiceModel.GeoJson
         [DataMember(Name = "coordinates")]
         public double[] Coordinates { get; set; }
 
-        public IGeometry ToGeometry(Type type)
+        public IGeometry<Point> ToGeometry(Type type)
         {
             if (Coordinates == null || Coordinates.Count() != 2) return null;
 
@@ -84,54 +84,54 @@ namespace ArcGIS.ServiceModel.GeoJson
         }
     }
 
+    //[DataContract]
+    //public class GeoJsonLineString : IGeoJsonGeometry
+    //{
+    //    readonly static Dictionary<Type, Func<PointCollection, IGeometry>> _geoJsonFactoryMap = new Dictionary<Type, Func<PointCollection, IGeometry>>
+    //    {
+    //        { typeof(MultiPoint), (coords) => new MultiPoint { Points = coords } },
+    //        { typeof(Polyline), (coords) => new Polyline { Paths = new PointCollectionList { coords } } } 
+    //    };
+
+    //    [DataMember(Name = "type")]
+    //    public string Type { get; set; }
+
+    //    [DataMember(Name = "coordinates")]
+    //    public PointCollection Coordinates { get; set; }
+
+    //    public IGeometry ToGeometry(Type type)
+    //    {
+    //        if (Coordinates == null) return null;
+
+    //        return _geoJsonFactoryMap[type](Coordinates);
+    //    }
+    //}
+
+    //[DataContract]
+    //public class GeoJsonPolygon : IGeoJsonGeometry
+    //{
+    //    static Dictionary<Type, Func<PointCollectionList, IGeometry>> _geoJsonFactoryMap = new Dictionary<Type, Func<PointCollectionList, IGeometry>>
+    //    {
+    //        { typeof(Polygon), (coords) => new Polygon { Rings = coords } },
+    //        { typeof(Polyline), (coords) => new Polyline { Paths =  coords  } } 
+    //    };
+
+    //    [DataMember(Name = "type")]
+    //    public string Type { get; set; }
+
+    //    [DataMember(Name = "coordinates")]
+    //    public PointCollectionList Coordinates { get; set; }
+
+    //    public IGeometry ToGeometry(Type type)
+    //    {
+    //        if (Coordinates == null) return null;
+
+    //        return _geoJsonFactoryMap[type](Coordinates);
+    //    }
+    //}
+
     [DataContract]
-    public class GeoJsonLineString : IGeoJsonGeometry
-    {
-        readonly static Dictionary<Type, Func<PointCollection, IGeometry>> _geoJsonFactoryMap = new Dictionary<Type, Func<PointCollection, IGeometry>>
-        {
-            { typeof(MultiPoint), (coords) => new MultiPoint { Points = coords } },
-            { typeof(Polyline), (coords) => new Polyline { Paths = new PointCollectionList { coords } } } 
-        };
-
-        [DataMember(Name = "type")]
-        public string Type { get; set; }
-
-        [DataMember(Name = "coordinates")]
-        public PointCollection Coordinates { get; set; }
-
-        public IGeometry ToGeometry(Type type)
-        {
-            if (Coordinates == null) return null;
-
-            return _geoJsonFactoryMap[type](Coordinates);
-        }
-    }
-
-    [DataContract]
-    public class GeoJsonPolygon : IGeoJsonGeometry
-    {
-        static Dictionary<Type, Func<PointCollectionList, IGeometry>> _geoJsonFactoryMap = new Dictionary<Type, Func<PointCollectionList, IGeometry>>
-        {
-            { typeof(Polygon), (coords) => new Polygon { Rings = coords } },
-            { typeof(Polyline), (coords) => new Polyline { Paths =  coords  } } 
-        };
-
-        [DataMember(Name = "type")]
-        public string Type { get; set; }
-
-        [DataMember(Name = "coordinates")]
-        public PointCollectionList Coordinates { get; set; }
-
-        public IGeometry ToGeometry(Type type)
-        {
-            if (Coordinates == null) return null;
-
-            return _geoJsonFactoryMap[type](Coordinates);
-        }
-    }
-
-    [DataContract]
-    public class GeoJsonMultiPolygon : IGeoJsonGeometry
+    public class GeoJsonMultiPolygon : IGeoJsonGeometry<Polygon>
     {
         [DataMember(Name = "type")]
         public string Type { get; set; }
@@ -139,7 +139,7 @@ namespace ArcGIS.ServiceModel.GeoJson
         [DataMember(Name = "coordinates")]
         public List<PointCollectionList> Coordinates { get; set; }
 
-        public IGeometry ToGeometry(Type type)
+        public IGeometry<Polygon> ToGeometry(Type type)
         {
             if (Coordinates == null) return null;
 
@@ -152,11 +152,11 @@ namespace ArcGIS.ServiceModel.GeoJson
         }
     }
 
-    public interface IGeoJsonGeometry
+    public interface IGeoJsonGeometry<out T>
     {
         [DataMember(Name = "type")]
         string Type { get; set; }
 
-        IGeometry ToGeometry(Type type);
+        IGeometry<T> ToGeometry(Type type);
     }
 }

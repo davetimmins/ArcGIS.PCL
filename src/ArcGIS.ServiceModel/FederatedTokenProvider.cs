@@ -99,8 +99,7 @@
             }
 
             var url = TokenRequest.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
-            Uri uri;
-            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out Uri uri);
             if (!validUrl)
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
             _logger.DebugFormat("Token request {0}", uri.AbsoluteUri);

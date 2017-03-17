@@ -1,6 +1,7 @@
 ﻿namespace ArcGIS.ServiceModel.Operation
 {
     using Common;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
@@ -15,21 +16,19 @@
         /// Request for the details of an ArcGIS Server service
         /// </summary>
         /// <param name="serviceDescription">A <see cref="ServiceDescription"/> from a previous call to DescribeSite</param>
-        public ServiceDescriptionDetails(ServiceDescription serviceDescription)
+        public ServiceDescriptionDetails(ServiceDescription serviceDescription, Action beforeRequest = null, Action afterRequest = null)
+            : base(serviceDescription.ArcGISServerEndpoint, beforeRequest, afterRequest)
         {
             LiteGuard.Guard.AgainstNullArgument(nameof(serviceDescription), serviceDescription);
-
-            Endpoint = serviceDescription.ArcGISServerEndpoint;
         }
-
+        
         /// <summary>
         /// Request for the details of an ArcGIS Server service
         /// </summary>
         /// <param name="serviceEndpoint"></param>
-        public ServiceDescriptionDetails(IEndpoint serviceEndpoint)
-        {
-            Endpoint = serviceEndpoint;
-        }
+        public ServiceDescriptionDetails(IEndpoint serviceEndpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(serviceEndpoint, beforeRequest, afterRequest)
+        { }
     }
 
     /// <summary>

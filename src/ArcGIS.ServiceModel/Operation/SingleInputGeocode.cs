@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -10,11 +11,9 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class SingleInputGeocode : GeocodeOperation
     {
-        public SingleInputGeocode(ArcGISServerEndpoint endpoint)
+        public SingleInputGeocode(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputGeocode), beforeRequest, afterRequest)
         {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputGeocode);
-
             MaxResults = 1;
             Distance = null;
         }
@@ -99,11 +98,9 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class SuggestGeocode : GeocodeOperation
     {
-        public SuggestGeocode(ArcGISServerEndpoint endpoint)
+        public SuggestGeocode(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SuggestGeocode), beforeRequest, afterRequest)
         {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SuggestGeocode);
-
             Distance = null;
         }
 

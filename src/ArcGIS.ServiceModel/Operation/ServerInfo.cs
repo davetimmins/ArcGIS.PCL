@@ -8,21 +8,11 @@
     /// Represents a request for a query against the info route for a server
     /// </summary>
     [DataContract]
-    public class ServerInfo : CommonParameters, IEndpoint
+    public class ServerInfo : ArcGISServerOperation
     {
-        public string RelativeUrl { get { return Operations.ServerInfoRoute; } }
-
-        public string BuildAbsoluteUrl(string rootUrl)
-        {
-            if (string.IsNullOrWhiteSpace(rootUrl))
-            {
-                throw new ArgumentNullException(nameof(rootUrl), "rootUrl is null.");
-            }
-
-            return !RelativeUrl.Contains(rootUrl.Substring(6)) && !RelativeUrl.Contains(rootUrl.Substring(6))
-                       ? rootUrl + RelativeUrl
-                       : RelativeUrl;
-        }
+        public ServerInfo(Action beforeRequest = null, Action afterRequest = null)
+            : base(new RootServerEndpoint(Operations.ServerInfoRoute), beforeRequest, afterRequest)
+        { }   
     }
 
     [DataContract]

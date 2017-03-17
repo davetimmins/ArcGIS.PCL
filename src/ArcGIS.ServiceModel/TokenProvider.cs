@@ -89,9 +89,8 @@
         void CheckRefererHeader()
         {
             if (_httpClient == null || string.IsNullOrWhiteSpace(TokenRequest.Referer)) return;
-
-            Uri referer;
-            bool validReferrerUrl = Uri.TryCreate(TokenRequest.Referer, UriKind.Absolute, out referer);
+            
+            bool validReferrerUrl = Uri.TryCreate(TokenRequest.Referer, UriKind.Absolute, out Uri referer);
             if (!validReferrerUrl)
             {
                 throw new HttpRequestException(string.Format("Not a valid url for referrer: {0}", TokenRequest.Referer));
@@ -118,8 +117,7 @@
             CheckRefererHeader();
 
             var url = TokenRequest.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
-            Uri uri;
-            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out Uri uri);
             if (!validUrl)
             {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));

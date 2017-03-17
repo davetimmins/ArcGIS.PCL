@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -34,14 +35,14 @@ namespace ArcGIS.ServiceModel.Operation
         /// SSearch against ArcGISOnline / Portal
         /// </summary>
         /// <param name="query">The search query to execute</param>
-        public SearchArcGISOnline(string query)
+        public SearchArcGISOnline(string query, Action beforeRequest = null, Action afterRequest = null)
+            : base(new ArcGISOnlineEndpoint(Operations.ArcGISOnlineSearch), beforeRequest, afterRequest)
         {
             Query = query;
             SortOrder = "asc";
             NumberToReturn = 10;
             StartIndex = 1;
             SortFields = new List<string>();
-            Endpoint = new ArcGISOnlineEndpoint(Operations.ArcGISOnlineSearch);
         }
 
         /// <summary>

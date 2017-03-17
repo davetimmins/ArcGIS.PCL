@@ -93,7 +93,9 @@
         public TimeSpan HttpRequestTimeout
         {
             get { return _httpClient.Timeout; }
-            set { if (_httpClient != null)
+            set
+            {
+                if (_httpClient != null)
                 {
                     _httpClient.Timeout = value;
                 }
@@ -109,7 +111,7 @@
         /// empty <see cref="IPortalResponse"/> object if successful otherwise the Error property is populated</returns>
         public virtual Task<PortalResponse> Ping(IEndpoint endpoint, CancellationToken ct = default(CancellationToken))
         {
-            return Get<PortalResponse>(endpoint, ct);
+            return Get<PortalResponse, ArcGISServerOperation>(new ArcGISServerOperation(endpoint), ct);
         }
 
         /// <summary>
@@ -119,7 +121,7 @@
         /// <returns>Information about the server configuration (version, authentication settings etc.)</returns>
         public virtual Task<ServerInfoResponse> Info(CancellationToken ct = default(CancellationToken))
         {
-            return Get<ServerInfoResponse>(new ServerInfo(), ct);
+            return Get<ServerInfoResponse, ServerInfo>(new ServerInfo(), ct);
         }
 
         /// <summary>
@@ -129,9 +131,14 @@
         /// <param name="queryOptions">Query filter parameters</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The matching features for the query</returns>
-        public virtual Task<QueryResponse<T>> Query<T>(Query queryOptions, CancellationToken ct = default(CancellationToken)) where T : IGeometry
+        public virtual Task<QueryResponse<Tout>> Query<Tout, Tin>(Query<Tin> queryOptions, CancellationToken ct = default(CancellationToken)) where Tout : IGeometry<Tout> where Tin : IGeometry<Tin>
         {
-            return Get<QueryResponse<T>, Query>(queryOptions, ct);
+            return Get<QueryResponse<Tout>, Query<Tin>>(queryOptions, ct);
+        }
+
+        public virtual Task<QueryResponse<Tout>> Query<Tout>(Query queryOptions, CancellationToken ct = default(CancellationToken)) where Tout : IGeometry<Tout>
+        {
+            return Get<QueryResponse<Tout>, Query>(queryOptions, ct);
         }
 
         /// <summary>
@@ -174,7 +181,7 @@
         /// <param name="edits">The edits to perform</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>A collection of add, update and delete results</returns>
-        public virtual async Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationToken ct = default(CancellationToken)) where T : IGeometry
+        public virtual async Task<ApplyEditsResponse> ApplyEdits<T>(ApplyEdits<T> edits, CancellationToken ct = default(CancellationToken)) where T : IGeometry<T>
         {
             var result = await Post<ApplyEditsResponse, ApplyEdits<T>>(edits, ct);
             result.SetExpected(edits);
@@ -189,19 +196,19 @@
         /// <param name="outputSpatialReference">The spatial reference you want the result set to be</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly projected geometries</returns>
-        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationToken ct = default(CancellationToken)) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Project<T>(List<Feature<T>> features, SpatialReference outputSpatialReference, CancellationToken ct = default(CancellationToken)) where T : IGeometry<T>
         {
             var op = new ProjectGeometry<T>(GeometryServiceEndpoint, features, outputSpatialReference);
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(op, ct).ConfigureAwait(false);
 
             if (ct.IsCancellationRequested) return null;
 
-            var result = features.UpdateGeometries<T>(projected.Geometries);
+            var result = features.UpdateGeometries(projected.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = outputSpatialReference;
             return result;
         }
 
-        public virtual async Task<List<Feature<T>>> Project<T>(ProjectGeometry<T> operation, CancellationToken ct = default(CancellationToken)) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Project<T>(ProjectGeometry<T> operation, CancellationToken ct = default(CancellationToken)) where T : IGeometry<T>
         {
             var projected = await Post<GeometryOperationResponse<T>, ProjectGeometry<T>>(operation, ct).ConfigureAwait(false);
 
@@ -221,7 +228,7 @@
         /// <param name="distance">Distance in meters to buffer the geometries by</param>
         /// <param name="ct">Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly buffered geometries</returns>
-        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationToken ct = default(CancellationToken)) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Buffer<T>(List<Feature<T>> features, SpatialReference spatialReference, double distance, CancellationToken ct = default(CancellationToken)) where T : IGeometry<T>
         {
             var op = new BufferGeometry<T>(GeometryServiceEndpoint, features, spatialReference, distance);
             var buffered = await Post<GeometryOperationResponse<T>, BufferGeometry<T>>(op, ct).ConfigureAwait(false);
@@ -234,14 +241,14 @@
         }
 
         /// <summary>
-        /// Simplify the list of geometries passed in using the GeometryServer. Simplify permanently alters the input geometry so that it becomes topologically consistent.
+        /// Simplify the list of geometries passed in using the GeometryServer.Simplify permanently alters the input geometry so that it becomes topologically consistent.
         /// </summary>
-        /// <typeparam name="T">The type of the geometries</typeparam>
-        /// <param name="features">A collection of features which will have their geometries buffered</param>
-        /// <param name="spatialReference">The spatial reference of the geometries</param>
-        /// <param name="ct">Optional cancellation token to cancel pending request</param>
+        /// <typeparam name = "T" > The type of the geometries</typeparam>
+        /// <param name = "features" > A collection of features which will have their geometries buffered</param>
+        /// <param name = "spatialReference" > The spatial reference of the geometries</param>
+        /// <param name = "ct" > Optional cancellation token to cancel pending request</param>
         /// <returns>The corresponding features with the newly simplified geometries</returns>
-        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationToken ct = default(CancellationToken)) where T : IGeometry
+        public virtual async Task<List<Feature<T>>> Simplify<T>(List<Feature<T>> features, SpatialReference spatialReference, CancellationToken ct = default(CancellationToken)) where T : IGeometry<T>
         {
             var op = new SimplifyGeometry<T>(GeometryServiceEndpoint, features, spatialReference);
             var simplified = await Post<GeometryOperationResponse<T>, SimplifyGeometry<T>>(op, ct).ConfigureAwait(false);
@@ -267,8 +274,7 @@
         {
             if (_httpClient == null || string.IsNullOrWhiteSpace(referrer)) return;
 
-            Uri referer;
-            bool validReferrerUrl = Uri.TryCreate(referrer, UriKind.Absolute, out referer);
+            bool validReferrerUrl = Uri.TryCreate(referrer, UriKind.Absolute, out Uri referer);
             if (!validReferrerUrl)
             {
                 throw new HttpRequestException(string.Format("Not a valid url for referrer: {0}", referrer));
@@ -276,31 +282,51 @@
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
 
-        protected Task<T> Get<T, TRequest>(TRequest requestObject, CancellationToken ct)
-            where TRequest : CommonParameters, IEndpoint
+        //protected Task<T> Get<T, TRequest>(TRequest requestObject, CancellationToken ct)
+        //    where TRequest : ArcGISServerOperation
+        //    where T : IPortalResponse
+        //{
+        //    LiteGuard.Guard.AgainstNullArgument("requestObject", requestObject);
+            
+        //    var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
+
+        //    if (url.Length > 2047)
+        //    {
+        //        return Post<T, TRequest>(requestObject, ct);
+        //    }
+
+        //    requestObject.BeforeRequest?.Invoke();
+
+        //    return Get<T>(url, ct);
+        //}
+
+        //protected Task<T> Get<T>(IEndpoint endpoint, CancellationToken ct) where T : IPortalResponse
+        //{
+        //    LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
+
+        //    return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), ct);
+        //}
+
+        protected async Task<T> Get<T, TRequest>(TRequest requestObject, CancellationToken ct)
+            where TRequest : ArcGISServerOperation
             where T : IPortalResponse
         {
+            //if (string.IsNullOrWhiteSpace(url))
+            //{
+            //    throw new ArgumentNullException(nameof(url));
+            //}
+
             LiteGuard.Guard.AgainstNullArgument("requestObject", requestObject);
 
-            var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
+            var endpoint = requestObject.Endpoint;
+            var url = endpoint.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
             if (url.Length > 2047)
             {
-                return Post<T, TRequest>(requestObject, ct);
+                return await Post<T, TRequest>(requestObject, ct).ConfigureAwait(false);
             }
-            return Get<T>(url, ct);
-        }
 
-        protected Task<T> Get<T>(IEndpoint endpoint, CancellationToken ct) where T : IPortalResponse
-        {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-
-            return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), ct);
-        }
-
-        protected async Task<T> Get<T>(string url, CancellationToken ct) where T : IPortalResponse
-        {
-            LiteGuard.Guard.AgainstNullArgument("url", url);
+            requestObject.BeforeRequest?.Invoke();
 
             var token = await CheckGenerateToken(ct).ConfigureAwait(false);
             if (ct.IsCancellationRequested) return default(T);
@@ -313,8 +339,7 @@
                 if (token.AlwaysUseSsl) url = url.Replace("http:", "https:");
             }
 
-            Uri uri;
-            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out Uri uri);
             if (!validUrl)
             {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
@@ -346,17 +371,25 @@
                 throw new InvalidOperationException(result.Error.ToString());
             }
 
-            if (IncludeHypermediaWithResponse) result.Links = new List<Link> { new Link(uri.AbsoluteUri) };
+            if (IncludeHypermediaWithResponse)
+            {
+                result.Links = new List<Link> { new Link(uri.AbsoluteUri) };
+            }
+
+            requestObject.AfterRequest?.Invoke();
+
             return result;
         }
 
         protected async Task<T> Post<T, TRequest>(TRequest requestObject, CancellationToken ct)
-            where TRequest : CommonParameters, IEndpoint
+            where TRequest : ArcGISServerOperation
             where T : IPortalResponse
         {
-            LiteGuard.Guard.AgainstNullArgument("requestObject", requestObject);
+            LiteGuard.Guard.AgainstNullArgument(nameof(requestObject), requestObject);
 
-            var endpoint = requestObject;
+            requestObject.BeforeRequest?.Invoke();
+
+            var endpoint = requestObject.Endpoint;
             var parameters = Serializer.AsDictionary(requestObject);
 
             var url = endpoint.BuildAbsoluteUrl(RootUrl).Split('?').FirstOrDefault();
@@ -394,8 +427,7 @@
                 _httpClient.CancelPendingRequests();
             }
 
-            Uri uri;
-            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out uri);
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out Uri uri);
             if (!validUrl)
             {
                 throw new HttpRequestException(string.Format("Not a valid url: {0}", url));
@@ -422,14 +454,20 @@
                 throw new InvalidOperationException(result.Error.ToString());
             }
 
-            if (IncludeHypermediaWithResponse) result.Links = new List<Link> { new Link(uri.AbsoluteUri, requestObject) };
+            if (IncludeHypermediaWithResponse)
+            {
+                result.Links = new List<Link> { new Link(uri.AbsoluteUri, requestObject) };
+            }
+
+            requestObject.AfterRequest?.Invoke();
+
             return result;
         }
 
-        internal static string AsRequestQueryString<T>(ISerializer serializer, T objectToConvert) where T : CommonParameters
+        internal static string AsRequestQueryString<T>(ISerializer serializer, T objectToConvert) where T : ArcGISServerOperation
         {
-            LiteGuard.Guard.AgainstNullArgument("serializer", serializer);
-            LiteGuard.Guard.AgainstNullArgument("objectToConvert", objectToConvert);
+            LiteGuard.Guard.AgainstNullArgument(nameof(serializer), serializer);
+            LiteGuard.Guard.AgainstNullArgument(nameof(objectToConvert), objectToConvert);
 
             var dictionary = serializer.AsDictionary(objectToConvert);
 

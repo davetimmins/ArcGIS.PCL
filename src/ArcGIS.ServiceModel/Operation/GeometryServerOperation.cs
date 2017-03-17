@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -6,25 +7,24 @@ using System.Runtime.Serialization;
 namespace ArcGIS.ServiceModel.Operation
 {
     [DataContract]
-    public class GeometryOperationResponse<T> : PortalResponse where T : IGeometry
+    public class GeometryOperationResponse<T> : PortalResponse where T : IGeometry<T>
     {
         [DataMember(Name = "geometries")]
         public List<T> Geometries { get; set; }
     }
 
     [DataContract]
-    public class SimplifyGeometry<T> : ArcGISServerOperation where T : IGeometry
+    public class SimplifyGeometry<T> : ArcGISServerOperation where T : IGeometry<T>
     {
-        public SimplifyGeometry(IEndpoint endpoint, List<Feature<T>> features = null, SpatialReference spatialReference = null)
-        {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = (endpoint is AbsoluteEndpoint) ?
-               (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify)
-             : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify);
-
+        public SimplifyGeometry(IEndpoint endpoint, List<Feature<T>> features = null, SpatialReference spatialReference = null, Action beforeRequest = null, Action afterRequest = null)
+            : base((endpoint is AbsoluteEndpoint) 
+                ? (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify)
+                : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify),
+                beforeRequest, afterRequest)
+        {            
             Geometries = new GeometryCollection<T> { Geometries = features == null ? null : features.Select(f => f.Geometry).ToList() };
             SpatialReference = spatialReference;
-        }
+        }        
 
         [DataMember(Name = "geometries")]
         public GeometryCollection<T> Geometries { get; set; }
@@ -34,7 +34,7 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
-    public class BufferGeometry<T> : GeometryOperation<T> where T : IGeometry
+    public class BufferGeometry<T> : GeometryOperation<T> where T : IGeometry<T>
     {
         public BufferGeometry(IEndpoint endpoint, List<Feature<T>> features, SpatialReference spatialReference, double distance)
             : base(endpoint, features, spatialReference, Operations.Buffer)
@@ -93,7 +93,7 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
-    public class ProjectGeometry<T> : GeometryOperation<T> where T : IGeometry
+    public class ProjectGeometry<T> : GeometryOperation<T> where T : IGeometry<T>
     {
         public ProjectGeometry(IEndpoint endpoint, List<Feature<T>> features, SpatialReference outputSpatialReference)
             : base(endpoint, features, outputSpatialReference, Operations.Project)
@@ -121,7 +121,7 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
-    public class GeometryCollection<T> where T : IGeometry
+    public class GeometryCollection<T> where T : IGeometry<T>
     {
         [DataMember(Name = "geometryType")]
         public string GeometryType
@@ -138,18 +138,18 @@ namespace ArcGIS.ServiceModel.Operation
         public List<T> Geometries { get; set; }
     }
 
-    public abstract class GeometryOperation<T> : ArcGISServerOperation where T : IGeometry
+    public abstract class GeometryOperation<T> : ArcGISServerOperation where T : IGeometry<T>
     {
         public GeometryOperation(IEndpoint endpoint,
             List<Feature<T>> features,
             SpatialReference outputSpatialReference,
-            string operation)
-        {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = (endpoint is AbsoluteEndpoint) ?
-               (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation)
-             : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation);
-
+            string operation,
+            Action beforeRequest = null, Action afterRequest = null)
+            : base((endpoint is AbsoluteEndpoint) 
+                ? (IEndpoint)new AbsoluteEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation)
+                : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + operation),
+                beforeRequest, afterRequest)
+        {         
             Features = features;
             if (features.Any())
             {
@@ -160,7 +160,7 @@ namespace ArcGIS.ServiceModel.Operation
             }
             OutputSpatialReference = outputSpatialReference;
         }
-
+        
         [IgnoreDataMember]
         public List<Feature<T>> Features { get; private set; }
 

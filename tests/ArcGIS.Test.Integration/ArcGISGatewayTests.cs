@@ -26,16 +26,11 @@
             : base(root, serializer, tokenProvider)
         { }
 
-        public Task<QueryResponse<T>> QueryAsPost<T>(Query queryOptions) where T : IGeometry
+        public Task<QueryResponse<Tout>> QueryAsPost<Tout, Tin>(Query<Tin> queryOptions) where Tout : IGeometry<Tout> where Tin : IGeometry<Tin>
         {
-            return Post<QueryResponse<T>, Query>(queryOptions, CancellationToken.None);
+            return Post<QueryResponse<Tout>, Query<Tin>>(queryOptions, CancellationToken.None);
         }
-
-        public Task<AgsObject> GetAnything(ArcGISServerEndpoint endpoint)
-        {
-            return Get<AgsObject>(endpoint, CancellationToken.None);
-        }
-
+        
         internal readonly static Dictionary<string, Func<Type>> TypeMap = new Dictionary<string, Func<Type>>
             {
                 { GeometryTypes.Point, () => typeof(Point) },
@@ -56,40 +51,12 @@
             return response;
         }
     }
-
-    public class AgsObject : JObject, IPortalResponse
-    {
-        [DataMember(Name = "error")]
-        public ArcGISError Error { get; set; }
-
-        [DataMember(Name = "links")]
-        public List<Link> Links { get; set; }
-    }
-
+    
     public class ArcGISGatewayTests : IClassFixture<IntegrationTestFixture>
     {
         public ArcGISGatewayTests(IntegrationTestFixture fixture, ITestOutputHelper output)
         {
             fixture.SetTestOutputHelper(output);
-        }
-
-        [Theory]
-        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/", "/Earthquakes/EarthquakesFromLastSevenDays/MapServer")]
-        [InlineData("http://services.arcgisonline.co.nz/arcgis", "Generic/newzealand/MapServer")]
-        public async Task CanGetAnythingFromServer(string rootUrl, string relativeUrl)
-        {
-            var gateway = new ArcGISGateway(rootUrl, null, null);
-            var endpoint = new ArcGISServerEndpoint(relativeUrl);
-            var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
-            {
-                return gateway.GetAnything(endpoint);
-            });
-
-            Assert.Null(response.Error);
-            Assert.NotNull(response.SelectToken("capabilities"));
-            Assert.NotNull(response.SelectToken("mapName"));
-            Assert.NotNull(response.SelectToken("layers"));
-            Assert.NotNull(response.SelectToken("documentInfo"));
         }
 
         [Theory]
@@ -109,7 +76,7 @@
         }
 
         [Theory]
-        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
+        [InlineData("http://sampleserver6.arcgisonline.com/ArcGIS/")]
         [InlineData("https://services.arcgisonline.co.nz/arcgis")]
         [InlineData("https://services.arcgisonline.com/arcgis")]
         public async Task CanGetServerInfo(string rootUrl)
@@ -128,8 +95,8 @@
         }
 
         [Theory]
-        [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
-        [InlineData("http://services.arcgisonline.co.nz/arcgis")]
+        [InlineData("http://sampleserver6.arcgisonline.com/ArcGIS/")]
+        [InlineData("https://services.arcgisonline.com/arcgis")]
         public async Task CanDescribeSite(string rootUrl)
         {
             var gateway = new PortalGateway(rootUrl);
@@ -153,7 +120,7 @@
 
         [Theory]
         [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
-        [InlineData("http://services.arcgisonline.co.nz/arcgis")]
+        [InlineData("http://services.arcgisonline.com/arcgis")]
         public async Task CanDescribeSiteServices(string rootUrl)
         {
             var gateway = new PortalGateway(rootUrl);
@@ -247,7 +214,7 @@
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { Where = "magnitude > 4.5" };
             var resultPoint = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
-                return gateway.QueryAsPost<Point>(queryPoint);
+                return gateway.QueryAsPost<Point, Extent>(queryPoint);
             });
 
             Assert.True(resultPoint.Features.Any());
@@ -267,7 +234,7 @@
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = new List<string> { "areasqkm" } };
             var resultPolygon = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
-                return gateway.QueryAsPost<Polygon>(queryPolygon);
+                return gateway.QueryAsPost<Polygon, Extent>(queryPolygon);
             });
 
             Assert.True(resultPolygon.Features.Any());
@@ -291,7 +258,7 @@
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<string> { "lengthkm" }, ReturnGeometry = false };
             var resultPolyline = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
-                return gateway.QueryAsPost<Polyline>(queryPolyline);
+                return gateway.QueryAsPost<Polyline, Extent>(queryPolyline);
             });
 
             Assert.True(resultPolyline.Features.Any());
@@ -548,13 +515,13 @@
                 new Point { X = 0, Y = 0 }
             }.ToPointCollectionList();
 
-            var queryPointPolygonResults = new Query(serviceUrl.AsEndpoint())
+            var queryPointPolygonResults = new Query<Polygon>(serviceUrl.AsEndpoint())
             {
                 Geometry = new Polygon { Rings = rings }
             };
             var resultPointPolygonResults = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
-                return gateway.Query<Point>(queryPointPolygonResults);
+                return gateway.Query<Point, Polygon>(queryPointPolygonResults);
             });
 
             countAllResults = resultPointAllResults.Features.Count();

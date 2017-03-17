@@ -1,19 +1,39 @@
-﻿using ArcGIS.ServiceModel.Common;
+﻿using System;
+using ArcGIS.ServiceModel.Common;
+using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation
 {
     /// <summary>
     /// Base class for calls to an ArcGIS Server operation
     /// </summary>
-    public abstract class ArcGISServerOperation : CommonParameters, IEndpoint
+    public class ArcGISServerOperation : CommonParameters, IHttpOperation // CommonParameters, IEndpoint
     {
-        protected IEndpoint Endpoint;
-
-        public string RelativeUrl { get { return Endpoint.RelativeUrl; } }
-
-        public string BuildAbsoluteUrl(string rootUrl)
+        public ArcGISServerOperation(IEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
         {
-            return Endpoint.BuildAbsoluteUrl(rootUrl);
+            LiteGuard.Guard.AgainstNullArgument(nameof(endpoint), endpoint);
+
+            Endpoint = endpoint;
+            BeforeRequest = beforeRequest;
+            AfterRequest = afterRequest;
         }
-    }
+
+        public ArcGISServerOperation(string endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : this(new ArcGISServerEndpoint(endpoint), beforeRequest, afterRequest)
+        { }        
+
+        [IgnoreDataMember]
+        public Action BeforeRequest { get; }
+
+        [IgnoreDataMember]
+        public Action AfterRequest { get; }
+        
+        [IgnoreDataMember]
+        public IEndpoint Endpoint { get; }
+
+        [IgnoreDataMember]
+        public string RelativeUrl => Endpoint.RelativeUrl;
+
+        public string BuildAbsoluteUrl(string rootUrl) => Endpoint.BuildAbsoluteUrl(rootUrl);        
+    }   
 }

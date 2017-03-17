@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -14,11 +15,9 @@ namespace ArcGIS.ServiceModel.Operation
         /// Represents a request for a find against a service resource
         /// </summary>
         /// <param name="endpoint">Resource to apply the query against</param>
-        public Find(ArcGISServerEndpoint endpoint)
+        public Find(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Find, beforeRequest, afterRequest)
         {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Find);
-
             FuzzySearch = true;
             ReturnGeometry = true;
             ReturnZ = true;

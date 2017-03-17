@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -10,11 +11,9 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class SingleInputCustomGeocode : ArcGISServerOperation
     {
-        public SingleInputCustomGeocode(ArcGISServerEndpoint endpoint)
-        {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputCustomGeocode);
-        }
+        public SingleInputCustomGeocode(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint.RelativeUrl.Trim('/') + "/" + Operations.SingleInputCustomGeocode, beforeRequest, afterRequest)
+        { }
 
         /// <summary>
         /// Specifies the location to be searched for.

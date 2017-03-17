@@ -28,18 +28,18 @@
         {
             var result = new SiteDescription();
 
-            result.Resources.AddRange(await DescribeEndpoint("/".AsEndpoint(), ct).ConfigureAwait(false));
+            result.Resources.AddRange(await DescribeEndpoint(new ArcGISServerOperation("/".AsEndpoint()), ct).ConfigureAwait(false));
 
             return result;
         }
 
-        async Task<List<SiteFolderDescription>> DescribeEndpoint(IEndpoint endpoint, CancellationToken ct = default(CancellationToken))
+        async Task<List<SiteFolderDescription>> DescribeEndpoint(ArcGISServerOperation operation, CancellationToken ct = default(CancellationToken))
         {
             SiteFolderDescription folderDescription = null;
             var result = new List<SiteFolderDescription>();
             try
             {
-                folderDescription = await Get<SiteFolderDescription>(endpoint, ct).ConfigureAwait(false);
+                folderDescription = await Get<SiteFolderDescription, ArcGISServerOperation>(operation, ct).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
@@ -48,7 +48,7 @@
                 {
                     Error = new ArcGISError
                     {
-                        Message = "HttpRequestException for Get SiteFolderDescription at path " + endpoint.RelativeUrl,
+                        Message = "HttpRequestException for Get SiteFolderDescription at path " + operation.Endpoint.RelativeUrl,
                         Details = new[] { ex.ToString() }
                     }
                 });
@@ -61,7 +61,7 @@
                 {
                     Error = new ArcGISError
                     {
-                        Message = "SerializationException for Get SiteFolderDescription at path " + endpoint.RelativeUrl,
+                        Message = "SerializationException for Get SiteFolderDescription at path " + operation.Endpoint.RelativeUrl,
                         Details = new[] { ex.ToString() }
                     }
                 });
@@ -73,7 +73,7 @@
                 {
                     Error = new ArcGISError
                     {
-                        Message = "Exception for Get SiteFolderDescription at path " + endpoint.RelativeUrl,
+                        Message = "Exception for Get SiteFolderDescription at path " + operation.Endpoint.RelativeUrl,
                         Details = new[] { ex.ToString() }
                     }
                 });
@@ -81,14 +81,14 @@
             }
             if (ct.IsCancellationRequested) return result;
 
-            folderDescription.Path = endpoint.RelativeUrl;
+            folderDescription.Path = operation.Endpoint.RelativeUrl;
             result.Add(folderDescription);
 
             if (folderDescription.Folders != null)
                 foreach (var folder in folderDescription.Folders)
                 {
                     if (ct.IsCancellationRequested) return result;
-                    result.AddRange(await DescribeEndpoint((endpoint.RelativeUrl + folder).AsEndpoint(), ct).ConfigureAwait(false));
+                    result.AddRange(await DescribeEndpoint(new ArcGISServerOperation((operation.Endpoint.RelativeUrl + folder).AsEndpoint()), ct).ConfigureAwait(false));
                 }
 
             return result;
@@ -138,7 +138,7 @@
         {
             LiteGuard.Guard.AgainstNullArgument(nameof(serviceEndpoint), serviceEndpoint);
 
-            return Get<ServiceDescriptionDetailsResponse>(new ServiceDescriptionDetails(serviceEndpoint), ct);
+            return Get<ServiceDescriptionDetailsResponse, ServiceDescriptionDetails>(new ServiceDescriptionDetails(serviceEndpoint), ct);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@
         {
             LiteGuard.Guard.AgainstNullArgument(nameof(layerEndpoint), layerEndpoint);
 
-            return Get<ServiceLayerDescriptionResponse>(new ServiceLayerDescription(layerEndpoint), ct);
+            return Get<ServiceLayerDescriptionResponse, ServiceLayerDescription>(new ServiceLayerDescription(layerEndpoint), ct);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                var folderDescription = await Get<SiteFolderDescription>("/".AsEndpoint(), ct).ConfigureAwait(false);
+                var folderDescription = await Get<SiteFolderDescription, ArcGISServerOperation>(new ArcGISServerOperation("/"), ct).ConfigureAwait(false);
                 folders.Add("/");
                 folders.AddRange(folderDescription.Folders);
             }
@@ -176,7 +176,7 @@
             var result = new SiteReportResponse();
             foreach (var folder in folders)
             {
-                var folderReport = await Get<FolderReportResponse>(new ServiceReport(folder), ct).ConfigureAwait(false);
+                var folderReport = await Get<FolderReportResponse, ServiceReport>(new ServiceReport(folder), ct).ConfigureAwait(false);
 
                 result.Resources.Add(folderReport);
 
@@ -193,7 +193,7 @@
         /// <returns>The expected and actual status of the service</returns>
         public virtual Task<ServiceStatusResponse> ServiceStatus(ServiceDescription serviceDescription, CancellationToken ct = default(CancellationToken))
         {
-            return Get<ServiceStatusResponse>(new ServiceStatus(serviceDescription), ct);
+            return Get<ServiceStatusResponse, ServiceStatus>(new ServiceStatus(serviceDescription), ct);
         }
 
         /// <summary>

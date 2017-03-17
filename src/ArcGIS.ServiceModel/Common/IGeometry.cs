@@ -15,7 +15,7 @@ namespace ArcGIS.ServiceModel.Common
     /// Envelopes
     /// </summary>
     /// <remarks>Starting at ArcGIS Server 10.1, geometries containing m and z values are supported</remarks>
-    public interface IGeometry
+    public interface IGeometry<out T>
     {
         /// <summary>
         /// The spatial reference can be defined using a well-known ID (wkid) or well-known text (wkt) 
@@ -36,10 +36,10 @@ namespace ArcGIS.ServiceModel.Common
         Point GetCenter();
 
         /// <summary>
-        /// Converts the geometry to its GeoJSON representation
+        /// Get the associated geometry
         /// </summary>
-        /// <returns>The corresponding GeoJSON for the geometry</returns>
-        IGeoJsonGeometry ToGeoJson();
+        /// <returns>The geometry object</returns>
+        T GetGeometry();
     }
 
     /// <summary>
@@ -52,19 +52,19 @@ namespace ArcGIS.ServiceModel.Common
         /// World Geodetic System 1984 (WGS84)
         /// </summary>
         public static SpatialReference WGS84 = new SpatialReference
-            {
-                Wkid = 4326,
-                LatestWkid = 4326
-            };
+        {
+            Wkid = 4326,
+            LatestWkid = 4326
+        };
 
         /// <summary>
         /// WGS 1984 Web Mercator (Auxiliary Sphere)
         /// </summary>
         public static SpatialReference WebMercator = new SpatialReference
-            {
-                Wkid = 102100,
-                LatestWkid = 3857
-            };
+        {
+            Wkid = 102100,
+            LatestWkid = 3857
+        };
 
         [DataMember(Name = "wkid")]
         public int? Wkid { get; set; }
@@ -138,10 +138,8 @@ namespace ArcGIS.ServiceModel.Common
         }
     }
 
-    public class GeometryBase { }
-
     [DataContract]
-    public class Point : GeometryBase, IGeometry, IEquatable<Point>
+    public class Point : IGeometry<Point>, IEquatable<Point>
     {
         [DataMember(Name = "spatialReference", Order = 5)]
         public SpatialReference SpatialReference { get; set; }
@@ -166,6 +164,12 @@ namespace ArcGIS.ServiceModel.Common
         public Point GetCenter()
         {
             return new Point { X = X, Y = Y, SpatialReference = SpatialReference };
+        }
+
+        public Point GetGeometry()
+        {
+            // TODO : make immutable?
+            return this;
         }
 
         public bool Equals(Point other)
@@ -196,14 +200,14 @@ namespace ArcGIS.ServiceModel.Common
             return Equals((Point)obj);
         }
 
-        public IGeoJsonGeometry ToGeoJson()
-        {
-            return new GeoJsonPoint { Type = "Point", Coordinates = new[] { X, Y } };
-        }
+        //public IGeoJsonGeometry ToGeoJson()
+        //{
+        //    return new GeoJsonPoint { Type = "Point", Coordinates = new[] { X, Y } };
+        //}
     }
 
     [DataContract]
-    public class MultiPoint : GeometryBase, IGeometry, IEquatable<MultiPoint>
+    public class MultiPoint : IGeometry<MultiPoint>, IEquatable<MultiPoint>
     {
         [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
@@ -225,6 +229,11 @@ namespace ArcGIS.ServiceModel.Common
         public Point GetCenter()
         {
             return GetExtent().GetCenter();
+        }
+
+        public MultiPoint GetGeometry()
+        {
+            return this;
         }
 
         public bool Equals(MultiPoint other)
@@ -254,14 +263,14 @@ namespace ArcGIS.ServiceModel.Common
             return Equals((MultiPoint)obj);
         }
 
-        public IGeoJsonGeometry ToGeoJson()
-        {
-            return new GeoJsonLineString { Type = "MultiPoint", Coordinates = Points };
-        }
+        //public IGeoJsonGeometry ToGeoJson()
+        //{
+        //    return new GeoJsonLineString { Type = "MultiPoint", Coordinates = Points };
+        //}
     }
 
     [DataContract]
-    public class Polyline : GeometryBase, IGeometry, IEquatable<Polyline>
+    public class Polyline : IGeometry<Polyline>, IEquatable<Polyline>
     {
         [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
@@ -295,6 +304,11 @@ namespace ArcGIS.ServiceModel.Common
             return GetExtent().GetCenter();
         }
 
+        public Polyline GetGeometry()
+        {
+            return this;
+        }
+
         public bool Equals(Polyline other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -322,10 +336,10 @@ namespace ArcGIS.ServiceModel.Common
             return Equals((Polyline)obj);
         }
 
-        public IGeoJsonGeometry ToGeoJson()
-        {
-            return Paths.Any() ? new GeoJsonLineString { Type = "LineString", Coordinates = Paths.First() } : null;
-        }
+        //public IGeoJsonGeometry<GeoJsonLineString> ToGeoJson()
+        //{
+        //    return Paths.Any() ? new GeoJsonLineString { Type = "LineString", Coordinates = Paths.First() } : null;
+        //}
     }
 
     public class PointCollection : List<double[]>
@@ -364,7 +378,7 @@ namespace ArcGIS.ServiceModel.Common
     { }
 
     [DataContract]
-    public class Polygon : GeometryBase, IGeometry, IEquatable<Polygon>
+    public class Polygon : IGeometry<Polygon>, IEquatable<Polygon>
     {
         [DataMember(Name = "spatialReference", Order = 4)]
         public SpatialReference SpatialReference { get; set; }
@@ -398,6 +412,11 @@ namespace ArcGIS.ServiceModel.Common
             return GetExtent().GetCenter();
         }
 
+        public Polygon GetGeometry()
+        {
+            return this;
+        }
+
         public bool Equals(Polygon other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -425,14 +444,14 @@ namespace ArcGIS.ServiceModel.Common
             return Equals((Polygon)obj);
         }
 
-        public IGeoJsonGeometry ToGeoJson()
-        {
-            return new GeoJsonPolygon { Type = "Polygon", Coordinates = Rings };
-        }
+        //public IGeoJsonGeometry ToGeoJson()
+        //{
+        //    return new GeoJsonPolygon { Type = "Polygon", Coordinates = Rings };
+        //}
     }
 
     [DataContract]
-    public class Extent : GeometryBase, IGeometry, IEquatable<Extent>
+    public class Extent : IGeometry<Extent>, IEquatable<Extent>
     {
         [DataMember(Name = "spatialReference", Order = 5)]
         public SpatialReference SpatialReference { get; set; }
@@ -457,6 +476,11 @@ namespace ArcGIS.ServiceModel.Common
         public Point GetCenter()
         {
             return new Point { X = ((XMin + XMax) / 2), Y = ((YMin + YMax) / 2), SpatialReference = SpatialReference };
+        }
+
+        public Extent GetGeometry()
+        {
+            return this;
         }
 
         public Extent Union(Extent extent)
@@ -525,23 +549,23 @@ namespace ArcGIS.ServiceModel.Common
             return Equals((Extent)obj);
         }
 
-        public IGeoJsonGeometry ToGeoJson()
-        {
-            return new GeoJsonPolygon
-            {
-                Type = "Polygon",
-                Coordinates = new PointCollectionList 
-                { 
-                    new PointCollection 
-                    {
-                        new[]{ XMin, YMin },                        
-                        new[]{ XMax, YMin },
-                        new[]{ XMax, YMax },
-                        new[]{ XMin, YMax }, 
-                        new[]{ XMin, YMin }
-                    }
-                }
-            };
-        }
+        //public IGeoJsonGeometry ToGeoJson()
+        //{
+        //    return new GeoJsonPolygon
+        //    {
+        //        Type = "Polygon",
+        //        Coordinates = new PointCollectionList
+        //        {
+        //            new PointCollection
+        //            {
+        //                new[]{ XMin, YMin },
+        //                new[]{ XMax, YMin },
+        //                new[]{ XMax, YMax },
+        //                new[]{ XMin, YMax },
+        //                new[]{ XMin, YMin }
+        //            }
+        //        }
+        //    };
+        //}
     }
 }

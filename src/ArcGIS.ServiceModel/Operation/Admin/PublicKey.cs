@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation.Admin
@@ -6,10 +7,9 @@ namespace ArcGIS.ServiceModel.Operation.Admin
     [DataContract]
     public class PublicKey : ArcGISServerOperation
     {
-        public PublicKey()
-        {
-            Endpoint = new ArcGISServerAdminEndpoint(Operations.PublicKey);
-        }
+        public PublicKey(Action beforeRequest = null, Action afterRequest = null)
+            : base(new ArcGISServerAdminEndpoint(Operations.PublicKey), beforeRequest, afterRequest)
+        { }
     }
 
     [DataContract]

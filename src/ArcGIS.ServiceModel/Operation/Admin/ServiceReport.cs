@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -33,10 +34,9 @@ namespace ArcGIS.ServiceModel.Operation.Admin
 
     public class ServiceReport : ArcGISServerOperation
     {
-        public ServiceReport(string path)
-        {
-            Endpoint = new ArcGISServerAdminEndpoint(string.Format(Operations.ServiceReport, path.Replace("/", "")).Replace("//", "/"));
-        }
+        public ServiceReport(string path, Action beforeRequest = null, Action afterRequest = null)
+            : base(new ArcGISServerAdminEndpoint(string.Format(Operations.ServiceReport, path.Replace("/", "")).Replace("//", "/")), beforeRequest, afterRequest)
+        { }
     }
 
     [DataContract]

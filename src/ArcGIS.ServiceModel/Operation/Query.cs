@@ -6,21 +6,27 @@ using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation
 {
+    [DataContract]
+    public class Query : Query<Extent>
+    {
+        public Query(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint, beforeRequest, afterRequest)
+        { }
+    }
+
     /// <summary>
     /// Basic query request operation
     /// </summary>
     [DataContract]
-    public class Query : ArcGISServerOperation
+    public class Query<T> : ArcGISServerOperation where T : IGeometry<T>
     {
         /// <summary>
         /// Represents a request for a query against a service resource
         /// </summary>
         /// <param name="endpoint">Resource to apply the query against</param>
-        public Query(ArcGISServerEndpoint endpoint)
+        public Query(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Query, beforeRequest, afterRequest)
         {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Query);
-
             Where = "1=1";
             OutFields = new List<string>();
             ReturnGeometry = true;
@@ -83,7 +89,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         /// <remarks>Default is empty</remarks>
         [DataMember(Name = "geometry")]
-        public IGeometry Geometry { get; set; }
+        public IGeometry<T> Geometry { get; set; }
 
         /// <summary>
         /// The type of geometry specified by the geometry parameter.
@@ -219,7 +225,7 @@ namespace ArcGIS.ServiceModel.Operation
     }
 
     [DataContract]
-    public class QueryResponse<T> : PortalResponse where T : IGeometry
+    public class QueryResponse<T> : PortalResponse where T : IGeometry<T>
     {
         public QueryResponse()
         {
@@ -288,10 +294,10 @@ namespace ArcGIS.ServiceModel.Operation
     /// Perform a query that only returns the ObjectIds for the results
     /// </summary>
     [DataContract]
-    public class QueryForIds : Query
+    public class QueryForIds : Query<Extent>
     {
-        public QueryForIds(ArcGISServerEndpoint endpoint)
-            : base(endpoint)
+        public QueryForIds(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint, beforeRequest, afterRequest)
         {
             ReturnGeometry = false;
         }
@@ -314,13 +320,14 @@ namespace ArcGIS.ServiceModel.Operation
     /// Perform a query that only returns a count of the results
     /// </summary>
     [DataContract]
-    public class QueryForCount : Query
+    public class QueryForCount : Query<Extent>
     {
-        public QueryForCount(ArcGISServerEndpoint endpoint)
-            : base(endpoint)
+        public QueryForCount(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint, beforeRequest, afterRequest)
         {
             ReturnGeometry = false;
         }
+
 
         [DataMember(Name = "returnCountOnly")]
         public bool ReturnCountOnly { get { return true; } }
@@ -339,8 +346,8 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class QueryForExtent : QueryForCount
     {
-        public QueryForExtent(ArcGISServerEndpoint endpoint)
-            : base(endpoint)
+        public QueryForExtent(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint, beforeRequest, afterRequest)
         { }
 
         [DataMember(Name = "returnExtentOnly")]

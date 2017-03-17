@@ -40,7 +40,7 @@
         }
 
         [Theory]
-        [InlineData("http://geocode.arcgis.com/arcgis", "/World/GeocodeServer/", "trea", 20000, -115.172783, 36.114789)]
+        [InlineData("https://geocode.arcgis.com/arcgis", "/World/GeocodeServer/", "trea", 20000, -115.172783, 36.114789)]
         public async Task CanSuggest(string rootUrl, string relativeUrl, string text, double distance, double x, double y)
         {
             var gateway = new PortalGateway(rootUrl);

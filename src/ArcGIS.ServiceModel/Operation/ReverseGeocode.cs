@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.Operation
@@ -6,6 +7,10 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public abstract class GeocodeOperation : ArcGISServerOperation
     {
+        public GeocodeOperation(IEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint, beforeRequest, afterRequest)
+        { }
+
         /// <summary>
         /// Defines an origin point location that is used with the distance parameter to sort geocoding candidates based upon their proximity to the location. 
         /// The distance parameter specifies the radial distance from the location in meters. 
@@ -44,11 +49,9 @@ namespace ArcGIS.ServiceModel.Operation
     [DataContract]
     public class ReverseGeocode : GeocodeOperation
     {
-        public ReverseGeocode(ArcGISServerEndpoint endpoint)
+        public ReverseGeocode(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ReverseGeocode), beforeRequest, afterRequest)
         {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ReverseGeocode);
-
             Distance = 100;
         }
 

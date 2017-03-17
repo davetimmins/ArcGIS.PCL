@@ -1,4 +1,5 @@
 ﻿using ArcGIS.ServiceModel.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -10,14 +11,12 @@ namespace ArcGIS.ServiceModel.Operation
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DataContract]
-    public class ApplyEdits<T> : ArcGISServerOperation where T : IGeometry
+    public class ApplyEdits<T> : ArcGISServerOperation where T : IGeometry<T>
     {
-        public ApplyEdits(ArcGISServerEndpoint endpoint)
-        {
-            LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-            Endpoint = new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ApplyEdits);
-        }
-
+        public ApplyEdits(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
+            : base(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ApplyEdits, beforeRequest, afterRequest)
+        { }
+                
         /// <summary>
         /// The array of features to be added.
         /// </summary>
@@ -107,7 +106,7 @@ namespace ArcGIS.ServiceModel.Operation
             return results.Where(r => r.Success == success);
         }
 
-        public void SetExpected<T>(ApplyEdits<T> operation) where T : IGeometry
+        public void SetExpected<T>(ApplyEdits<T> operation) where T : IGeometry<T>
         {
             if (operation == null) return;
 
