@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace ArcGIS.ServiceModel.GeoJson
 {
+    // TODO : sort this out again
     [DataContract]
     public class FeatureCollection<TGeometry> where TGeometry : IGeoJsonGeometry<TGeometry>
     {

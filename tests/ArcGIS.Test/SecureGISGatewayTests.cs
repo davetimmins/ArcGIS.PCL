@@ -25,7 +25,7 @@
         // [Fact]
         public async Task CanStopAndStartService()
         {
-            var gateway = new SecurePortalGateway("", "", "");
+            var gateway = new PortalGateway("", "", "");
             var folder = ""; // set this to only get a specific folder
             var site = await gateway.SiteReport(folder);
             Assert.NotNull(site);

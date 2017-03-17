@@ -59,7 +59,7 @@
         [InlineData("https://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
         public async Task CanDescribeSecureSite(string rootUrl, string username, string password)
         {
-            var gateway = new SecurePortalGateway(rootUrl, username, password);
+            var gateway = new PortalGateway(rootUrl, username, password);
 
             var response = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
@@ -83,7 +83,7 @@
         [InlineData("https://serverapps10.esri.com/arcgis", "user1", "pass.word1")]
         public async Task CanDescribeSecureSiteServices(string rootUrl, string username, string password)
         {
-            var gateway = new SecurePortalGateway(rootUrl, username, password);
+            var gateway = new PortalGateway(rootUrl, username, password);
             var siteResponse = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
                 return gateway.DescribeSite();

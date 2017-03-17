@@ -48,7 +48,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// The well-known ID of the spatial reference of the output geometries.
         /// </summary>
         [DataMember(Name = "sr")]
-        public int? OutputSpatialReferenceValue { get { return OutputSpatialReference == null ? null : OutputSpatialReference.Wkid; } }
+        public int? OutputSpatialReferenceValue { get { return OutputSpatialReference?.Wkid; } }
 
         [IgnoreDataMember]
         public SpatialReference OutputSpatialReference { get; set; }

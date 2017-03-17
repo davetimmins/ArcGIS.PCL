@@ -19,6 +19,14 @@
             : base(rootUrl, serializer, tokenProvider, httpClientFunc)
         { }
 
+        public PortalGateway(string rootUrl, string username, string password, ISerializer serializer = null, Func<HttpClient> httpClientFunc = null)
+            : this(rootUrl, serializer,
+            (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                ? null
+                : new TokenProvider(rootUrl, username, password, serializer),
+            httpClientFunc)
+        { }
+
         /// <summary>
         /// Recursively parses an ArcGIS Server site and discovers the resources available
         /// </summary>

@@ -26,9 +26,9 @@
             : base(root, serializer, tokenProvider)
         { }
 
-        public Task<QueryResponse<Tout>> QueryAsPost<Tout, Tin>(Query<Tin> queryOptions) where Tout : IGeometry<Tout> where Tin : IGeometry<Tin>
+        public Task<QueryResponse<Tout>> QueryAsPost<Tout>(Query queryOptions) where Tout : IGeometry<Tout> 
         {
-            return Post<QueryResponse<Tout>, Query<Tin>>(queryOptions, CancellationToken.None);
+            return Post<QueryResponse<Tout>, Query>(queryOptions, CancellationToken.None);
         }
         
         internal readonly static Dictionary<string, Func<Type>> TypeMap = new Dictionary<string, Func<Type>>
@@ -214,7 +214,7 @@
             var queryPoint = new Query(@"Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint()) { Where = "magnitude > 4.5" };
             var resultPoint = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
-                return gateway.QueryAsPost<Point, Extent>(queryPoint);
+                return gateway.QueryAsPost<Point>(queryPoint);
             });
 
             Assert.True(resultPoint.Features.Any());
@@ -234,7 +234,7 @@
             var queryPolygon = new Query(@"/Hydrography/Watershed173811/MapServer/0".AsEndpoint()) { Where = "areasqkm = 0.012", OutFields = new List<string> { "areasqkm" } };
             var resultPolygon = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
-                return gateway.QueryAsPost<Polygon, Extent>(queryPolygon);
+                return gateway.QueryAsPost<Polygon>(queryPolygon);
             });
 
             Assert.True(resultPolygon.Features.Any());
@@ -258,7 +258,7 @@
             var queryPolyline = new Query(@"Hydrography/Watershed173811/MapServer/1".AsEndpoint()) { OutFields = new List<string> { "lengthkm" }, ReturnGeometry = false };
             var resultPolyline = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
-                return gateway.QueryAsPost<Polyline, Extent>(queryPolyline);
+                return gateway.QueryAsPost<Polyline>(queryPolyline);
             });
 
             Assert.True(resultPolyline.Features.Any());
@@ -496,14 +496,14 @@
                 return gateway.Query<Point>(queryPointAllResults);
             });
 
-            var queryPointExtentResults = new Query(serviceUrl.AsEndpoint())
+            var queryPointExtentResults = new Query<Extent>(serviceUrl.AsEndpoint())
             {
                 Geometry = new Extent { XMin = 0, YMin = 0, XMax = 180, YMax = -90, SpatialReference = SpatialReference.WGS84 }, // SE quarter of globe
                 OutputSpatialReference = SpatialReference.WebMercator
             };
             var resultPointExtentResults = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
             {
-                return gateway.Query<Point>(queryPointExtentResults);
+                return gateway.Query<Point, Extent>(queryPointExtentResults);
             });
 
             var rings = new Point[]

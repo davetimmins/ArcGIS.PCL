@@ -7,18 +7,53 @@ using System.Runtime.Serialization;
 namespace ArcGIS.ServiceModel.Operation
 {
     [DataContract]
-    public class Query : Query<Extent>
+    public class Query<T> : Query where T : IGeometry<T>
     {
         public Query(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
             : base(endpoint, beforeRequest, afterRequest)
         { }
+
+        /// <summary>
+        /// The geometry to apply as the spatial filter.
+        /// The structure of the geometry is the same as the structure of the json geometry objects returned by the ArcGIS REST API.
+        /// </summary>
+        /// <remarks>Default is empty</remarks>
+        [DataMember(Name = "geometry")]
+        public IGeometry<T> Geometry { get; set; }
+
+        /// <summary>
+        /// The spatial reference of the input geometry.
+        /// </summary>
+        [DataMember(Name = "inSR")]
+        public SpatialReference InputSpatialReference
+        {
+            get { return Geometry == null ? null : Geometry.SpatialReference ?? null; }
+        }
+        /// <summary>
+        /// The type of geometry specified by the geometry parameter.
+        /// The geometry type can be an envelope, point, line, or polygon.
+        /// The default geometry type is "esriGeometryEnvelope".
+        /// Values: esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | esriGeometryEnvelope
+        /// </summary>
+        /// <remarks>Default is esriGeometryEnvelope</remarks>
+        [DataMember(Name = "geometryType")]
+        public string GeometryType
+        {
+            get
+            {
+                return Geometry == null
+                    ? GeometryTypes.Envelope
+                    : GeometryTypes.TypeMap[Geometry.GetType()]();
+            }
+        }
+
     }
 
     /// <summary>
     /// Basic query request operation
     /// </summary>
     [DataContract]
-    public class Query<T> : ArcGISServerOperation where T : IGeometry<T>
+    public class Query : ArcGISServerOperation
     {
         /// <summary>
         /// Represents a request for a query against a service resource
@@ -65,16 +100,7 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         [DataMember(Name = "objectIds")]
         public string ObjectIdsValue { get { return ObjectIds == null || !ObjectIds.Any() ? null : string.Join(",", ObjectIds); } }
-
-
-        /// <summary>
-        /// The spatial reference of the input geometry.
-        /// </summary>
-        [DataMember(Name = "inSR")]
-        public SpatialReference InputSpatialReference
-        {
-            get { return Geometry == null ? null : Geometry.SpatialReference ?? null; }
-        }
+                
 
         /// <summary>
         /// The spatial reference of the returned geometry.
@@ -82,32 +108,8 @@ namespace ArcGIS.ServiceModel.Operation
         /// </summary>
         [DataMember(Name = "outSR")]
         public SpatialReference OutputSpatialReference { get; set; }
-
-        /// <summary>
-        /// The geometry to apply as the spatial filter.
-        /// The structure of the geometry is the same as the structure of the json geometry objects returned by the ArcGIS REST API.
-        /// </summary>
-        /// <remarks>Default is empty</remarks>
-        [DataMember(Name = "geometry")]
-        public IGeometry<T> Geometry { get; set; }
-
-        /// <summary>
-        /// The type of geometry specified by the geometry parameter.
-        /// The geometry type can be an envelope, point, line, or polygon.
-        /// The default geometry type is "esriGeometryEnvelope".
-        /// Values: esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | esriGeometryEnvelope
-        /// </summary>
-        /// <remarks>Default is esriGeometryEnvelope</remarks>
-        [DataMember(Name = "geometryType")]
-        public string GeometryType
-        {
-            get
-            {
-                return Geometry == null
-                    ? GeometryTypes.Envelope
-                    : GeometryTypes.TypeMap[Geometry.GetType()]();
-            }
-        }
+        
+        
 
         /// <summary>
         /// The spatial relationship to be applied on the input geometry while performing the query.
@@ -294,8 +296,9 @@ namespace ArcGIS.ServiceModel.Operation
     /// Perform a query that only returns the ObjectIds for the results
     /// </summary>
     [DataContract]
-    public class QueryForIds : Query<Extent>
+    public class QueryForIds : Query
     {
+        // TODO : make these work with or without input geometry
         public QueryForIds(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
             : base(endpoint, beforeRequest, afterRequest)
         {
@@ -320,7 +323,7 @@ namespace ArcGIS.ServiceModel.Operation
     /// Perform a query that only returns a count of the results
     /// </summary>
     [DataContract]
-    public class QueryForCount : Query<Extent>
+    public class QueryForCount : Query
     {
         public QueryForCount(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
             : base(endpoint, beforeRequest, afterRequest)
