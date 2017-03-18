@@ -19,7 +19,7 @@
         internal const string AGOPortalUrl = "https://www.arcgis.com/sharing/rest/";
         protected const string GeometryServerUrlRelative = "/Utilities/Geometry/GeometryServer";
         protected const string GeometryServerUrl = "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
-        HttpClient _httpClient;
+        static HttpClient _httpClient;
         protected IEndpoint GeometryServiceIEndpoint;
         readonly ILog _logger;
 
@@ -44,6 +44,7 @@
             LiteGuard.Guard.AgainstNullArgument("Serializer", Serializer);
             var httpFunc = httpClientFunc ?? HttpClientFactory.Get;
             _httpClient = httpFunc();
+            MaximumGetRequestLength = 2047;
 
             _logger = log() ?? LogProvider.For<PortalGatewayBase>();
             _logger.DebugFormat("Created new gateway for {0}", RootUrl);
@@ -81,6 +82,8 @@
         public ITokenProvider TokenProvider { get; private set; }
 
         public ISerializer Serializer { get; private set; }
+
+        public int MaximumGetRequestLength { get; set; }
 
         protected virtual IEndpoint GeometryServiceEndpoint
         {
@@ -282,46 +285,17 @@
             _httpClient.DefaultRequestHeaders.Referrer = referer;
         }
 
-        //protected Task<T> Get<T, TRequest>(TRequest requestObject, CancellationToken ct)
-        //    where TRequest : ArcGISServerOperation
-        //    where T : IPortalResponse
-        //{
-        //    LiteGuard.Guard.AgainstNullArgument("requestObject", requestObject);
-            
-        //    var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
-
-        //    if (url.Length > 2047)
-        //    {
-        //        return Post<T, TRequest>(requestObject, ct);
-        //    }
-
-        //    requestObject.BeforeRequest?.Invoke();
-
-        //    return Get<T>(url, ct);
-        //}
-
-        //protected Task<T> Get<T>(IEndpoint endpoint, CancellationToken ct) where T : IPortalResponse
-        //{
-        //    LiteGuard.Guard.AgainstNullArgument("endpoint", endpoint);
-
-        //    return Get<T>(endpoint.BuildAbsoluteUrl(RootUrl), ct);
-        //}
-
         protected async Task<T> Get<T, TRequest>(TRequest requestObject, CancellationToken ct)
             where TRequest : ArcGISServerOperation
             where T : IPortalResponse
         {
-            //if (string.IsNullOrWhiteSpace(url))
-            //{
-            //    throw new ArgumentNullException(nameof(url));
-            //}
-
-            LiteGuard.Guard.AgainstNullArgument("requestObject", requestObject);
+            LiteGuard.Guard.AgainstNullArgument(nameof(requestObject), requestObject);
+            LiteGuard.Guard.AgainstNullArgumentProperty(nameof(requestObject), nameof(requestObject.Endpoint), requestObject.Endpoint);
 
             var endpoint = requestObject.Endpoint;
             var url = endpoint.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
-            if (url.Length > 2047)
+            if (url.Length > MaximumGetRequestLength)
             {
                 return await Post<T, TRequest>(requestObject, ct).ConfigureAwait(false);
             }

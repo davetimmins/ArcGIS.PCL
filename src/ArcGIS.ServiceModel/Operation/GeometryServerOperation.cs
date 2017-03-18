@@ -22,7 +22,7 @@ namespace ArcGIS.ServiceModel.Operation
                 : (IEndpoint)new ArcGISServerEndpoint(endpoint.RelativeUrl.Trim('/') + "/" + Operations.Simplify),
                 beforeRequest, afterRequest)
         {            
-            Geometries = new GeometryCollection<T> { Geometries = features == null ? null : features.Select(f => f.Geometry).ToList() };
+            Geometries = new GeometryCollection<T> { Geometries = features?.Select(f => f.Geometry).ToList() };
             SpatialReference = spatialReference;
         }        
 
