@@ -128,7 +128,7 @@
 
         [Theory]
         [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
-        [InlineData("http://services.arcgisonline.co.nz/arcgis")]
+        [InlineData("https://services.arcgisonline.com/arcgis")]
         public async Task CanDescribeSite(string rootUrl)
         {
             var gateway = new PortalGateway(rootUrl);
@@ -152,7 +152,7 @@
 
         [Theory]
         [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS/")]
-        [InlineData("http://services.arcgisonline.co.nz/arcgis")]
+        [InlineData("https://services.arcgisonline.com/arcgis")]
         public async Task CanDescribeSiteServices(string rootUrl)
         {
             var gateway = new PortalGateway(rootUrl);
@@ -213,6 +213,25 @@
             Assert.Null(result.Error);
             Assert.NotNull(result.SpatialReference);
             Assert.False(result.Features.Any());
+            Assert.NotNull(result.Links);
+            Assert.Equal("POST", result.Links.First().Method);
+        }
+
+        [Fact]
+        public async Task GatewayDoesAutoPostForMaximumGetRequestLength()
+        {
+            var gateway = new ArcGISGateway() { IncludeHypermediaWithResponse = true, MaximumGetRequestLength = 1 };
+
+            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
+
+            var result = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.Query<Point>(query);
+            });
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.NotNull(result.SpatialReference);
+            Assert.True(result.Features.Any());
             Assert.NotNull(result.Links);
             Assert.Equal("POST", result.Links.First().Method);
         }
