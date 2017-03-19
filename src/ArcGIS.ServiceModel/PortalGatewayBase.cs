@@ -44,6 +44,7 @@
             Guard.AgainstNullArgument("Serializer", Serializer);
             var httpFunc = httpClientFunc ?? HttpClientFactory.Get;
             _httpClient = httpFunc();
+            MaximumGetRequestLength = 2047;
 
             _logger = log() ?? LogProvider.For<PortalGatewayBase>();
             _logger.DebugFormat("Created new gateway for {0}", RootUrl);
@@ -81,6 +82,11 @@
         public ITokenProvider TokenProvider { get; private set; }
 
         public ISerializer Serializer { get; private set; }
+
+        /// <summary>
+        /// Set this to control the url length check for doing a GET vs. a POST request
+        /// </summary>
+        public int MaximumGetRequestLength { get; set; }
 
         protected virtual IEndpoint GeometryServiceEndpoint
         {
@@ -284,8 +290,9 @@
 
             var url = requestObject.BuildAbsoluteUrl(RootUrl) + AsRequestQueryString(Serializer, requestObject);
 
-            if (url.Length > 2047)
+            if (url.Length > MaximumGetRequestLength)
             {
+                _logger.DebugFormat("Url length {0} is greater than maximum configured {1}, switching to POST.", url.Length, MaximumGetRequestLength);
                 return Post<T, TRequest>(requestObject, ct);
             }
             return Get<T>(url, ct);

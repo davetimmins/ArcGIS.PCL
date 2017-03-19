@@ -31,6 +31,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\serializers\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" target="lib\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" />
+    <file src="artefacts\build\serializers\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" target="lib\ArcGIS.ServiceModel.Serializers.JsonDotNet.dll" />
   </files>
 </package>

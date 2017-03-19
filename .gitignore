@@ -56,7 +56,7 @@ _ReSharper*/
 packages/
 dist/
 lib/
-artifacts/
+artefacts/
 Backup/
 .fake/
 

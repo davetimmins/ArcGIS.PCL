@@ -52,9 +52,7 @@
       Works with .NET for Windows Store apps, .NET framework 4.5, Windows Phone 8.1, Xamarin Android and Xamarin iOS. (PCL Profile 111)
     </summary>
     <releaseNotes>
-      Added AdvancedQueryCapabilities +more to ServiceLayerDescriptionResponse
-      Query will now send null for inSR if not set, reverts to service SR for processing
-      Removed Microsoft.Net.Http dependency for .NET 4.5
+      Added MaximumGetRequestLength to PortalGatewayBase to allow controlling the switch from GET to POST based on url length
     </releaseNotes>
     <language />
     <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
@@ -78,6 +76,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\lib\**\ArcGIS.Service*.dll" target="lib" />
+    <file src="artefacts\build\lib\**\ArcGIS.Service*.dll" target="lib" />
   </files>
 </package>
