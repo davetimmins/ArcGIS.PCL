@@ -29,6 +29,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\serializers\ServiceStackSerializer.cs.pp" target="content\App_Packages\ArcGIS.PCL.ServiceStackSerializer.Source.@build.number@" />
+    <file src="artefacts\build\serializers\ServiceStackSerializer.cs.pp" target="content\App_Packages\ArcGIS.PCL.ServiceStackSerializer.Source.@build.number@" />
   </files>
 </package>

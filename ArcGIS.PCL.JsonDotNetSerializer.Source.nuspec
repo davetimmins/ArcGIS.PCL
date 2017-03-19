@@ -29,6 +29,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="artifacts\build\serializers\JsonDotNetSerializer.cs.pp" target="content\App_Packages\ArcGIS.PCL.JsonDotNetSerializer.Source.@build.number@" />
+    <file src="artefacts\build\serializers\JsonDotNetSerializer.cs.pp" target="content\App_Packages\ArcGIS.PCL.JsonDotNetSerializer.Source.@build.number@" />
   </files>
 </package>
