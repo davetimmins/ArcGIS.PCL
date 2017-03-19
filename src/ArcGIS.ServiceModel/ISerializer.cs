@@ -42,7 +42,7 @@ namespace ArcGIS.ServiceModel
 
         static SerializerFactory()
         {
-            Get = (() => { return null; });
+            Get = (() => { return Serializers.JsonDotNetSerializer.Create(); });
         }
     }
 }

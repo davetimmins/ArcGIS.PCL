@@ -7,7 +7,7 @@ namespace ArcGIS.ServiceModel.Operation
     /// <summary>
     /// Base class for calls to an ArcGIS Server operation
     /// </summary>
-    public class ArcGISServerOperation : CommonParameters, IHttpOperation // CommonParameters, IEndpoint
+    public class ArcGISServerOperation : CommonParameters, IHttpOperation
     {
         public ArcGISServerOperation(IEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
         {

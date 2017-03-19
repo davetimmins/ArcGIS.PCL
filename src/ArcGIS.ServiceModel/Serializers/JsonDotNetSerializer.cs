@@ -7,11 +7,11 @@
     public class JsonDotNetSerializer : ISerializer
     {
         static ISerializer _serializer = null;
-
-        public static void Init(Newtonsoft.Json.JsonSerializerSettings settings = null)
+        
+        public static ISerializer Create(Newtonsoft.Json.JsonSerializerSettings settings = null)
         {
             _serializer = new JsonDotNetSerializer(settings);
-            SerializerFactory.Get = (() => _serializer ?? new JsonDotNetSerializer(settings));
+            return _serializer ?? new JsonDotNetSerializer(settings);
         }
 
         readonly Newtonsoft.Json.JsonSerializerSettings _settings;

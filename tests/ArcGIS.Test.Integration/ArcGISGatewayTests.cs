@@ -185,6 +185,25 @@
             Assert.Equal("POST", result.Links.First().Method);
         }
 
+        [Fact]
+        public async Task GatewayDoesAutoPostForMaximumGetRequestLength()
+        {
+            var gateway = new ArcGISGateway() { IncludeHypermediaWithResponse = true, MaximumGetRequestLength = 1 };
+
+            var query = new Query(@"/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0".AsEndpoint());
+
+            var result = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
+            {
+                return gateway.Query<Point>(query);
+            });
+            Assert.NotNull(result);
+            Assert.Null(result.Error);
+            Assert.NotNull(result.SpatialReference);
+            Assert.True(result.Features.Any());
+            Assert.NotNull(result.Links);
+            Assert.Equal("POST", result.Links.First().Method);
+        }
+
         [Theory]
         [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS", "/Earthquakes/EarthquakesFromLastSevenDays/MapServer/0")]
         [InlineData("http://sampleserver3.arcgisonline.com/ArcGIS", "Earthquakes/Since_1970/MapServer/0")]

@@ -4,7 +4,6 @@
     using Serilog;
     using Serilog.Events;
     using ServiceModel;
-    using ServiceModel.Serializers;
     using System;
     using System.Net;
     using System.Net.Http;
@@ -19,9 +18,7 @@
         static IntegrationTestFixture()
         {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-
-            JsonDotNetSerializer.Init();
-
+            
             HttpClientFactory.Get = (() =>
             {
                 var httpClientHandler = new HttpClientHandler();

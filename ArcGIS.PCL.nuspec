@@ -3,14 +3,14 @@
   <metadata minClientVersion="2.8.1">
     <id>ArcGIS.PCL</id>
     <version>@build.number@</version>
-    <title>ArcGIS.PCL</title>
+    <title>ArcGIS.Anywhere</title>
     <authors>Dave Timmins</authors>
     <projectUrl>https://github.com/davetimmins/ArcGIS.PCL</projectUrl>
     <licenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</licenseUrl>
     <iconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-      ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
+      ArcGIS.Anywhere can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
       Supports the following as typed operations:
 
@@ -40,44 +40,39 @@
       > StartService - admin operation to start a service
       > StopService - admin operation to stop a service
 
-      Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
-
-      Works with .NET for Windows Store apps, .NET framework 4.5, Windows Phone 8.1, Xamarin Android and Xamarin iOS. (PCL Profile 111)
+      ArcGIS.Anywhere is a netstandard v1.3 library. This library was formerly title ArcGIS.PCL.
     </description>
     <summary>
-      ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
+      ArcGIS.Anywhere can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
 
       Also supports converting GeoJSON &lt;-&gt; ArcGIS Features.
 
-      Works with .NET for Windows Store apps, .NET framework 4.5, Windows Phone 8.1, Xamarin Android and Xamarin iOS. (PCL Profile 111)
+      ArcGIS.Anywhere is a netstandard v1.3 library. This library was formerly title ArcGIS.PCL.
     </summary>
     <releaseNotes>
-      Added AdvancedQueryCapabilities +more to ServiceLayerDescriptionResponse
-      Query will now send null for inSR if not set, reverts to service SR for processing
-      Removed Microsoft.Net.Http dependency for .NET 4.5
+      New features
+
+      - added more options to HttpClientFactory to support different proxy / windows user connections
+
+      Breaking changes in this release
+
+      - The default serializer uses JSON.NET and you longe rhave to set it up
+      - No longer supports GeoJSON types or conversion to/from ArcGIS Features
+      - SecurePortalGateway is now just PortalGateway
+      - Query operation with an input geometry must now specify that geometry type as a constraint
+      - internally all requests now use an ArcGISServerOperation type, this allows before and after actions to be invoked for the HTTP request
     </releaseNotes>
     <language />
-    <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>
-    <dependencies>
-      <group targetFramework="wpa81">
-        <dependency id="Microsoft.Net.Http" version="2.2.28" />
-      </group>
-      <group targetFramework="net45">
-      </group>
-      <group targetFramework="win81">
-        <dependency id="Microsoft.Net.Http" version="2.2.28" />
-      </group>
-      <group targetFramework="monoandroid1">
-        <dependency id="modernhttpclient" version="2.4.1" />
-      </group>
-      <group targetFramework="xamarin.ios10">
-        <dependency id="modernhttpclient" version="2.4.1" />
-      </group>
-      <group targetFramework="portable-net45+win81+wpa81+monoandroid1+xamarin.ios10">
-      </group>
-    </dependencies>
+    <tags>ArcGIS ArcGISServer ArcGISOnline Esri REST netstandard anywhere PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</tags>    
   </metadata>
+  <group targetFramework="netstandard">
+    <dependency id="LiteGuard" version="1.1.0" />
+    <dependency id="Newtonsoft.Json" version="9.0.1" />
+    <dependency id="System.Dynamic.Runtime" version="4.3.0" />
+    <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+    <dependency id="System.Security.Cryptography.Csp" version="4.3.0" />
+  </group>
   <files>
-    <file src="artifacts\build\lib\**\ArcGIS.Service*.dll" target="lib" />
+    <file src="artefacts\build\lib\**\ArcGIS.Service*.dll" target="lib" />
   </files>
 </package>

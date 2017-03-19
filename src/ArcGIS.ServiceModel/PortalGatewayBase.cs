@@ -297,6 +297,7 @@
 
             if (url.Length > MaximumGetRequestLength)
             {
+                _logger.DebugFormat("Url length {0} is greater than maximum configured {1}, switching to POST.", url.Length, MaximumGetRequestLength);
                 return await Post<T, TRequest>(requestObject, ct).ConfigureAwait(false);
             }
 
@@ -360,6 +361,7 @@
             where T : IPortalResponse
         {
             LiteGuard.Guard.AgainstNullArgument(nameof(requestObject), requestObject);
+            LiteGuard.Guard.AgainstNullArgumentProperty(nameof(requestObject), nameof(requestObject.Endpoint), requestObject.Endpoint);
 
             requestObject.BeforeRequest?.Invoke();
 
