@@ -3,20 +3,79 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>ArcGIS.ServiceModel</AssemblyName>
-    <PackageId>ArcGIS.ServiceModel</PackageId>
+    <PackageId>ArcGIS.PCL</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+    
+    <PackageVersion>6.0.0-beta-1</PackageVersion>
+    <PackageIconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/davetimmins/ArcGIS.PCL</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</PackageLicenseUrl>       
+    <Authors>Dave Timmins</Authors>
+    <Description>
+      ArcGIS.PCL can be used to call ArcGIS Server resources, including those from Portal for ArcGIS and ArcGIS Online. The resources can be secure or unsecure and the ArcGIS Online token service and OAuth token service are supported.
+
+      Supports the following as typed operations:
+
+      &gt; CheckGenerateToken - create a token automatically via an ITokenProvider
+      &gt; Query&lt;T&gt; - query a layer by attribute and / or spatial filters
+      &gt; QueryForCount - only return the number of results for the query operation
+      &gt; QueryForIds - only return the ObjectIds for the results of the query operation
+      &gt; Find - search across n layers and fields in a service
+      &gt; ApplyEdits&lt;T&gt; - post adds, updates and deletes to a feature service layer
+      &gt; Geocode - single line of input to perform a geocode using a custom locator or the Esri world locator
+      &gt; Suggest - lightweight geocode operation that only returns text results, commonly used for predictive searching
+      &gt; ReverseGeocode - find location candidates for an input point location
+      &gt; Simplify&lt;T&gt; - alter geometries to be topologically consistent
+      &gt; Project&lt;T&gt; - convert geometries to a different spatial reference
+      &gt; Buffer&lt;T&gt; - buffers geometries by the distance requested
+      &gt; DescribeSite - returns a url for every service discovered, for ArcGISOnline or Portal this returns the hosted feature services for a user
+      &gt; Ping - verify that the server can be accessed
+      &gt; Info - return the server information such as version and token authentication settings
+      &gt; DescribeServices - return service information (name, sublayers etc.)
+      &gt; DescribeLayer - return layer information
+
+      REST admin operations:
+
+      &gt; PublicKey - admin operation to get public key used for encryption of token requests
+      &gt; ServiceStatus - admin operation to get the configured and actual status of a service
+      &gt; ServiceReport - admin operation to get the service report
+      &gt; StartService - admin operation to start a service
+      &gt; StopService - admin operation to stop a service
+
+      ArcGIS.PCL is a netstandard v1.3 library.
+    </Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>
+      New features
+
+      - added more options to HttpClientFactory to support different proxy / windows user connections
+
+      Breaking changes in this release
+
+      - The default serializer uses JSON.NET and you longer have to set it up
+      - No longer supports GeoJSON types or conversion to/from ArcGIS Features
+      - SecurePortalGateway is now just PortalGateway
+      - Query operation with an input geometry must now specify that geometry type as a constraint
+      - internally all requests now use an ArcGISServerOperation type, this allows before and after actions to be invoked for the HTTP request
+    </PackageReleaseNotes>
+    <Copyright>Copyright Dave Timmins (c) 2013. All rights reserved.</Copyright>
+    <PackageTags>ArcGIS ArcGISServer ArcGISOnline Esri REST netstandard anywhere PCL GIS GeoJSON Geo Json Mapping Map Location GeoLocation OAuth</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;LIBLOG_PORTABLE;NETSTANDARD1_3</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="LiteGuard" Version="1.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" />
