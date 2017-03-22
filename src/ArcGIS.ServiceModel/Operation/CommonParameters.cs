@@ -7,6 +7,9 @@ namespace ArcGIS.ServiceModel.Operation
         public const string Query = "query";
         public const string Find = "find";
         public const string ApplyEdits = "applyEdits";
+        public const string DeleteAttachments = "deleteAttachments";
+        public const string CreateReplica = "createReplica";
+        public const string UnregisterReplica = "unRegisterReplica";
         public const string SingleInputGeocode = "find";
         public const string SingleInputCustomGeocode = "findAddressCandidates";
         public const string SuggestGeocode = "suggest";

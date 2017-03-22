@@ -5,11 +5,9 @@
     using ArcGIS.ServiceModel.Operation;
     using ArcGIS.ServiceModel.Serializers;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.Serialization;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -95,7 +93,7 @@
         }
 
         [Theory]
-        [InlineData("http://sampleserver6.arcgisonline.com/ArcGIS/")]
+        [InlineData("http://mapserv.utah.gov/arcgis/")]
         [InlineData("https://services.arcgisonline.com/arcgis")]
         public async Task CanDescribeSite(string rootUrl)
         {
@@ -108,7 +106,7 @@
             Assert.NotNull(response);
             Assert.True(response.Version > 0);
 
-            foreach (var resource in response.ArcGISServerEndpoints)
+            foreach (var resource in response.ArcGISServerEndpoints.Where(e => e.RelativeUrl.EndsWith("server", StringComparison.OrdinalIgnoreCase) && !e.RelativeUrl.EndsWith("searchserver", StringComparison.OrdinalIgnoreCase)))
             {
                 var ping = await IntegrationTestFixture.TestPolicy.ExecuteAsync(() =>
                 {

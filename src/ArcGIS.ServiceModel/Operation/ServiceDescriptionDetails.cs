@@ -89,13 +89,28 @@
     [DataContract]
     public class DocumentInfo
     {
+        [DataMember(Name = "title")]
         public string Title { get; set; }
+
+        [DataMember(Name = "author")]
         public string Author { get; set; }
+
+        [DataMember(Name = "comments")]
         public string Comments { get; set; }
+
+        [DataMember(Name = "subject")]
         public string Subject { get; set; }
+
+        [DataMember(Name = "category")]
         public string Category { get; set; }
+
+        [DataMember(Name = "antialiasingMode")]
         public string AntialiasingMode { get; set; }
+
+        [DataMember(Name = "textAntialiasingMode")]
         public string TextAntialiasingMode { get; set; }
+
+        [DataMember(Name = "keywords")]
         public string Keywords { get; set; }
     }
 

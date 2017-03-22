@@ -15,7 +15,11 @@ namespace ArcGIS.ServiceModel.Operation
     {
         public ApplyEdits(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
             : base(endpoint.RelativeUrl.Trim('/') + "/" + Operations.ApplyEdits, beforeRequest, afterRequest)
-        { }
+        {
+            Adds = new List<Feature<T>>();
+            Updates = new List<Feature<T>>();
+            Deletes = new List<long>();
+        }
                 
         /// <summary>
         /// The array of features to be added.

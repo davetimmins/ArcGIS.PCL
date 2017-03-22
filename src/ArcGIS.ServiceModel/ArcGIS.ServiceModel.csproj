@@ -9,7 +9,7 @@
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
     
-    <PackageVersion>6.0.0-beta-1</PackageVersion>
+    <PackageVersion>6.0.0-beta-2</PackageVersion>
     <PackageIconUrl>https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/davetimmins/ArcGIS.PCL</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/davetimmins/ArcGIS.PCL/blob/master/LICENSE.txt</PackageLicenseUrl>       
@@ -49,9 +49,11 @@
     </Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>
-      New features
+      New features for v6
 
       - added more options to HttpClientFactory to support different proxy / windows user connections
+      - new operations create replica, unregister replica, delete attachments, batch query (re runs query if transfer limit is exceeded so that all rows are returned)
+      - new AttachmentWorker, use to add or update attachments
 
       Breaking changes in this release
 

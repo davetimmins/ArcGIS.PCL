@@ -2,7 +2,7 @@
 {
     using Xunit;
 
-    public class ArcGISOnlineTests : IClassFixture<TestsFixture>
+    public class ArcGISOnlineTests
     {
         //[Fact]
         //public async Task CanSearchForHostedFeatureServices()

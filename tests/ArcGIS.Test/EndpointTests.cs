@@ -5,7 +5,7 @@
     using System;
     using Xunit;
 
-    public class EndpointTests : IClassFixture<TestsFixture>
+    public class EndpointTests
     {
         [Theory]
         [InlineData(null)]

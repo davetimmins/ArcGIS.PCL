@@ -3,11 +3,9 @@
     using Polly;
     using Serilog;
     using Serilog.Events;
-    using ServiceModel;
     using System;
     using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using Xunit.Abstractions;
 
     public class IntegrationTestFixture : IDisposable
@@ -19,19 +17,6 @@
         {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             
-            HttpClientFactory.Get = (() =>
-            {
-                var httpClientHandler = new HttpClientHandler();
-                if (httpClientHandler.SupportsAutomaticDecompression)
-                    httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-                var httpClient = new HttpClient(httpClientHandler);
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jsonp"));
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
-
-                return httpClient;
-            });
-
             TestPolicy = Policy
                 .Handle<InvalidOperationException>()
                 .Or<HttpRequestException>()

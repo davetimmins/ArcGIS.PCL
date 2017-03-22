@@ -5,6 +5,7 @@
     using Operation;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -144,6 +145,81 @@
             return Get<QueryResponse<Tout>, Query>(queryOptions, ct);
         }
 
+        public virtual async Task<QueryResponse<Tout>> BatchQuery<Tout, Tin>(Query<Tin> queryOptions, CancellationToken ct = default(CancellationToken))
+            where Tout : IGeometry<Tout>
+            where Tin : IGeometry<Tin>
+        {
+            var result = await Get<QueryResponse<Tout>, Query<Tin>>(queryOptions, ct);
+
+            if (result != null && result.Error == null && result.Features != null && result.Features.Any() && result.ExceededTransferLimit.HasValue && result.ExceededTransferLimit.Value == true)
+            {
+                // need to get the remaining data since we went over the limit
+                var batchSize = result.Features.Count();
+                var loop = 1;
+                var exceeded = true;
+
+                while (exceeded == true)
+                {
+                    _logger.InfoFormat("Exceeded query transfer limit (found {0}), batching query for {1} - loop {2}", batchSize, queryOptions.RelativeUrl, loop);
+                    var innerQueryOptions = queryOptions;
+                    innerQueryOptions.ResultOffset = batchSize * loop;
+                    innerQueryOptions.ResultRecordCount = batchSize;
+                    var innerResult = await Get<QueryResponse<Tout>, Query<Tin>>(queryOptions, ct).ConfigureAwait(false);
+
+                    if (innerResult != null && innerResult.Error == null && innerResult.Features != null && innerResult.Features.Any())
+                    {
+                        result.Features.ToList().AddRange(innerResult.Features);
+                        exceeded = result.ExceededTransferLimit.HasValue && innerResult.ExceededTransferLimit.Value;
+                    }
+                    else
+                    {
+                        exceeded = false;
+                    }
+
+                    loop++;
+                }
+            }
+
+            return result;
+        }
+
+        public virtual async Task<QueryResponse<Tout>> BatchQuery<Tout>(Query queryOptions, CancellationToken ct = default(CancellationToken))
+            where Tout : IGeometry<Tout>
+        {
+            var result = await Get<QueryResponse<Tout>, Query>(queryOptions, ct);
+
+            if (result != null && result.Error == null && result.Features != null && result.Features.Any() && result.ExceededTransferLimit.HasValue && result.ExceededTransferLimit.Value == true)
+            {
+                // need to get the remaining data since we went over the limit
+                var batchSize = result.Features.Count();
+                var loop = 1;
+                var exceeded = true;
+
+                while (exceeded == true)
+                {
+                    _logger.InfoFormat("Exceeded query transfer limit (found {0}), batching query for {1} - loop {2}", batchSize, queryOptions.RelativeUrl, loop);
+                    var innerQueryOptions = queryOptions;
+                    innerQueryOptions.ResultOffset = batchSize * loop;
+                    innerQueryOptions.ResultRecordCount = batchSize;
+                    var innerResult = await Get<QueryResponse<Tout>, Query>(queryOptions, ct).ConfigureAwait(false);
+
+                    if (innerResult != null && innerResult.Error == null && innerResult.Features != null && innerResult.Features.Any())
+                    {
+                        result.Features.ToList().AddRange(innerResult.Features);
+                        exceeded = result.ExceededTransferLimit.HasValue && innerResult.ExceededTransferLimit.Value;
+                    }
+                    else
+                    {
+                        exceeded = false;
+                    }
+
+                    loop++;
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Call the count operation for the query resource.
         /// </summary>
@@ -261,6 +337,75 @@
             var result = features.UpdateGeometries<T>(simplified.Geometries);
             if (result.First().Geometry.SpatialReference == null) result.First().Geometry.SpatialReference = spatialReference;
             return result;
+        }
+
+        public Task<ArcGISReplica<Tout>> CreateReplica<Tout, Tin>(CreateReplica<Tin> createReplica, CancellationToken ct = default(CancellationToken))
+            where Tout : IGeometry<Tout>
+            where Tin : IGeometry<Tin>
+        {
+            return Post<ArcGISReplica<Tout>, CreateReplica<Tin>>(createReplica, ct);
+        }
+
+        public Task<ArcGISReplica<Tout>> CreateReplica<Tout>(CreateReplica createReplica, CancellationToken ct = default(CancellationToken))
+            where Tout : IGeometry<Tout>
+        {
+            return Post<ArcGISReplica<Tout>, CreateReplica>(createReplica, ct);
+        }
+
+        public Task<PortalResponse> UnregisterReplica(UnregisterReplica unregisterReplica, CancellationToken ct = default(CancellationToken))
+        {
+            return Post<PortalResponse, UnregisterReplica>(unregisterReplica, ct);
+        }
+
+        public async Task<FileInfo> DownloadAttachmentToLocal(Attachment attachment, string documentLocation)
+        {
+            if (attachment == null)
+            {
+                throw new ArgumentNullException(nameof(attachment));
+            }
+
+            if (string.IsNullOrWhiteSpace(attachment.Url))
+            {
+                throw new ArgumentNullException(nameof(attachment.Url));
+            }
+
+            if (string.IsNullOrWhiteSpace(attachment.Name))
+            {
+                throw new ArgumentNullException(nameof(attachment.Name));
+            }
+
+            if (string.IsNullOrWhiteSpace(documentLocation))
+            {
+                throw new ArgumentNullException(nameof(documentLocation));
+            }
+
+            var response = await _httpClient.GetAsync(attachment.Url);
+            response.EnsureSuccessStatusCode();
+            await response.Content.LoadIntoBufferAsync();
+
+            var fileInfo = new FileInfo(Path.Combine(documentLocation, attachment.SafeFileName));
+
+            // check that the file doesn't already exist
+            int i = 1;
+            while (fileInfo.Exists)
+            {
+                fileInfo = new FileInfo(Path.Combine(documentLocation, $"rev-{i}-" + attachment.SafeFileName));
+                i++;
+            }
+                        
+            using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await response.Content.CopyToAsync(fileStream);
+            }
+                
+            _logger.DebugFormat("Saved attachment to {0}.", fileInfo.FullName);
+
+            return new FileInfo(fileInfo.FullName);            
+        }
+
+        public Task<DeleteAttachmentsResponse> DeleteAttachments(DeleteAttachments deletes, CancellationToken ct = default(CancellationToken))
+        {
+            return Post<DeleteAttachmentsResponse, DeleteAttachments>(deletes, ct);
         }
 
         async Task<Token> CheckGenerateToken(CancellationToken ct)
