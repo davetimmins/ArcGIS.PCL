@@ -9,12 +9,31 @@
     using System.Text.RegularExpressions;
     using System.IO;
 
+
+    /// <summary>
+    /// The createReplica operation is performed on a feature service resource.
+    /// This operation creates the replica between the feature service and a client based on a client-supplied replica definition.
+    /// It requires the Sync capability.
+    /// </summary>
     [DataContract]
-    public class CreateReplica<T> : CreateReplica where T : IGeometry<T>
+    public class CreateReplica<T> : ArcGISServerOperation where T : IGeometry<T>
     {
+        public const string Operation = "createReplica";
+
         public CreateReplica(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
-            : base(endpoint, beforeRequest, afterRequest)
-        { }
+            : base(endpoint.RelativeUrl.Trim('/') + "/" + Operations.CreateReplica, beforeRequest, afterRequest)
+        {
+            ReturnAttachments = false;
+            TargetType = "client";
+            TransportType = "esriTransportTypeEmbedded";
+            Layers = new List<int>();
+            LayerQueries = new List<LayerQuery>();
+            ReturnAttachmentsDataByUrl = false;
+            SyncModel = "none";
+            AttachmentsSyncDirection = "none";
+            DataFormat = "json";
+            IsAsync = false;
+        }
 
         [DataMember(Name = "geometryType")]
         public string GeometryType
@@ -34,6 +53,10 @@
         [DataMember(Name = "inSR")]
         public SpatialReference InputGeometrySpatialReference { get; set; }
 
+        /// <summary>
+        ///  (Required) The geometry to apply as the spatial filter. 
+        ///  All the features in layers intersecting this geometry will be replicated
+        /// </summary>
         [DataMember(Name = "geometry")]
         public IGeometry<T> Geometry { get; set; }
 
@@ -44,32 +67,8 @@
             { typeof(Extent), () => GeometryTypes.Envelope },
             { typeof(Polygon), () => GeometryTypes.Polygon },
             { typeof(Polyline), () => GeometryTypes.Polyline }
-        };
-    }
-
-    /// <summary>
-    /// The createReplica operation is performed on a feature service resource.
-    /// This operation creates the replica between the feature service and a client based on a client-supplied replica definition.
-    /// It requires the Sync capability.
-    /// </summary>
-    [DataContract]
-    public class CreateReplica : ArcGISServerOperation
-    {
-        public const string Operation = "createReplica";
-
-        public CreateReplica(ArcGISServerEndpoint endpoint, Action beforeRequest = null, Action afterRequest = null)
-            : base(endpoint.RelativeUrl.Trim('/') + "/" + Operations.CreateReplica, beforeRequest, afterRequest)
-        {
-            ReturnAttachments = false;
-            TransportType = "esriTransportTypeEmbedded";
-            Layers = new List<int>();
-            LayerQueries = new List<LayerQuery>();
-            ReturnAttachmentsDataByUrl = false;
-            SyncModel = "none";
-            DataFormat = "json";
-            IsAsync = false;
-        }
-        
+        };           
+                
         /// <summary>
         /// Gets or sets the name of the replica on the server. The replica name is unique per feature service.
         /// This is not a required parameter.
@@ -98,6 +97,14 @@
         { get { return LayerQueries == null || !LayerQueries.Any() ? null : LayerQueries.ToDictionary(k => k.Id, v => v); } }
 
         /// <summary>
+        ///  Specifies whether the replica is to be used on a client, such as a mobile device or ArcGIS Pro, or on another server. 
+        ///  Specifying server allows you to publish the replica to another portal and then synchronize changes between two feature services. 
+        ///  The default is client.
+        /// </summary>
+        [DataMember(Name = "targetType")]
+        public string TargetType { get; set; }
+
+        /// <summary>
         /// The transportType represents the response format.
         /// If the transportType is esriTransportTypeUrl, the JSON response is contained in a file, and the URL link to the file is returned.
         /// Otherwise, the JSON object is returned directly.
@@ -106,6 +113,7 @@
         [DataMember(Name = "transportType")]
         public string TransportType { get; set; }
 
+        bool _returnAttachments;
         /// <summary>
         /// Gets or sets whether to return attachments.
         /// If true, attachments are added to the replica and returned in the response.
@@ -113,7 +121,15 @@
         /// This parameter is only applicable if the feature service has attachments.
         /// </summary>
         [DataMember(Name = "returnAttachments")]
-        public bool ReturnAttachments { get; set; }
+        public bool ReturnAttachments
+        {
+            get => _returnAttachments;
+            set
+            {
+                _returnAttachments = value;
+                AttachmentsSyncDirection = value ? "bidirectional" : "none";
+            }
+        }
 
         /// <summary>
         /// If true, a reference to a URL will be provided for each attachment returned from createReplica.
@@ -145,6 +161,18 @@
         public string SyncModel { get; set; }
 
         /// <summary>
+        /// Values include:
+        /// bidirectional - Attachment edits can be both uploaded from the client and downloaded from the service when syncing.
+        /// Upload - Attachment edits can only be uploaded from the client when syncing.When the client calls synchronizeReplica, feature and row edits will be downloaded but attachments will not be. This is useful in cases where the data collector does not want to consume space with attachments from the service, but does need to collect new attachments.
+        /// None - Attachment edits are never synced from either the client or the server.
+        /// When returnAttachments is set to true, you can set attachmentsSyncDirection to either bidirectional (default) or upload.In this case, create replica includes attachments from the service.
+        /// When returnAttachments is set to false, you can set attachmentsSyncDirection to either upload or none (default). In this case, create replica does not include attachments from the service.
+        /// All other combinations are not valid.
+        /// </summary>
+        [DataMember(Name = "attachmentsSyncDirection")]
+        public string AttachmentsSyncDirection { get; set; }
+       
+        /// <summary>
         /// The format of the replica geodatabase returned in the response.
         /// sqlite or json are valid values.
         /// The default is json.
@@ -165,6 +193,8 @@
         public LayerQuery()
         {
             QueryOption = "useFilter";
+            UseGeometry = true;
+            IncludeRelated = true;
         }
 
         [IgnoreDataMember]
@@ -182,6 +212,23 @@
         /// </summary>
         [DataMember(Name = "where")]
         public string Where { get; set; }
+
+        /// <summary>
+        /// Determines whether or not to apply the geometry for the layer. 
+        /// The default is true. If set to false, features from the layer that intersect the geometry are not added.
+        /// </summary>
+        [DataMember(Name = "useGeometry")]
+        public bool UseGeometry { get; set; }
+
+        /// <summary>
+        /// Determines whether or not to add related rows. 
+        /// The default is true. 
+        /// Value true is honored only for queryOption = none. 
+        /// This is only applicable if your data has relationship classes. 
+        /// Relationships are only processed in a forward direction from origin to destination.
+        /// </summary>
+        [DataMember(Name = "includeRelated")]
+        public bool IncludeRelated { get; set; }
     }
 
     [DataContract]

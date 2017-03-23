@@ -346,12 +346,6 @@
             return Post<ArcGISReplica<Tout>, CreateReplica<Tin>>(createReplica, ct);
         }
 
-        public Task<ArcGISReplica<Tout>> CreateReplica<Tout>(CreateReplica createReplica, CancellationToken ct = default(CancellationToken))
-            where Tout : IGeometry<Tout>
-        {
-            return Post<ArcGISReplica<Tout>, CreateReplica>(createReplica, ct);
-        }
-
         public Task<PortalResponse> UnregisterReplica(UnregisterReplica unregisterReplica, CancellationToken ct = default(CancellationToken))
         {
             return Post<PortalResponse, UnregisterReplica>(unregisterReplica, ct);
