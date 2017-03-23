@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.ServiceModel", "src\ArcGIS.ServiceModel\ArcGIS.ServiceModel.csproj", "{BD6D09F4-FCD7-4894-971B-87E6294393BC}"
 EndProject
@@ -9,12 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcGIS.Test", "tests\ArcGIS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1EF606F2-E995-4D3D-BDE4-6AF81895C465}"
 	ProjectSection(SolutionItems) = preProject
-		.travis.yml = .travis.yml
-		appveyor.yml = appveyor.yml
-		ArcGIS.PCL.nuspec = ArcGIS.PCL.nuspec
-		build.bat = build.bat
-		build.fsx = build.fsx
-		build.sh = build.sh
 		src\CommonAssemblyInfo.cs = src\CommonAssemblyInfo.cs
 	EndProjectSection
 EndProject
