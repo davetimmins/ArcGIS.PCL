@@ -429,12 +429,12 @@
             return "?" + string.Join("&", dictionary.Keys.Select(k => string.Format("{0}={1}", k, dictionary[k].UrlEncode())));
         }
 
-        internal static HttpContent CreateContent(Dictionary<string, string> parameters)
+        protected static HttpContent CreateContent(Dictionary<string, string> parameters)
         {
-            // if any of the parameters is longer than 65520, FormUrlEncodedContent throws an
+            // if any of the parameters is longer than 65519 characters, FormUrlEncodedContent throws an
             // UriFormatException (see e.g. https://github.com/dotnet/corefx/issues/1936)
             // if we have any parameters that are this long, we use MultipartFormDataContent instead
-            if (parameters.Any(kvp => kvp.Value?.Length > 65520))
+            if (parameters.Any(kvp => kvp.Value?.Length > 65519))
             {
                 var content = new MultipartFormDataContent();
                 foreach (var keyValuePair in parameters)

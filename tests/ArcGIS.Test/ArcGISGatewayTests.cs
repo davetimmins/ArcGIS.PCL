@@ -2,6 +2,8 @@
 {
     using ArcGIS.ServiceModel;
     using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
     using Xunit;
 
     public class ArcGISGatewayTests : IClassFixture<TestsFixture>
@@ -76,6 +78,40 @@
         {
             var rootUrl = urlToTest.AsRootUrl();
             Assert.Equal("https://www.arcgis.com/arcgis/", rootUrl, true);
+        }
+        
+        [Fact]
+        public void PostingLongContentShouldCreateMultipartContent()
+        {
+            var content = new string('x', 65520);
+            var parameters = new Dictionary<string, string> { ["test"] = content };
+            var gateway = new PostTest();
+
+            Assert.IsType<MultipartFormDataContent>(gateway.MakeContent(parameters));
+        }
+
+        [Fact]
+        public void PostingShortContentShouldCreateFormUrlEncodedContent()
+        {
+            var content = new string('x', 65519);
+            var parameters = new Dictionary<string, string> { ["test"] = content };
+            var gateway = new PostTest();
+
+            Assert.IsType<FormUrlEncodedContent>(gateway.MakeContent(parameters));
+        }
+
+        private class PostTest : PortalGatewayBase
+        {
+            public PostTest() : base("http://example.com") { }
+
+            public PostTest(string rootUrl, ISerializer serializer = null, ITokenProvider tokenProvider = null, Func<HttpClient> httpClientFunc = null) : base(rootUrl, serializer, tokenProvider, httpClientFunc)
+            {
+            }
+
+            public HttpContent MakeContent(Dictionary<string, string> parameters)
+            {
+                return PortalGatewayBase.CreateContent(parameters);
+            }
         }
     }
 }
