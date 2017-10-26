@@ -1,3 +1,5 @@
+> This project is no longer supported as it has been migrated to [Anywhere.ArcGIS](https://github.com/davetimmins/Anywhere.ArcGIS)
+
 <img align="right" height="120" src="https://raw.githubusercontent.com/davetimmins/ArcGIS.PCL/master/logo.png">
 
 ### ArcGIS.PCL
